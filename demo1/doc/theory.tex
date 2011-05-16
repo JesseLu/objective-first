@@ -1,0 +1,32 @@
+\documentclass{article}
+\usepackage{amsmath}
+
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\curl}{\nabla\times}
+\newcommand{\eps}{\epsilon}
+\newcommand{\inv}{\frac{1}}
+
+\title{Electromagnetic Theory Handbook for Objective-First Optimization}
+\author{Jesse Lu, \texttt{jesselu@stanford.edu}}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Maxwell's equations}
+According to Eqs. 3.7 and 3.8 in \cite{TH}, Maxwell's time-harmonic equations are
+\be -i \omega H = -\inv{\mu} \curl E - \inv{\mu} M \ee
+\be -i \omega E = \inv{\epsilon} \curl H - \inv{\eps} J \ee
+where $M$ and $J$ are the magnetic and electric current densities, respectively.
+
+The wave equations are then,
+\be \curl \inv{\mu} \curl E - \omega^2 \eps E = i \omega J - 
+    \curl \inv{\mu} M \ee
+\be \curl \inv{\eps} \curl H - \omega^2 \mu H = i \omega M + 
+    \curl \inv{\eps} J \ee
+
+\begin{thebibliography}{99}
+\bibitem{TH} Allen Taflove, Susan C. Hagness, \emph{Computational Electrodynamics, Third Edition} (Artech House, 2005). 
+\end{thebibliography}
+\end{document}
