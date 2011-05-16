@@ -26,7 +26,18 @@ The wave equations are then,
 \be \curl \inv{\eps} \curl H - \omega^2 \mu H = i \omega M + 
     \curl \inv{\eps} J \ee
 
+\section{Perfectly matched layers}
+The upshot of ref.~\cite{SJ} is that a PML can be implemented by simply substituting partial derivatives in the following manner,
+\be \frac{\delta}{\delta x} \rightarrow
+    \inv{1 + i\frac{\sigma_x(x)}{\omega}} \frac{\delta}{\delta x}, \ee
+where $\sigma_x(x) > 0$ in the PML and $\sigma_x = 0$ outside of it.
+
+Further considerations include complex $\sigma$, $\text{Im }\sigma < 0$, to attenuate evanescent waves. Quadratic or cubic growth of $\sigma$ to reduce numerical reflections arising from discretization error. 
+
+Generally, a half-wavelength thick PML layer is sufficient for acceptable attentuation.
+
 \begin{thebibliography}{99}
 \bibitem{TH} Allen Taflove, Susan C. Hagness, \emph{Computational Electrodynamics, Third Edition} (Artech House, 2005). 
+\bibitem{SJ} Steven G. Johnson, \emph{Notes on Perfectly Matched Layers (PMLs)} (2007).
 \end{thebibliography}
 \end{document}
