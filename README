@@ -1,2 +1,6 @@
-Objective-first Optimization
-===
+Requires the level-set method files which can be found at:
+    https://github.com/JesseLu/Level-Set
+
+Add them to the Matlab path using,
+    path(path, 'path-to-Level-Set-files');
+
