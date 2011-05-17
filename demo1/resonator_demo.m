@@ -24,7 +24,7 @@ phi = signed_distance(phi, 1e-3); % Make phi roughly a signed distance function.
 lset_plot(phi); % Use to visualize the initial structure.
 
 % Helper function to convert from phi to p ("digitize phi").
-p = @(phi) ((phi .* (phi > -1 & phi < 1) + (phi >= 1) - (phi <= -1)) * ... 
+dig = @(phi) ((phi .* (phi > -1 & phi < 1) + (phi >= 1) - (phi <= -1)) * ... 
     (eps_hi-eps_lo)/2) + (eps_hi+eps_lo)/2;
 
 
@@ -56,10 +56,8 @@ d = 1e3;
     % Iterate through the optimization process.
     %
 
-x = field_update(A(p(phi)), b, C, d);
-phys_res(x, p(phi))
-V = derivatives(grad_res(x, p(phi)));
-phi = update_interface(phi, V, 0); % Move the interface.
-phys_res(x, p(phi))
+x = field_update(A(p), b, C, d);
+plot_fields(dims, {'Ex', x(1:N)}, {'Ey', x(N+1:end)});
 
-plot_fields(dims, {'p', p(phi)}, {'Ex', x(1:N)}, {'Ey', x(N+1:end)});
+phi = structure_update(phi, @(phi) phys_res(x, dig(phi)), ...
+    @(phi) grad_res(x, dig(phi)));
