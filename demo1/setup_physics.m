@@ -1,9 +1,8 @@
-function [A, b, phys_res, grad_res] = setup_physics(dims, omega)
+function [A, b, phys_res, grad_res] = setup_physics(dims, omega, t_pml)
 
 N = prod(dims);
 
-sigma = 1e0/omega; % Strength of PML.
-t_pml = 10; % Thickness of PML layer.
+sigma = 1 / omega; % Strength of PML.
 
 
     %

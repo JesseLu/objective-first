@@ -46,7 +46,6 @@ M = zeros(dims);
 
 [A, b, phys_res, grad_res] = setup_physics(dims, omega);
 b = b(J, M);
-
 % This defines the design objective.
 C = -i * J(:);
 d = 1e3;
@@ -56,8 +55,8 @@ d = 1e3;
     % Iterate through the optimization process.
     %
 
-x = field_update(A(p), b, C, d);
+x = field_update(A(dig(phi))+0.1*speye(2*N), b, C, d);
 plot_fields(dims, {'Ex', x(1:N)}, {'Ey', x(N+1:end)});
-
+drawnow
 phi = structure_update(phi, @(phi) phys_res(x, dig(phi)), ...
     @(phi) grad_res(x, dig(phi)));
