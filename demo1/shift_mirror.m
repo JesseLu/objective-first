@@ -1,5 +1,5 @@
-function [A] = mirror_shift(dims, shift)
-% A = MIRROR_SHIFT(DIMS, SHIFT)
+function [A] = shift_mirror(dims, shift)
+% A = SHIFT_MIRROR(DIMS, SHIFT)
 %
 % Description
 %     Create a matrix that will shift the values of a vector, where the vector

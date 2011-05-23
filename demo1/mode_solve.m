@@ -67,9 +67,10 @@ Hy = E2Hy(Ex, Ez, beta);
     % Re-package for the actual propagation direction.
     %
 
-mode = struct('Et', Ex, 'El', Ez, 'Ht', Hy);
+mode = struct('Et', Ex, 'El', Ez, 'Ht', Hy, 'beta', beta);
 
 % plot([real(mode.Et), imag(mode.El), real(mode.Ht)], '.-');
 % legend({'transverse E', 'longitudinal E', 'transverse H'});
-% pause
+plot([eps.x(:), eps.z(:)], '.-');
+pause
 

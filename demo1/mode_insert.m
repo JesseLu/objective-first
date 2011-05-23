@@ -10,6 +10,12 @@ Hz = zeros(MY_DIMS);
 
 switch (side)
     case '-x'
+        % Ex(x,y) = mode.El;
+        Ey(x,y) = mode.Et(:);
+        % Hz(x,y) = mode.Ht;
+
 
 
 end
+plot(mode.Et)
+pause

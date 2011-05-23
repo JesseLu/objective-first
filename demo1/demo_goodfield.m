@@ -8,7 +8,7 @@ help demo_goodfield
     % Some optimization parameters.
     %
 
-dims = [160 90]; % Size of the grid.
+dims = [80 80]; % Size of the grid.
 N = prod(dims);
 
 eps_lo = 1.0; % Relative permittivity of air.
@@ -19,7 +19,7 @@ omega = 0.2; % Angular frequency of desired mode.
 pml_thick = 10; % Thickness of pml.
 
 % Set the device boundary.
-dev.dims = [100 60];
+dev.dims = [40 40];
 dev.offset = round((dims - dev.dims)/2);
 
 
@@ -45,14 +45,15 @@ MY_DEVICE = dev;
     %
 
 lset_grid(dims);
-phi = lset_box([-80 -15], [1000 10]);
+phi = lset_box([0 0], [1000 10]);
 % phi = lset_union(phi, lset_box([80 15], [100 10]));
 phi = lset_complement(phi);
 
-lset_plot(phi); pause % Use to visualize the initial structure.
 % Initialize phi, and create conversion functions.
 [phi, phi2p, phi2e, p2e, e2p, phi_smooth] = ...
     setup_levelset(phi, eps_lo, eps_hi, 1e-3);
+
+% lset_plot(phi); pause % Use to visualize the initial structure.
 
 
     %
@@ -60,19 +61,16 @@ lset_plot(phi); pause % Use to visualize the initial structure.
     %
 
 input = mode_solve(mode_cutout(phi2e(phi), '-x'), omega, '-x');
-mode_insert(
-
-
-    % 
-    % Source terms.
-    %
-
-Jx = zeros(dims);
-Jy = zeros(dims);
-Jy(ceil(dims(1)/2), ceil(dims(2)/2)) = i;
+[Jx, Jy, M] = mode_insert(input, '-x');
 J = [Jx, Jy];
-
-M = zeros(dims);
+% 
+% Jx = zeros(dims);
+% Jy = zeros(dims);
+% Jy(ceil(dims(1)/2), ceil(dims(2)/2)) = i;
+% J = [Jy, Jx];
+% 
+% M = zeros(dims);
+% 
 
 
     %
@@ -100,5 +98,10 @@ grad_res = @(x, p) e2p((-omega^2 * D(x))' * (A(p2e(p)) * x));
     %
     % Plot field.
     %
-x = field_update(A(p2e(ones(dims)))+0.1*speye(2*N), b, C, d);
-plot_fields(dims, {'Ex', x(1:N)}, {'Ey', x(N+1:end)});
+% x = field_update(A(p2e(ones(dims)))+0.1*speye(2*N), b, C, d);
+x = A(phi2e(phi)) \ b;
+% x = A(p2e(12.25*ones(dims))) \ b;
+figure(1); plot_fields(dims, {'Ex', x(1:N)}, {'Ey', x(N+1:end)});
+e = phi2e(phi);
+figure(2); plot_fields(dims, {'ex', e.x}, {'ey', e.y});
+figure(3); plot([e.y(19,:); e.x(19,:); Jy(19,:)]', '.-')

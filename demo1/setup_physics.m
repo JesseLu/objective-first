@@ -20,8 +20,8 @@ scy = @(sx, sy) setup_stretched_coords(dims, [1 dims(2)+0.5], [sx, sy], ...
     'y', t_pml, sigma, 2.5);
 
 % Define the curl operators as applied to E and H, respectively.
-Ecurl = [   scy(.5,.5)*-(S(0,0)-S(0,-1)),   scx(.5,.5)*(S(0,0)-S(-1,0))];  
-Hcurl = [   scy(.5,0)*(S(0,1)-S(0,0));      scx(0,.5)*-(S(1,0)-S(0,0))]; 
+Ecurl = [   scy(.5,.5)*-(S(0,1)-S(0,0)),   scx(.5,.5)*(S(1,0)-S(0,0))];  
+Hcurl = [   scy(.5,0)*(S(0,0)-S(0,-1));      scx(0,.5)*-(S(0,0)-S(-1,0))]; 
 
     % 
     % Build the matrices that we will be using.
