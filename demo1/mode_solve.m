@@ -71,6 +71,6 @@ mode = struct('Et', Ex, 'El', Ez, 'Ht', Hy, 'beta', beta);
 
 % plot([real(mode.Et), imag(mode.El), real(mode.Ht)], '.-');
 % legend({'transverse E', 'longitudinal E', 'transverse H'});
-plot([eps.x(:), eps.z(:)], '.-');
-pause
+% plot([eps.x(:), eps.z(:)], '.-');
+% pause
 

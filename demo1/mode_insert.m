@@ -10,12 +10,11 @@ Hz = zeros(MY_DIMS);
 
 switch (side)
     case '-x'
-        % Ex(x,y) = mode.El;
-        Ey(x,y) = mode.Et(:);
-        % Hz(x,y) = mode.Ht;
+        Ex(x,y) = mode.El;
+        Ey(x,y) = mode.Et * exp(i * mode.beta * 0.5);
+        Hz(x,y) = mode.Ht;
 
 
 
 end
-plot(mode.Et)
-pause
+isreal(mode.Ht)

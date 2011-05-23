@@ -63,6 +63,7 @@ phi = lset_complement(phi);
 input = mode_solve(mode_cutout(phi2e(phi), '-x'), omega, '-x');
 [Jx, Jy, M] = mode_insert(input, '-x');
 J = [Jx, Jy];
+J = J / omega^2;
 % 
 % Jx = zeros(dims);
 % Jy = zeros(dims);
@@ -77,7 +78,7 @@ J = [Jx, Jy];
     % Get matrices.
     %
 
-[A, b] = setup_physics(dims, omega, pml_thick, p2e, e2p);
+[A, b, E2H] = setup_physics(dims, omega, pml_thick, p2e, e2p);
 b = b(J, M);
 % This defines the design objective.
 C = -i * J(:);
@@ -101,7 +102,15 @@ grad_res = @(x, p) e2p((-omega^2 * D(x))' * (A(p2e(p)) * x));
 % x = field_update(A(p2e(ones(dims)))+0.1*speye(2*N), b, C, d);
 x = A(phi2e(phi)) \ b;
 % x = A(p2e(12.25*ones(dims))) \ b;
-figure(1); plot_fields(dims, {'Ex', x(1:N)}, {'Ey', x(N+1:end)});
-e = phi2e(phi);
-figure(2); plot_fields(dims, {'ex', e.x}, {'ey', e.y});
-figure(3); plot([e.y(19,:); e.x(19,:); Jy(19,:)]', '.-')
+Ex = reshape(x(1:N), dims);
+Ey = reshape(x(N+1:end), dims);
+Hz = reshape(E2H(x), dims);
+
+figure(1); plot_fields(dims, ...
+    {'Ex', imag(x(1:N))}, {'Ey', real(x(N+1:end))}, {'Hz', real(y)}, ...
+    {'|Ex|', abs(x(1:N))}, {'|Ey|', abs(x(N+1:end))}, {'|Hz|', abs(y)});
+figure(2); plot(abs([Ex(60,:); Ey(60,:); Hz(60,:)]'), '.-');
+figure(3); plot(abs([Jx(19,:); Jy(19,:); M(19,:)]'), '.-');
+% e = phi2e(phi);
+% figure(2); plot_fields(dims, {'ex', e.x}, {'ey', e.y});
+% figure(3); plot([e.y(19,:); e.x(19,:); Jy(19,:)]', '.-')

@@ -1,4 +1,4 @@
-function [A, b, phys_res, grad_res] = ...
+function [A, b, E2H] = ...
     setup_physics(dims, omega, t_pml, p2e, e2p)
 
 N = prod(dims);
@@ -33,3 +33,4 @@ A = @(eps) Hcurl * Ecurl - omega^2 * D([eps.x(:); eps.y(:)]);
 % Source terms.
 b = @(J, M) i * omega * J(:) - Hcurl * M(:);
 
+E2H = @(E) 1 / (i * omega) * Ecurl * E;
