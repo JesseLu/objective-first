@@ -29,7 +29,7 @@ dev.offset = round((dims - dev.dims)/2);
 
 global S D
 
-% Shortbut to form a derivative matrix.
+% Shortcut to form a derivative matrix.
 S = @(sx, sy) shift_mirror(dims, -[sx sy]); % Mirror boundary conditions.
 
 % Shortcut to make a sparse diagonal matrix.
@@ -46,7 +46,7 @@ phi = lset_union(phi, lset_box([80 15], [100 10]));
 phi = lset_complement(phi);
 % lset_plot(phi); % Use to visualize the initial structure.
 
-[phi, phi2p, p2e, e2p] = setup_levelset(phi, dev, eps_lo, eps_hi);
+[phi, phi2p, phi2e, p2e, e2p] = setup_levelset(phi, eps_lo, eps_hi);
 
 
     % 
@@ -76,7 +76,9 @@ d = 1e3;
     % Find the input and output modes.
     %
 
+
 % input = solve_wg_mode(dig(phi), omega, dev, '-y');
+input = mode_solve(mode_cutout(phi2e(phi), dev, '-x'), omega, '-x');
 
 
     % 

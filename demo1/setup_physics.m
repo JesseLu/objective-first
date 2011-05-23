@@ -28,7 +28,7 @@ Hcurl = [   scy(.5,0)*(S(0,1)-S(0,0));      scx(0,.5)*-(S(1,0)-S(0,0))];
     %
 
 % Primary physics matrix, electromagnetic wave equation.
-A = @(eps) Hcurl * Ecurl - omega^2 * D(eps);
+A = @(eps) Hcurl * Ecurl - omega^2 * D([eps.x(:); eps.y(:)]);
 
 % Source terms.
 b = @(J, M) i * omega * J(:) - Hcurl * M(:);
