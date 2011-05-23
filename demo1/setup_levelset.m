@@ -1,8 +1,8 @@
-function [phi, phi2p, phi2e, p2e, e2p] = setup_levelset (phi, eps_lo, eps_hi)
+function [phi, phi2p, phi2e, p2e, e2p, smooth_phi] = ...
+    setup_levelset (phi, eps_lo, eps_hi, alpha_smooth)
 
-global S D
-dims = size(phi);
-
+global S D MY_DIMS % Helper functions.
+dims = MY_DIMS;
 
 % Epsilon is defined on Ez, interpolate to get epsilon at Ex and Ey.
 A_spread_x = 0.5 * [S(0,0)+S(1,0)]; 
@@ -21,4 +21,11 @@ e2p = @(eps) reshape(A_gather * [eps.x(:); eps.y(:)], dims);
 phi2p = @(phi) ((phi .* (phi > -1 & phi < 1) + (phi >= 1) - (phi <= -1)) * ... 
     (eps_hi-eps_lo)/2) + (eps_hi+eps_lo)/2;
 
+% Make it easier to go straight to epsilon from phi.
 phi2e = @(phi) p2e(phi2p(phi));
+
+% Re-initialization function to keep phi "well-behaved".
+smooth_phi = @(phi) signed_distance(phi, alpha_smooth);
+
+% Re-initialize phi.
+phi = smooth_phi(phi);

@@ -1,6 +1,10 @@
 function [mode] = mode_solve(eps, omega, dir)
 
 
+    %
+    % Package/re-align so that z is the propagation direction.
+    %
+
 % Make z the propagation the direction.
 switch (dir)
     case {'-x', '+x'}
@@ -9,24 +13,28 @@ switch (dir)
         eps = struct('x', eps.x(:), 'z', eps.z(:));
 end
 
-global D
-
-% Shortcut to form a derivative matrix.
-S = @(sx, sz) shift_mirror(size(eps.x), -[sx sz]); % Mirror boundary conditions.
-
 
     %
     % Build the physics matrix. We assume for now that propagation is in the 
     % z-direction.
     %
 
+global D % Diagonalization function.
+
+% Shortcut to form a derivative matrix.
+S = @(sx, sz) shift_mirror(size(eps.x), -[sx sz]); % Mirror boundary conditions.
+
 div = S(0,0) - S(-1,0); % Divergence.
 grad = S(1,0) - S(0,0); % Gradient.
 
-% Matrix that define the eigenproblem.
+% Matrix that defines the eigenproblem.
 A = grad * D(1./eps.z) * div * D(eps.x) + omega^2 * D(eps.x);
 
-Ex2Ez = @(Ex, beta) 1 ./ (beta * eps.z) .* (div * (eps.x .* Ex));
+% Function to obtain the longitudinal component.
+Ex2Ez = @(Ex, beta) i ./ (beta * eps.z) .* (div * (eps.x .* Ex));
+
+% Function to obtain the Hy-field.
+E2Hy = @(Ex, Ey, beta) 1 / (i*omega) * (i * beta * Ex - grad * Ey);
 
 
     %
@@ -34,10 +42,10 @@ Ex2Ez = @(Ex, beta) 1 ./ (beta * eps.z) .* (div * (eps.x .* Ex));
     %
 
 % Solve the eigenproblem.
-[V, D] = eig(full(A));
+[V, C] = eig(full(A));
 
 % Obtain the wave-vector (beta) and the transverse field.
-[beta2, ind] = max(diag(D));
+[beta2, ind] = max(diag(C));
 beta = sqrt(beta2);
 Ex = V(:,ind);
 
@@ -48,11 +56,20 @@ else
     Ex = Ex;
 end
 
-% Obtain the longitudinal field.
+% Obtain the longitudinal E-field (Ez).
 Ez = Ex2Ez(Ex, beta);
 
+% Obtain the transverse H-field (Hy).
+Hy = E2Hy(Ex, Ez, beta);
 
-plot([eps.x(:), eps.z(:)], '.-'); % Plot the cut-away structure.
 
-plot([Ex, Ez], '.-');
+    %
+    % Re-package for the actual propagation direction.
+    %
+
+mode = struct('Et', Ex, 'El', Ez, 'Ht', Hy);
+
+% plot([real(mode.Et), imag(mode.El), real(mode.Ht)], '.-');
+% legend({'transverse E', 'longitudinal E', 'transverse H'});
+% pause
 

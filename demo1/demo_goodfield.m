@@ -25,9 +25,10 @@ dev.offset = round((dims - dev.dims)/2);
 
     %
     % Helper function for determining derivative matrices.
+    % Also, helper global variables for prettier argument passing.
     %
 
-global S D
+global S D MY_DIMS MY_DEVICE
 
 % Shortcut to form a derivative matrix.
 S = @(sx, sy) shift_mirror(dims, -[sx sy]); % Mirror boundary conditions.
@@ -35,18 +36,31 @@ S = @(sx, sy) shift_mirror(dims, -[sx sy]); % Mirror boundary conditions.
 % Shortcut to make a sparse diagonal matrix.
 D = @(x) spdiags(x(:), 0, numel(x), numel(x));
 
+MY_DIMS = dims;
+MY_DEVICE = dev;
+
 
     %
     % Form the initial structure.
     %
 
 lset_grid(dims);
-phi = lset_box([-80 -15], [100 10]);
-phi = lset_union(phi, lset_box([80 15], [100 10]));
+phi = lset_box([-80 -15], [1000 10]);
+% phi = lset_union(phi, lset_box([80 15], [100 10]));
 phi = lset_complement(phi);
-% lset_plot(phi); % Use to visualize the initial structure.
 
-[phi, phi2p, phi2e, p2e, e2p] = setup_levelset(phi, eps_lo, eps_hi);
+lset_plot(phi); pause % Use to visualize the initial structure.
+% Initialize phi, and create conversion functions.
+[phi, phi2p, phi2e, p2e, e2p, phi_smooth] = ...
+    setup_levelset(phi, eps_lo, eps_hi, 1e-3);
+
+
+    %
+    % Find the input and output modes.
+    %
+
+input = mode_solve(mode_cutout(phi2e(phi), '-x'), omega, '-x');
+mode_insert(
 
 
     % 
@@ -70,15 +84,6 @@ b = b(J, M);
 % This defines the design objective.
 C = -i * J(:);
 d = 1e3;
-
-
-    %
-    % Find the input and output modes.
-    %
-
-
-% input = solve_wg_mode(dig(phi), omega, dev, '-y');
-input = mode_solve(mode_cutout(phi2e(phi), dev, '-x'), omega, '-x');
 
 
     % 
