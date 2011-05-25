@@ -45,8 +45,7 @@ MY_DEVICE = dev;
     %
 
 lset_grid(dims);
-phi = lset_box([0 0], [1000 10]);
-% phi = lset_union(phi, lset_box([80 15], [100 10]));
+phi = lset_box([0 0], [10 1000]);
 phi = lset_complement(phi);
 
 % Initialize phi, and create conversion functions.
@@ -60,57 +59,38 @@ phi = lset_complement(phi);
     % Find the input and output modes.
     %
 
-input = mode_solve(mode_cutout(phi2e(phi), '-x'), omega, '-x');
-[Jx, Jy, M] = mode_insert(input, '-x');
+dir = '-y';
+input = mode_solve(mode_cutout(phi2e(phi), dir), omega, dir);
+[Jx, Jy, M] = mode_insert(input, dir);
 J = [Jx, Jy];
-J = J / omega^2;
-% 
-% Jx = zeros(dims);
-% Jy = zeros(dims);
-% Jy(ceil(dims(1)/2), ceil(dims(2)/2)) = i;
-% J = [Jy, Jx];
-% 
-% M = zeros(dims);
-% 
 
 
     %
-    % Get matrices.
+    % Get the physics matrices and solve.
     %
 
+% Obtain physics matrix.
 [A, b, E2H] = setup_physics(dims, omega, pml_thick, p2e, e2p);
-b = b(J, M);
-% This defines the design objective.
-C = -i * J(:);
-d = 1e3;
 
+% Solve.
+x = A(phi2e(phi)) \ b(J,M);
 
-    % 
-    % Stuff for optimizing the structure.
-    %
-
-% Physics residual.
-phys_res = @(x, p) 0.5 * norm(A(p2e(p)) * x)^2;
-
-% Gradient of the physics residual with respect to p.
-grad_res = @(x, p) e2p((-omega^2 * D(x))' * (A(p2e(p)) * x)); 
-
-
-    %
-    % Plot field.
-    %
-% x = field_update(A(p2e(ones(dims)))+0.1*speye(2*N), b, C, d);
-x = A(phi2e(phi)) \ b;
-% x = A(p2e(12.25*ones(dims))) \ b;
+% Back-out field components.
 Ex = reshape(x(1:N), dims);
 Ey = reshape(x(N+1:end), dims);
 Hz = reshape(E2H(x), dims);
 
-figure(1); plot_fields(dims, ...
-    {'Ex', imag(x(1:N))}, {'Ey', real(x(N+1:end))}, {'Hz', real(y)}, ...
-    {'|Ex|', abs(x(1:N))}, {'|Ey|', abs(x(N+1:end))}, {'|Hz|', abs(y)});
-figure(2); plot(abs([Ex(60,:); Ey(60,:); Hz(60,:)]'), '.-');
-figure(3); plot(abs([Jx(19,:); Jy(19,:); M(19,:)]'), '.-');
-% e = phi2e(phi);
-% figure(2); plot_fields(dims, {'ex', e.x}, {'ey', e.y});
-% figure(3); plot([e.y(19,:); e.x(19,:); Jy(19,:)]', '.-')
+
+    %
+    % Plot results.
+    %
+
+% Plot the structure.
+eps = phi2e(phi);
+figure(1); plot_fields(dims, {'\epsilon_x', eps.x}, {'\epsilon_y', eps.y});
+
+% Plot the fields.
+figure(2); plot_fields(dims, ...
+    {'Re(Ex)', real(Ex)}, {'Re(Ey)', real(Ey)}, {'Re(Hz)', real(Hz)}, ...
+    {'Im(Ex)', imag(Ex)}, {'Im(Ey)', imag(Ey)}, {'Im(Hz)', imag(Hz)}, ...
+    {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});

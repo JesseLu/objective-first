@@ -10,11 +10,18 @@ Hz = zeros(MY_DIMS);
 
 switch (side)
     case '-x'
-        Ex(x,y) = mode.El;
-        Ey(x,y) = mode.Et * exp(i * mode.beta * 0.5);
-        Hz(x,y) = mode.Ht;
+        Ey(x,y) = mode.Jt;
+        Ey(x-1,y) = -mode.Jt * exp(i * mode.beta);
 
+    case '+x'
+        Ey(x,y) = mode.Jt;
+        Ey(x+1,y) = -mode.Jt * exp(i * mode.beta);
 
+    case '-y'
+        Ex(x,y) = mode.Jt;
+        Ex(x,y-1) = -mode.Jt * exp(i * mode.beta);
 
+    case '+y'
+        Ex(x,y) = mode.Jt;
+        Ex(x,y+1) = -mode.Jt * exp(i * mode.beta);
 end
-isreal(mode.Ht)

@@ -2,13 +2,12 @@ function plot_fields(dims, varargin)
 
 N = length(varargin);
 
-if (N > 3)
-    xx = ceil(N/2);
-    yy = 2;
-else
-    xx = N;
-    yy = 1;
-end
+f = factor(N);
+f = f(end:-1:1);
+n = length(f);
+
+xx = prod(f(1:2:n));
+yy = prod(f(2:2:n));
 
 for k = 1 : N
     v = varargin{k};

@@ -10,7 +10,7 @@ switch (dir)
     case {'-x', '+x'}
         eps = struct('x', eps.y(:), 'z', eps.x(:));
     case {'-y', '+y'}
-        eps = struct('x', eps.x(:), 'z', eps.z(:));
+        eps = struct('x', eps.x(:), 'z', eps.y(:));
 end
 
 
@@ -62,15 +62,15 @@ Ez = Ex2Ez(Ex, beta);
 % Obtain the transverse H-field (Hy).
 Hy = E2Hy(Ex, Ez, beta);
 
+% Info for sourcing.
+Jx = Ex .* eps.x; 
+Jz = Ez .* eps.z; 
+My = Hy;
+
 
     %
     % Re-package for the actual propagation direction.
     %
 
-mode = struct('Et', Ex, 'El', Ez, 'Ht', Hy, 'beta', beta);
-
-% plot([real(mode.Et), imag(mode.El), real(mode.Ht)], '.-');
-% legend({'transverse E', 'longitudinal E', 'transverse H'});
-% plot([eps.x(:), eps.z(:)], '.-');
-% pause
-
+mode = struct('beta', beta,     'Et', Ex, 'El', Ez, 'Ht', Hy, ...
+                                'Jt', Jx, 'Jl', Jz, 'Mt', My);

@@ -31,6 +31,6 @@ Hcurl = [   scy(.5,0)*(S(0,0)-S(0,-1));      scx(0,.5)*-(S(0,0)-S(-1,0))];
 A = @(eps) Hcurl * Ecurl - omega^2 * D([eps.x(:); eps.y(:)]);
 
 % Source terms.
-b = @(J, M) i * omega * J(:) - Hcurl * M(:);
+b = @(J, M) (i * omega * J(:) - Hcurl * M(:));
 
 E2H = @(E) 1 / (i * omega) * Ecurl * E;
