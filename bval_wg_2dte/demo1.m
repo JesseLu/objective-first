@@ -1,7 +1,7 @@
-% DEMO_GOODFIELD
-% 
-% The objective of this demo is to determine a good objective to optimize on.
-help demo_goodfield
+% DEMO1
+%
+% Update both structure and field in an unbounded way to satisfy physics.
+help demo1
 
 
     %
@@ -14,13 +14,7 @@ N = prod(dims);
 eps_lo = 1.0; % Relative permittivity of air.
 eps_hi = 12.25; % Relative permittivity of silicon.
 
-omega = 0.2; % Angular frequency of desired mode.
-
-pml_thick = 10; % Thickness of pml.
-
-% Set the device boundary.
-dev.dims = [40 40];
-dev.offset = round((dims - dev.dims)/2);
+omega = 0.15; % Angular frequency of desired mode.
 
 
     %
@@ -28,16 +22,15 @@ dev.offset = round((dims - dev.dims)/2);
     % Also, helper global variables for prettier argument passing.
     %
 
-global S D MY_DIMS MY_DEVICE
+global S_ D_ DIMS_ 
 
 % Shortcut to form a derivative matrix.
-S = @(sx, sy) shift_mirror(dims, -[sx sy]); % Mirror boundary conditions.
+S_ = @(sx, sy) shift_mirror(dims, -[sx sy]); % Mirror boundary conditions.
 
 % Shortcut to make a sparse diagonal matrix.
-D = @(x) spdiags(x(:), 0, numel(x), numel(x));
+D_ = @(x) spdiags(x(:), 0, numel(x), numel(x));
 
-MY_DIMS = dims;
-MY_DEVICE = dev;
+DIMS_ = dims;
 
 
     %
@@ -45,7 +38,8 @@ MY_DEVICE = dev;
     %
 
 lset_grid(dims);
-phi = lset_box([0 0], [10 1000]);
+phi = lset_box([0 0], [1000 10]);
+phi = lset_intersect(phi, lset_complement(lset_box([0 0], [10 1000]))); % Form cross-beam.
 phi = lset_complement(phi);
 
 % Initialize phi, and create conversion functions.
@@ -59,10 +53,7 @@ phi = lset_complement(phi);
     % Find the input and output modes.
     %
 
-dir = '-y';
-input = mode_solve(mode_cutout(phi2e(phi), dir), omega, dir);
-[Jx, Jy, M] = mode_insert(input, dir);
-J = [Jx, Jy];
+[Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2e(phi));
 
 
     %
@@ -70,15 +61,21 @@ J = [Jx, Jy];
     %
 
 % Obtain physics matrix.
-[A, b, E2H] = setup_physics(dims, omega, pml_thick, p2e, e2p);
+A = setup_physics(omega, phi2e(phi));
 
-% Solve.
-x = A(phi2e(phi)) \ b(J,M);
+% Obtain the matrices for the boundary-value problem.
+[Ahat, bhat, add_border] = setup_border_insert(A, [Ex(:); Ey(:); Hz(:)]);
+
+% Solve the boundary-value problem.
+xhat = Ahat \ -bhat;
+
+% Obtain the full field (re-insert the field values at the boundary).
+x = add_border(xhat);
 
 % Back-out field components.
 Ex = reshape(x(1:N), dims);
-Ey = reshape(x(N+1:end), dims);
-Hz = reshape(E2H(x), dims);
+Ey = reshape(x(N+1:2*N), dims);
+Hz = reshape(x(2*N+1:end), dims);
 
 
     %
@@ -94,3 +91,22 @@ figure(2); plot_fields(dims, ...
     {'Re(Ex)', real(Ex)}, {'Re(Ey)', real(Ey)}, {'Re(Hz)', real(Hz)}, ...
     {'Im(Ex)', imag(Ex)}, {'Im(Ey)', imag(Ey)}, {'Im(Hz)', imag(Hz)}, ...
     {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});
+
+% % Plot cross-section, and check power flow.
+% ey = Ey(:, dims(2)/2);
+% hz = Hz(:, dims(2)/2);
+% figure(3); plot([real(ey), real(hz), real(conj(hz).*ey)]);
+% figure(3); plot_fields(dims, {'power', real(Ex.*conj(Hz))});
+
+
+    %
+    % Mark the region where we will allow the structure to change.
+    %
+
+eta = lset_box([0 0], [40 40]);
+
+
+    % 
+    % Compute the partial derivative of the physics residual relative to p.
+    %
+
