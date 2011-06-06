@@ -1,0 +1,64 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{graphicx}
+
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+% \newcommand{\bz}{\begin{equation}}
+% \newcommand{\ee}{\end{equation}}
+\newcommand{\grad}{\nabla}
+\newcommand{\dvg}{\nabla\cdot}
+\newcommand{\curl}{\nabla\times}
+\newcommand{\eps}{\epsilon}
+\newcommand{\inv}{\frac{1}}
+\newcommand{\del}{\partial}
+\newcommand{\dt}{\frac{\del}{\del t}}
+\newcommand{\BI}{\begin{itemize}}
+\newcommand{\I}{\item}
+\newcommand{\EI}{\end{itemize}}
+\newcommand{\MIN}[1]{\underset{#1}{\text{minimize}}\quad}
+\newcommand{\ST}{\text{subject to}\quad}
+
+
+\title{Theory for Boundary-Value Objective-First Optimization}
+\author{Jesse Lu, \texttt{jesselu@stanford.edu}}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Setting up the boundary-value problem}
+We begin by writing down a generic (sourceless) physics problem, 
+\be A(p)x = 0. \label{orig_eq} \ee
+Here, $x$ is the field variable, $p$ is the structure variable, and $A(p)$ represents the physics of the problem.
+
+Now, suppose that we want to fix the value of the field at certain grid-points. 
+We denote these fixed points as \emph{boundary values} of the problem.
+Specifically, we break up $x$ into
+\be x = S_1 x_1 + S_0 x_0, \ee
+where $S_1$ and $S_0$ are selection matrices for the varying and fixed elements of x respectively. 
+
+We can now attempt to solve eq.~\ref{orig_eq} by finding $x_1$ in the following manner. Let
+\be A(p)S_1 x_1 = -S_0 x_0, \ee
+or
+\be \hat{A}(p) x_1 = b, \label{field_eq} \ee
+where $\hat{A}(p) = A(p) S_1$ and $b = -S_0 x_0$.
+
+Note that there often will not be a valid $x_1$ to satisfy eq.~\cite{field_eq} since $\hat{A}(p)$ will in general be skinny and full-rank. 
+Instead, we can minimize the \emph{physics residual}, defined as
+\be \| A(p)x \|^2 = \| \hat{A}(p) x_1 - b \|^2. \ee
+
+We call solving the problem
+\be \MIN{x_1} \| \hat{A}(p)x_1 - b \|^2\ee
+improving the field.
+Note that an equivalent problem definition is
+\begin{align} 
+    \MIN{x}& \| A(p)x \|^2 \\
+    \ST& S_0^T x = x_0.
+\end{align}
+
+
+\begin{thebibliography}{99}
+\end{thebibliography}
+\end{document}
