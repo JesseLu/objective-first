@@ -5,20 +5,19 @@
 
 \newcommand{\be}{\begin{equation}}
 \newcommand{\ee}{\end{equation}}
-% \newcommand{\bz}{\begin{equation}}
-% \newcommand{\ee}{\end{equation}}
 \newcommand{\grad}{\nabla}
 \newcommand{\dvg}{\nabla\cdot}
 \newcommand{\curl}{\nabla\times}
 \newcommand{\eps}{\epsilon}
 \newcommand{\inv}{\frac{1}}
 \newcommand{\del}{\partial}
-\newcommand{\dt}{\frac{\del}{\del t}}
+\newcommand{\der}[1]{\frac{\del}{\del #1}}
 \newcommand{\BI}{\begin{itemize}}
 \newcommand{\I}{\item}
 \newcommand{\EI}{\end{itemize}}
 \newcommand{\MIN}[1]{\underset{#1}{\text{minimize}}\quad}
 \newcommand{\ST}{\text{subject to}\quad}
+\newcommand{\diag}{\text{diag}}
 
 
 \title{Theory for Boundary-Value Objective-First Optimization}
@@ -28,7 +27,7 @@
 \maketitle
 \tableofcontents
 
-\section{Setting up the boundary-value problem}
+\section{Improving the field}
 We begin by writing down a generic (sourceless) physics problem, 
 \be A(p)x = 0. \label{orig_eq} \ee
 Here, $x$ is the field variable, $p$ is the structure variable, and $A(p)$ represents the physics of the problem.
@@ -53,10 +52,30 @@ We call solving the problem
 \be \MIN{x_1} \| \hat{A}(p)x_1 - b \|^2\ee
 improving the field.
 Note that an equivalent problem definition is
-\begin{align} 
+\begin{align}
     \MIN{x}& \| A(p)x \|^2 \\
     \ST& S_0^T x = x_0.
 \end{align}
+
+
+\section{Improving the structure}
+We now consider the structure improvement problem, that is,
+\be \MIN{p} \| A(p)x \|^2. \label{struct_eq}\ee
+
+Whereas the field improvement problem can always be solved exactly, this is not the case for the structure improvement problem. 
+Even when $A(p)$ is linear with respect to $p$, there are often restrictions on $p$ which make finding a solution very difficult. 
+For example, a common restriction is that $p$ be binary, that is, $p \in {p_0, p_1}$. 
+In this case, the problem is generally NP-hard.
+For these reasons, we often use a simple gradient-descent method to arrive at an approximate solution of eq.~\ref{struct_eq}.
+
+If $A(p) = A_1 \diag(p) A_2$ then,
+\begin{align}
+    A(p)x &= A_1 \diag(p) A_2 x \\
+        &= A_1 \diag(A_2 x) p \\
+        &= B(x) p. 
+\end{align}
+The gradient of the physics residual with respect to $p$ can then be computed using
+\be \der{p} \inv{2} \|A(p)x\|^2 = \der{p} \inv{2} \|B(x)p\|^2 = B(x)^*B(x)p. \ee
 
 
 \begin{thebibliography}{99}
