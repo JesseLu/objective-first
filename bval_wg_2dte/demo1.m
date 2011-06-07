@@ -65,7 +65,8 @@ phi = lset_complement(phi);
 A = @(phi) A0(phi2p(phi));
 
 % Obtain the matrices for the boundary-value problem.
-[Ahat, bhat, add_border] = setup_border_insert(A(phi), [Ex(:); Ey(:); Hz(:)]);
+[Ahat, bhat, add_border, rm_border] = ...
+    setup_border_insert(A(phi), [Ex(:); Ey(:); Hz(:)]);
 
 % Solve the boundary-value problem.
 xhat = Ahat \ -bhat;
@@ -79,7 +80,8 @@ Ey = reshape(x(N+1:2*N), dims);
 Hz = reshape(x(2*N+1:end), dims);
 
 % Calculate the values for the physics residual.
-fprintf('Physics residual: %e\n', norm(A(phi)*x));
+phys_res = @(phi, x) norm(rm_border(A(phi)*x));
+fprintf('Physics residual: %e\n', phys_res(phi, x));
 % norm(Ahat*xhat + bhat) % Alternate definition.
 
 
@@ -94,14 +96,23 @@ eta = lset_box([0 0], [40 40]);
     % Compute the partial derivative of the physics residual relative to p.
     %
 
-dp = e2p(B(x)' * (B(x) * p2e(p) - d(x)));
-fprintf('Physics residual: %e\n', norm(A(phi)*x));
-c = -1 : 1e-2 : 1;
-for k = 1 : length(c)
-    phi1 = update_interface(phi, [], real(dp), 0, c(k));
-    res(k) = norm(A(phi1) * x);
+res = [];
+for k = 1 : 100
+    dp = (eta < 0) .* e2p(B(x)' * (B(x) * phi2e(phi) - d(x)));
+    phi = update_interface(phi, [], real(dp), 0, 1e-2);
+    res(k) = phys_res(phi, x);
+    fprintf('.');
 end
-figure(3); subplot 111; plot(c, res)
+figure(3); subplot 111; plot(res, '.-')
+min(res)/max(res)
+
+% dp = (eta < 0) .* e2p(B(x)' * (B(x) * phi2e(phi) - d(x)));
+% c = -1 : 1e-2 : 1;
+% for k = 1 : length(c) 
+%     phi1 = update_interface(phi, [], real(dp), 0, c(k));
+%     res(k) = phys_res(phi1, x);
+% end
+% figure(3); subplot 111; plot(c, res, '.-')
 
 
     %
@@ -124,4 +135,9 @@ figure(2); plot_fields(dims, ...
 % figure(3); plot([real(ey), real(hz), real(conj(hz).*ey)]);
 % figure(3); plot_fields(dims, {'power', real(Ex.*conj(Hz))});
 
-
+% % Plot the residual.
+% y = real(A(phi)*x);
+% y = rm_border(y);
+% M = prod(dims-2);
+% figure(4); plot_fields(dims-2, {'residual_x', y(1:M)}, ...
+%     {'res_y', y(M+1:2*M)}, {'res_z', y(2*M+1:3*M)});
