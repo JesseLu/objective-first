@@ -43,7 +43,7 @@ phi = lset_intersect(phi, lset_complement(lset_box([0 0], [10 1000]))); % Form c
 phi = lset_complement(phi);
 
 % Initialize phi, and create conversion functions.
-[phi, phi2p, phi2e, p2e, e2p, phi_smooth] = ...
+[phi, phi2p, phi2e, phi2eps, p2e, e2p, p2eps, eps2p, phi_smooth] = ...
     setup_levelset(phi, eps_lo, eps_hi, 1e-3);
 
 % lset_plot(phi); pause % Use to visualize the initial structure.
@@ -53,7 +53,7 @@ phi = lset_complement(phi);
     % Find the input and output modes.
     %
 
-[Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2e(phi));
+[Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
 
 
     %
@@ -61,10 +61,11 @@ phi = lset_complement(phi);
     %
 
 % Obtain physics matrix.
-A = setup_physics(omega, phi2e(phi));
+[A, B, d] = setup_physics(omega, p2e);
+A = @(phi) A(phi2p(phi));
 
 % Obtain the matrices for the boundary-value problem.
-[Ahat, bhat, add_border] = setup_border_insert(A, [Ex(:); Ey(:); Hz(:)]);
+[Ahat, bhat, add_border] = setup_border_insert(A(phi), [Ex(:); Ey(:); Hz(:)]);
 
 % Solve the boundary-value problem.
 xhat = Ahat \ -bhat;
@@ -77,13 +78,17 @@ Ex = reshape(x(1:N), dims);
 Ey = reshape(x(N+1:2*N), dims);
 Hz = reshape(x(2*N+1:end), dims);
 
+% Calculate the values for the physics residual.
+fprintf('Physics residual: %e\n', norm(A(phi)*x));
+% norm(Ahat*xhat + bhat) % Alternate definition.
+
 
     %
     % Plot results.
     %
 
 % Plot the structure.
-eps = phi2e(phi);
+eps = phi2eps(phi);
 figure(1); plot_fields(dims, {'\epsilon_x', eps.x}, {'\epsilon_y', eps.y});
 
 % Plot the fields.
@@ -110,3 +115,5 @@ eta = lset_box([0 0], [40 40]);
     % Compute the partial derivative of the physics residual relative to p.
     %
 
+dp = e2p(B(x)' * (B(x) * p2e(phi2p(phi)) - d(x)));
+% subplot 111; spy(A(phi))
