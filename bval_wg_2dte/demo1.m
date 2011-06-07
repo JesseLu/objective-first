@@ -61,8 +61,8 @@ phi = lset_complement(phi);
     %
 
 % Obtain physics matrix.
-[A, B, d] = setup_physics(omega, p2e);
-A = @(phi) A(phi2p(phi));
+[A0, B, d] = setup_physics(omega, p2e);
+A = @(phi) A0(phi2p(phi));
 
 % Obtain the matrices for the boundary-value problem.
 [Ahat, bhat, add_border] = setup_border_insert(A(phi), [Ex(:); Ey(:); Hz(:)]);
@@ -81,6 +81,27 @@ Hz = reshape(x(2*N+1:end), dims);
 % Calculate the values for the physics residual.
 fprintf('Physics residual: %e\n', norm(A(phi)*x));
 % norm(Ahat*xhat + bhat) % Alternate definition.
+
+
+    %
+    % Mark the region where we will allow the structure to change.
+    %
+
+eta = lset_box([0 0], [40 40]);
+
+
+    % 
+    % Compute the partial derivative of the physics residual relative to p.
+    %
+
+dp = e2p(B(x)' * (B(x) * p2e(p) - d(x)));
+fprintf('Physics residual: %e\n', norm(A(phi)*x));
+c = -1 : 1e-2 : 1;
+for k = 1 : length(c)
+    phi1 = update_interface(phi, [], real(dp), 0, c(k));
+    res(k) = norm(A(phi1) * x);
+end
+figure(3); subplot 111; plot(c, res)
 
 
     %
@@ -104,16 +125,3 @@ figure(2); plot_fields(dims, ...
 % figure(3); plot_fields(dims, {'power', real(Ex.*conj(Hz))});
 
 
-    %
-    % Mark the region where we will allow the structure to change.
-    %
-
-eta = lset_box([0 0], [40 40]);
-
-
-    % 
-    % Compute the partial derivative of the physics residual relative to p.
-    %
-
-dp = e2p(B(x)' * (B(x) * p2e(phi2p(phi)) - d(x)));
-% subplot 111; spy(A(phi))
