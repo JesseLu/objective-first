@@ -25,4 +25,5 @@ N = prod(DIMS_);
 A = @(p) [Ecurl, -i*omega*speye(N); i*omega*D_(p2e(p)), Hcurl];
 
 B = @(x) i * omega * D_(x(1:2*N)); 
+B = @(x) i * omega * (x(1:2*N)); 
 d = @(x) -Hcurl * x(2*N+1:3*N);

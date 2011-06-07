@@ -1,7 +1,7 @@
-% DEMO1
+% DEMO2
 %
-% First try at field and structure improvement steps.
-help demo1
+% Update both structure and field in an unbounded way to satisfy physics.
+help demo2
 
 
     %
@@ -96,15 +96,25 @@ eta = lset_box([0 0], [40 40]);
     % Compute the partial derivative of the physics residual relative to p.
     %
 
-res = [];
-for k = 1 : 100
-    dp = (eta < 0) .* e2p(B(x)' * (B(x) * phi2e(phi) - d(x)));
-    phi = update_interface(phi, [], real(dp), 0, 1e-2);
-    res(k) = phys_res(phi, x);
-    fprintf('.');
-end
-figure(3); subplot 111; plot(res, '.-')
-min(res)/max(res)
+% p = e2p([real(B(x)); imag(B(x))] \ [real(d(x)); imag(d(x))]);
+p0 = phi2p(phi);
+p = p0 .* (eta >= 0) + ...
+    e2p(real((conj(B(x)) .* d(x))) ./ abs(B(x)).^2) .* (eta < 0);
+ind = find(isnan(p));
+p(ind) = p0(ind);
+norm(rm_border(A0(p) * x))
+figure(3); plot_fields(dims, {'p', p});
+% res = [];
+% p = phi2p(phi);
+% for k = 1 : 100
+%     dp = (eta < 0) .* real(e2p(B(x)' * (B(x) * phi2e(phi) - d(x))));
+%     p = p - 100 * dp;
+%     % phi = update_interface(phi, [], real(dp), 0, 1e-2);
+%     res(k) = norm(rm_border(A0(p) * x));
+%     fprintf('.');
+% end
+% figure(3); subplot 111; plot(res, '.-')
+% min(res)/max(res)
 
 % dp = (eta < 0) .* e2p(B(x)' * (B(x) * phi2e(phi) - d(x)));
 % c = -1 : 1e-2 : 1;
@@ -134,6 +144,7 @@ figure(2); plot_fields(dims, ...
 % hz = Hz(:, dims(2)/2);
 % figure(3); plot([real(ey), real(hz), real(conj(hz).*ey)]);
 % figure(3); plot_fields(dims, {'power', real(Ex.*conj(Hz))});
+figure(3); plot_fields(dims, {'p', p});
 
 % % Plot the residual.
 % y = real(A(phi)*x);
