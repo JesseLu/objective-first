@@ -68,12 +68,14 @@ For example, a common restriction is that $p$ be binary, that is, $p \in {p_0, p
 In this case, the problem is generally NP-hard.
 For these reasons, we often use a simple gradient-descent method to arrive at an approximate solution of eq.~\ref{struct_eq}.
 
-If $A(p) = A_1 \diag(p) A_2$ then,
+If $A(p) = A_1 \diag(A_2 p) A_3$ then,
 \begin{align}
-    A(p)x &= A_1 \diag(p) A_2 x \\
-        &= A_1 \diag(A_2 x) p \\
+    A(p)x &= A_1 \diag(A_2 p) A_3 x \\
+        &= A_1 \diag(A_3 x) A_2 p \\
         &= B(x) p. 
 \end{align}
+where $B(x) = A_1 \diag(A_3 x) A_2$.
+
 The gradient of the physics residual with respect to $p$ can then be computed using
 \be \der{p} \inv{2} \|A(p)x\|^2 = \der{p} \inv{2} \|B(x)p\|^2 = B(x)^*B(x)p. \ee
 

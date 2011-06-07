@@ -43,7 +43,8 @@ phi = lset_intersect(phi, lset_complement(lset_box([0 0], [10 1000]))); % Form c
 phi = lset_complement(phi);
 
 % Initialize phi, and create conversion functions.
-[phi, phi2p, phi2e, phi2eps, p2e, e2p, p2eps, eps2p, phi_smooth] = ...
+[phi, phi2p, phi2e, phi2eps, p2e, e2p, p2eps, eps2p, ...
+    A_spread, A_gather, phi_smooth] = ...
     setup_levelset(phi, eps_lo, eps_hi, 1e-3);
 
 % lset_plot(phi); pause % Use to visualize the initial structure.
@@ -96,10 +97,10 @@ eta = lset_box([0 0], [40 40]);
     % Compute the partial derivative of the physics residual relative to p.
     %
 
-% p = e2p([real(B(x)); imag(B(x))] \ [real(d(x)); imag(d(x))]);
-p0 = phi2p(phi);
-p = p0 .* (eta >= 0) + ...
-    e2p(real((conj(B(x)) .* d(x))) ./ abs(B(x)).^2) .* (eta < 0);
+p = [real(B(x)); imag(B(x))] * A_spread \ [real(d(x)); imag(d(x))];
+% p0 = phi2p(phi);
+% p = p0 .* (eta >= 0) + ...
+%     e2p(real((conj(B(x)) .* d(x))) ./ abs(B(x)).^2) .* (eta < 0);
 ind = find(isnan(p));
 p(ind) = p0(ind);
 norm(rm_border(A0(p) * x))

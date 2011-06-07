@@ -1,4 +1,5 @@
-function [phi, phi2p, phi2e, phi2eps, p2e, e2p, p2eps, eps2p, smooth_phi] = ...
+function [phi, phi2p, phi2e, phi2eps, p2e, e2p, p2eps, eps2p, ...
+    A_spread, A_gather, smooth_phi] = ...
     setup_levelset (phi, eps_lo, eps_hi, alpha_smooth)
 
 global S_ DIMS_ % Helper functions.
@@ -10,7 +11,8 @@ A_spread_y = 0.5 * [S_(0,0)+S_(0,1)];
 p2eps = @(p) struct('x', reshape(A_spread_x * p(:), dims), ...
                     'y', reshape(A_spread_y * p(:), dims));
                     % 'z', reshape(p(:), dims)); % For 3D code.
-p2e = @(p) [A_spread_x; A_spread_y] * p(:);
+A_spread = [A_spread_x; A_spread_y];
+p2e = @(p) A_spread * p(:);
 
 % Average Ex and Ey, to get back p (Ez).
 A_gather = 1/4 * [S_(0,0)+S_(-1,0), S_(0,0)+S_(0,-1)];
