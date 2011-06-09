@@ -39,7 +39,7 @@ DIMS_ = dims;
 
 lset_grid(dims);
 phi = lset_box([0 0], [1000 10]);
-phi = lset_intersect(phi, lset_complement(lset_box([0 0], [10 1000]))); % Form cross-beam.
+phi = lset_intersect(phi, lset_complement(lset_box([0 0], [3 1000]))); % Form cross-beam.
 phi = lset_complement(phi);
 
 % Initialize phi, and create conversion functions.
@@ -62,7 +62,7 @@ phi = lset_complement(phi);
     %
 
 % Obtain physics matrix.
-[A0, B, d] = setup_physics(omega, p2e);
+[A0, B, d] = setup_physics(omega, A_spread);
 A = @(phi) A0(phi2p(phi));
 
 % Obtain the matrices for the boundary-value problem.
@@ -97,33 +97,10 @@ eta = lset_box([0 0], [40 40]);
     % Compute the partial derivative of the physics residual relative to p.
     %
 
-p = [real(B(x)); imag(B(x))] * A_spread \ [real(d(x)); imag(d(x))];
-% p0 = phi2p(phi);
-% p = p0 .* (eta >= 0) + ...
-%     e2p(real((conj(B(x)) .* d(x))) ./ abs(B(x)).^2) .* (eta < 0);
-ind = find(isnan(p));
-p(ind) = p0(ind);
-norm(rm_border(A0(p) * x))
+p = solve_p(B(x), d(x), phi2p(phi), eta);
+norm((A(phi) * x))
+norm((A0(p) * x))
 figure(3); plot_fields(dims, {'p', p});
-% res = [];
-% p = phi2p(phi);
-% for k = 1 : 100
-%     dp = (eta < 0) .* real(e2p(B(x)' * (B(x) * phi2e(phi) - d(x))));
-%     p = p - 100 * dp;
-%     % phi = update_interface(phi, [], real(dp), 0, 1e-2);
-%     res(k) = norm(rm_border(A0(p) * x));
-%     fprintf('.');
-% end
-% figure(3); subplot 111; plot(res, '.-')
-% min(res)/max(res)
-
-% dp = (eta < 0) .* e2p(B(x)' * (B(x) * phi2e(phi) - d(x)));
-% c = -1 : 1e-2 : 1;
-% for k = 1 : length(c) 
-%     phi1 = update_interface(phi, [], real(dp), 0, c(k));
-%     res(k) = phys_res(phi1, x);
-% end
-% figure(3); subplot 111; plot(c, res, '.-')
 
 
     %

@@ -1,4 +1,4 @@
-function [A, B, d] = setup_physics(omega, p2e)
+function [A, B, d] = setup_physics(omega, A_spread)
 
 
     %
@@ -22,8 +22,7 @@ N = prod(DIMS_);
     %
 
 % Primary physics matrix, electromagnetic wave equation.
-A = @(p) [Ecurl, -i*omega*speye(N); i*omega*D_(p2e(p)), Hcurl];
+A = @(p) [Ecurl, -i*omega*speye(N); i*omega*D_(A_spread * p(:)), Hcurl];
 
-B = @(x) i * omega * D_(x(1:2*N)); 
-B = @(x) i * omega * (x(1:2*N)); 
+B = @(x) i * omega * D_(x(1:2*N)) * A_spread; 
 d = @(x) -Hcurl * x(2*N+1:3*N);
