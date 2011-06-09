@@ -92,6 +92,9 @@ A = @(phi) A0(phi2p(phi));
 
     p = solve_p(B(x), d(x), phi2p(phi), eta);
     fprintf(' -> %e\n', phys_res(p, x));
+Hz = reshape(x(2*N+1:end), dims);
+plot_fields(dims, {'p', p}, {'|Hz|', abs(Hz)});
+drawnow
 end
 
     %
@@ -104,7 +107,7 @@ Ey = reshape(x(N+1:2*N), dims);
 Hz = reshape(x(2*N+1:end), dims);
 
 % Plot the structure.
-eps = phi2eps(phi);
+eps = p2eps(p);
 figure(1); plot_fields(dims, {'\epsilon_x', eps.x}, {'\epsilon_y', eps.y});
 
 % Plot the fields.
@@ -119,6 +122,7 @@ figure(2); plot_fields(dims, ...
 % figure(3); plot([real(ey), real(hz), real(conj(hz).*ey)]);
 % figure(3); plot_fields(dims, {'power', real(Ex.*conj(Hz))});
 figure(3); plot_fields(dims, {'p', p});
+drawnow
 
 % % Plot the residual.
 % y = real(A(phi)*x);
