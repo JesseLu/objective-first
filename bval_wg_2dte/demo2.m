@@ -56,6 +56,14 @@ phi = lset_complement(phi);
 
 [Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
 
+    %
+    % Mark the region where we will allow the structure to change.
+    %
+
+eta = lset_box([0 0], [40 40]);
+
+p = phi2p(phi);
+for k = 1 : 100
 
     %
     % Get the physics matrices and solve.
@@ -67,45 +75,33 @@ A = @(phi) A0(phi2p(phi));
 
 % Obtain the matrices for the boundary-value problem.
 [Ahat, bhat, add_border, rm_border] = ...
-    setup_border_insert(A(phi), [Ex(:); Ey(:); Hz(:)]);
+    setup_border_insert(A0(p), [Ex(:); Ey(:); Hz(:)]);
 
-% Solve the boundary-value problem.
-xhat = Ahat \ -bhat;
 
-% Obtain the full field (re-insert the field values at the boundary).
-x = add_border(xhat);
+    % Solve the boundary-value problem.
+    xhat = Ahat \ -bhat;
+
+    % Obtain the full field (re-insert the field values at the boundary).
+    x = add_border(xhat);
+
+    % Calculate the values for the physics residual.
+    phys_res = @(p, x) norm(rm_border(A0(p)*x));
+    % norm(Ahat*xhat + bhat) % Alternate definition.
+
+    fprintf('%d: %e', k, phys_res(p, x));
+
+    p = solve_p(B(x), d(x), phi2p(phi), eta);
+    fprintf(' -> %e\n', phys_res(p, x));
+end
+
+    %
+    % Plot results.
+    %
 
 % Back-out field components.
 Ex = reshape(x(1:N), dims);
 Ey = reshape(x(N+1:2*N), dims);
 Hz = reshape(x(2*N+1:end), dims);
-
-% Calculate the values for the physics residual.
-phys_res = @(phi, x) norm(rm_border(A(phi)*x));
-fprintf('Physics residual: %e\n', phys_res(phi, x));
-% norm(Ahat*xhat + bhat) % Alternate definition.
-
-
-    %
-    % Mark the region where we will allow the structure to change.
-    %
-
-eta = lset_box([0 0], [40 40]);
-
-
-    % 
-    % Compute the partial derivative of the physics residual relative to p.
-    %
-
-p = solve_p(B(x), d(x), phi2p(phi), eta);
-norm((A(phi) * x))
-norm((A0(p) * x))
-figure(3); plot_fields(dims, {'p', p});
-
-
-    %
-    % Plot results.
-    %
 
 % Plot the structure.
 eps = phi2eps(phi);
