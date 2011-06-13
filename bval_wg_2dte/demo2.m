@@ -39,7 +39,8 @@ DIMS_ = dims;
 
 lset_grid(dims);
 phi = lset_box([0 0], [1000 10]);
-phi = lset_intersect(phi, lset_complement(lset_box([0 0], [3 1000]))); % Form cross-beam.
+% phi = lset_intersect(phi, lset_complement(lset_box([0 0], [3 1000]))); % Gap.
+phi = lset_union(phi, lset_box([0 0], [10 1000])); % Cross-beam.
 phi = lset_complement(phi);
 
 % Initialize phi, and create conversion functions.
@@ -54,7 +55,7 @@ phi = lset_complement(phi);
     % Find the input and output modes.
     %
 
-[Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
+[Ex, Ey, Hz] = setup_border_vals({'x-', 'y-'}, omega, phi2eps(phi));
 
     %
     % Mark the region where we will allow the structure to change.
@@ -65,18 +66,17 @@ eta = lset_box([0 0], [40 40]);
 p = phi2p(phi);
 for k = 1 : 100
 
-    %
-    % Get the physics matrices and solve.
-    %
+        %
+        % Get the physics matrices and solve.
+        %
 
-% Obtain physics matrix.
-[A0, B, d] = setup_physics(omega, A_spread);
-A = @(phi) A0(phi2p(phi));
+    % Obtain physics matrix.
+    [A0, B, d] = setup_physics(omega, A_spread);
+    A = @(phi) A0(phi2p(phi));
 
-% Obtain the matrices for the boundary-value problem.
-[Ahat, bhat, add_border, rm_border] = ...
-    setup_border_insert(A0(p), [Ex(:); Ey(:); Hz(:)]);
-
+    % Obtain the matrices for the boundary-value problem.
+    [Ahat, bhat, add_border, rm_border] = ...
+        setup_border_insert(A0(p), [Ex(:); Ey(:); Hz(:)]);
 
     % Solve the boundary-value problem.
     xhat = Ahat \ -bhat;
@@ -92,9 +92,9 @@ A = @(phi) A0(phi2p(phi));
 
     p = solve_p(B(x), d(x), phi2p(phi), eta);
     fprintf(' -> %e\n', phys_res(p, x));
-Hz = reshape(x(2*N+1:end), dims);
-plot_fields(dims, {'p', p}, {'|Hz|', abs(Hz)});
-drawnow
+    Hz = reshape(x(2*N+1:end), dims);
+    plot_fields(dims, {'p', p}, {'|Hz|', abs(Hz)});
+    drawnow
 end
 
     %
