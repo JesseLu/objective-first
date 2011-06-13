@@ -79,6 +79,16 @@ where $B(x) = A_1 \diag(A_3 x) A_2$.
 The gradient of the physics residual with respect to $p$ can then be computed using
 \be \der{p} \inv{2} \|A(p)x\|^2 = \der{p} \inv{2} \|B(x)p\|^2 = B(x)^*B(x)p. \ee
 
+\section{Gradients}
+A first-order approximation to a function, $f(x): \mathcal{C}^{n} \to \mathcal{R}$ can be formulated as
+\be f(x) \approx f(x_0) + \mathcal{R}\{g(x_0)^\ast (x - x_0)\}, \ee
+where $g(x_0)$ is the gradient of $f$ at $x_0$.
+
+To test that $g(x)$ does indeed give the correct value for the gradient, one can produce a set random of vectors $v_n$ and find the error, 
+\be \frac{\| (f(x_0+v_n) - f(x_0)) - \mathcal{R}\{g(x_0)^\ast (v_n)\} \|^2}
+	{\| v_n \|^2} \ee
+for $\|v_n\|^2 \ll 1 $.
+	
 
 \begin{thebibliography}{99}
 \end{thebibliography}
