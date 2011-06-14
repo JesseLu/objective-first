@@ -14,16 +14,15 @@ b = randn(n, 1);
 f = @(x) 0.5 * norm(A * x - b)^2; % Optimization objective.  
 g = @(x) A' * (A * x - b); % Gradient.
 c = @(x, grad, s) x - s * grad; % Constraint. This problem is unconstrained.
-x = zeros(n, 1); % Initial starting point.
+x0 = zeros(n, 1); % Initial starting point.
 
 
     %
     % Optimize using c-go.
     %
 
-x_opt = opt(f, g, c, x);
+[x_opt, fval, ss] = opt(f, g, c, x0, 5e4);
+cgo_visualize(fval, ss);
 
 
-    %
-    % Evaluate how close we got to the actual answer.
-    %
+
