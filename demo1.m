@@ -7,7 +7,7 @@ path(path, '~/c-go'); % Make sure we have access to c-go.
 
 
     %
-    % Some optimization parameters.
+    % Parameters for this optimization.
     %
 
 dims = [80 80]; % Size of the grid.
@@ -19,6 +19,8 @@ eps_hi = 12.25; % Relative permittivity of silicon.
 omega = 0.15; % Angular frequency of desired mode.
 
 
+[A0, B, d] = setup_physics(omega, A_spread);
+return
     %
     % Helper function for determining derivative matrices.
     % Also, helper global variables for prettier argument passing.
