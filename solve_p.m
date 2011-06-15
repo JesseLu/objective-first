@@ -1,4 +1,5 @@
 function [p] = solve_p(B, d, p2, eta)
+% Checks to see if the matrices for p (structure are correct).
 
     %
     % Transform the problem to constrain the solution to the real values.
