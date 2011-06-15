@@ -1,22 +1,43 @@
 % DEMO1
 %
-% Update both structure and field using the c-go package.
-help demo2
+% Update the field using the c-go package.
+help demo1
 
 path(path, '~/c-go'); % Make sure we have access to c-go.
+path(path, '~/level-set'); % Make sure we have access to level-set.
 
 
-    %
-    % Parameters for this optimization.
-    %
 
 dims = [80 80]; % Size of the grid.
+omega = 0.15; % Angular frequency of desired mode.
+[f, g] = em_physics(omega, dims);
+
+lset_grid(dims);
+phi = lset_box([0 0], [1000 10]);
+phi = lset_union(phi, lset_box([0 0], [10 1000])); % Cross-beam.
+phi = lset_complement(phi);
+
+% Initialize phi, and create conversion functions.
+[phi, phi2p, phi2e, phi2eps, p2e, e2p, p2eps, eps2p, ...
+    A_spread, A_gather, phi_smooth] = ...
+    setup_levelset(dims, phi, 1.0, 12.25, 1e-3);
+
+v.eps = phi2eps(phi);
+v.eps = [v.eps.x(:); v.eps.y(:)];
+
+[Ex, Ey, Hz] = setup_border_vals({'x-', 'y-'}, omega, phi2eps(phi));
+
+figure(1); plot_fields(dims, ...
+    {'Re(Ex)', real(Ex)}, {'Re(Ey)', real(Ey)}, {'Re(Hz)', real(Hz)}, ...
+    {'Im(Ex)', imag(Ex)}, {'Im(Ey)', imag(Ey)}, {'Im(Hz)', imag(Hz)}, ...
+    {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});
+
+return
 N = prod(dims);
 
 eps_lo = 1.0; % Relative permittivity of air.
 eps_hi = 12.25; % Relative permittivity of silicon.
 
-omega = 0.15; % Angular frequency of desired mode.
 
 
 [A0, B, d] = setup_physics(omega, A_spread);

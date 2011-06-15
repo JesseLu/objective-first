@@ -1,13 +1,13 @@
 function [phi, phi2p, phi2e, phi2eps, p2e, e2p, p2eps, eps2p, ...
     A_spread, A_gather, smooth_phi] = ...
-    setup_levelset (phi, eps_lo, eps_hi, alpha_smooth)
+    setup_levelset (dims, phi, eps_lo, eps_hi, alpha_smooth)
 
-global S_ DIMS_ % Helper functions.
-dims = DIMS_;
+
+s = @(sx, sy) shift_mirror(dims, -[sx sy]); % Mirror boundary conditions.
 
 % Epsilon is defined on Ez, interpolate to get epsilon at Ex and Ey.
-A_spread_x = 0.5 * [S_(0,0)+S_(1,0)]; 
-A_spread_y = 0.5 * [S_(0,0)+S_(0,1)];
+A_spread_x = 0.5 * [s(0,0)+s(1,0)]; 
+A_spread_y = 0.5 * [s(0,0)+s(0,1)];
 p2eps = @(p) struct('x', reshape(A_spread_x * p(:), dims), ...
                     'y', reshape(A_spread_y * p(:), dims));
                     % 'z', reshape(p(:), dims)); % For 3D code.
@@ -15,7 +15,7 @@ A_spread = [A_spread_x; A_spread_y];
 p2e = @(p) A_spread * p(:);
 
 % Average Ex and Ey, to get back p (Ez).
-A_gather = 1/4 * [S_(0,0)+S_(-1,0), S_(0,0)+S_(0,-1)];
+A_gather = 1/4 * [s(0,0)+s(-1,0), s(0,0)+s(0,-1)];
 eps2p = @(eps) reshape(A_gather * [eps.x(:); eps.y(:)], dims);
 e2p = @(e) reshape(A_gather * e, dims);
 
