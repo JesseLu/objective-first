@@ -1,7 +1,9 @@
-% DEMO2
+% DEMO1
 %
-% Update both structure and field in an unbounded way to satisfy physics.
+% Update both structure and field using the c-go package.
 help demo2
+
+path(path, '~/c-go'); % Make sure we have access to c-go.
 
 
     %
