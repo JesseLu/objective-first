@@ -1,4 +1,4 @@
-function [f, g] = em_physics(dims, eps)
+function [f, g] = em_physics(omega, eps)
 
 
     %

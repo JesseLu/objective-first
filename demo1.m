@@ -25,6 +25,7 @@ S_ = @(sx, sy) shift_mirror(dims, -[sx sy]); % Mirror boundary conditions.
 D_ = @(x) spdiags(x(:), 0, numel(x), numel(x));
 
 DIMS_ = dims;
+N = prod(dims);
 
 
 lset_grid(dims);
@@ -40,16 +41,34 @@ eps = phi2eps(phi);
 
 [f, g] = em_physics(omega, phi2eps(phi));
 [Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
-v.E = [Ex(:), Ey(:)];
+v.E = [Ex(:); Ey(:)];
 v.H = Hz(:);
 
 % Setup constraints
+tp = ones(dims);
+tp([1,dims(1)],:) = 0;
+tp(:,[1,dims(2)]) = 0;
+tp = tp(:);
+
+c = @(v, dv, s) struct( ...
+    'E', v.E - s * ([tp; tp] .* dv.E), ...
+    'H', v.H - s * (tp .* dv.H));
+c = @(v, dv, s) struct( ...
+    'E', v.E - s * dv.E, ...
+    'H', v.H - s * dv.H);
+
+[v, fval, ss_hist] = opt(f, g, c, v, 1e4);
+
+Ex = reshape(v.E(1:N), dims);
+Ey = reshape(v.E(N+1:2*N), dims);
+Hz = reshape(v.H, dims);
 
 figure(1); plot_fields(dims, ...
     {'Re(Ex)', real(Ex)}, {'Re(Ey)', real(Ey)}, {'Re(Hz)', real(Hz)}, ...
     {'Im(Ex)', imag(Ex)}, {'Im(Ey)', imag(Ey)}, {'Im(Hz)', imag(Hz)}, ...
     {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});
 
+figure(2); cgo_visualize(fval, ss_hist);
 return
 N = prod(dims);
 
