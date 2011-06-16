@@ -1,28 +1,25 @@
-function [f, g] = em_physics(omega, dims)
+function [f, g] = em_physics(dims, eps)
 
 
     %
     % Helper functions for building matrices.
     %
 
-% Shortcut to form a derivative matrix.
-s = @(sx, sy) shift_mirror(dims, -[sx sy]); % Mirror boundary conditions.
+global S_ 
 
 % Define the curl operators as applied to E and H, respectively.
-Ecurl = [   -(s(0,1)-s(0,0)),  (s(1,0)-s(0,0))];  
-Hcurl = [   (s(0,0)-s(0,-1)); -(s(0,0)-s(-1,0))]; 
+Ecurl = [   -(S_(0,1)-S_(0,0)),  (S_(1,0)-S_(0,0))];  
+Hcurl = [   (S_(0,0)-S_(0,-1)); -(S_(0,0)-S_(-1,0))]; 
 
 
 % Physics residual.
 f = @(v) 0.5 * (norm(Ecurl * v.E - i * omega * v.H)^2 + ...
-                norm(Hcurl * v.H + i * omega * (v.eps .* v.E))^2);
+                norm(Hcurl * v.H + i * omega * (eps .* v.E))^2);
 
 % Gradient.
 g = @(v) struct( ...
     'E', Ecurl' * (Ecurl * v.E - i * omega * v.H), ...  
-    'H', Hcurl' * (Hcurl * v.H + i * omega * (v.eps .* v.E)), ...  
-    'eps',  conj(i * omega * v.E) .* ...  
-        (Hcurl' * (Hcurl * v.H + i * omega * (v.eps .* v.E))));
+    'H', Hcurl' * (Hcurl * v.H + i * omega * (v.eps .* v.E)));
 
 return
 % Primary physics matrix, electromagnetic wave equation.
