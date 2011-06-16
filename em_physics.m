@@ -11,15 +11,16 @@ global S_
 Ecurl = [   -(S_(0,1)-S_(0,0)),  (S_(1,0)-S_(0,0))];  
 Hcurl = [   (S_(0,0)-S_(0,-1)); -(S_(0,0)-S_(-1,0))]; 
 
+e = [eps.x(:); eps.y(:)];
 
 % Physics residual.
 f = @(v) 0.5 * (norm(Ecurl * v.E - i * omega * v.H)^2 + ...
-                norm(Hcurl * v.H + i * omega * (eps .* v.E))^2);
+                norm(Hcurl * v.H + i * omega * (e .* v.E))^2);
 
 % Gradient.
 g = @(v) struct( ...
     'E', Ecurl' * (Ecurl * v.E - i * omega * v.H), ...  
-    'H', Hcurl' * (Hcurl * v.H + i * omega * (v.eps .* v.E)));
+    'H', Hcurl' * (Hcurl * v.H + i * omega * (e .* v.E)));
 
 return
 % Primary physics matrix, electromagnetic wave equation.

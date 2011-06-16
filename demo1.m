@@ -29,7 +29,6 @@ DIMS_ = dims;
 
 lset_grid(dims);
 phi = lset_box([0 0], [1000 10]);
-phi = lset_union(phi, lset_box([0 0], [10 1000])); % Cross-beam.
 phi = lset_complement(phi);
 
 % Initialize phi, and create conversion functions.
@@ -38,13 +37,13 @@ phi = lset_complement(phi);
     setup_levelset(phi, 1.0, 12.25, 1e-3);
 
 eps = phi2eps(phi);
-eps = [eps.x(:); eps.y(:)];
 
-[f, g] = em_physics(omega, eps);
-[Ex, Ey, Hz] = setup_border_vals({'x-', 'y-'}, omega, phi2eps(phi));
+[f, g] = em_physics(omega, phi2eps(phi));
+[Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
 v.E = [Ex(:), Ey(:)];
 v.H = Hz(:);
 
+% Setup constraints
 
 figure(1); plot_fields(dims, ...
     {'Re(Ex)', real(Ex)}, {'Re(Ey)', real(Ey)}, {'Re(Hz)', real(Hz)}, ...
