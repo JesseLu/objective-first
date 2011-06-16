@@ -41,27 +41,27 @@ eps = phi2eps(phi);
 
 [f, g] = em_physics(omega, phi2eps(phi));
 [Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
-v.E = [Ex(:); Ey(:)];
-v.H = Hz(:);
+% v.E = [Ex(:); Ey(:)];
+% v.H = Hz(:);
+v.x = [Ex(:); Ey(:); Hz(:)];
+
 
 % Setup constraints
 tp = ones(dims);
 tp([1,dims(1)],:) = 0;
 tp(:,[1,dims(2)]) = 0;
-tp = tp(:);
+tp = [tp(:); tp(:); tp(:)];
 
 c = @(v, dv, s) struct( ...
     'E', v.E - s * ([tp; tp] .* dv.E), ...
     'H', v.H - s * (tp .* dv.H));
-c = @(v, dv, s) struct( ...
-    'E', v.E - s * dv.E, ...
-    'H', v.H - s * dv.H);
+c = @(v, dv, s) struct('x', v.x - s * (tp .* dv.x));
 
 [v, fval, ss_hist] = opt(f, g, c, v, 1e4);
 
-Ex = reshape(v.E(1:N), dims);
-Ey = reshape(v.E(N+1:2*N), dims);
-Hz = reshape(v.H, dims);
+Ex = reshape(v.x(1:N), dims);
+Ey = reshape(v.x(N+1:2*N), dims);
+Hz = reshape(v.x(2*N+1:3*N), dims);
 
 figure(1); plot_fields(dims, ...
     {'Re(Ex)', real(Ex)}, {'Re(Ey)', real(Ey)}, {'Re(Hz)', real(Hz)}, ...
