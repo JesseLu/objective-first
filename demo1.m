@@ -57,16 +57,23 @@ c = @(v, dv, s) struct( ...
     'H', v.H - s * (tp .* dv.H));
 c = @(v, dv, s) struct('x', v.x - s * (tp .* dv.x));
 
-[v, fval, ss_hist] = opt(f, g, c, v, 1e4);
+figure(1);
+for cnt = 1 : 1e3
 
 Ex = reshape(v.x(1:N), dims);
 Ey = reshape(v.x(N+1:2*N), dims);
 Hz = reshape(v.x(2*N+1:3*N), dims);
 
-figure(1); plot_fields(dims, ...
+plot_fields(dims, ...
     {'Re(Ex)', real(Ex)}, {'Re(Ey)', real(Ey)}, {'Re(Hz)', real(Hz)}, ...
-    {'Im(Ex)', imag(Ex)}, {'Im(Ey)', imag(Ey)}, {'Im(Hz)', imag(Hz)}, ...
     {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});
+    % {'Im(Ex)', imag(Ex)}, {'Im(Ey)', imag(Ey)}, {'Im(Hz)', imag(Hz)}, ...
+
+drawnow
+[v, fval, ss_hist] = opt(f, g, c, v, 1e2);
+fprintf('.');
+saveas(gcf, ['temp/movie_', num2str(1e5 + cnt), '.png']);
+end
 
 figure(2); cgo_visualize(fval, ss_hist);
 return

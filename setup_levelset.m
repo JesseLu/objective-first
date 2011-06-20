@@ -1,5 +1,4 @@
-function [phi, phi2p, phi2e, phi2eps, p2e, e2p, p2eps, eps2p, ...
-    A_spread, A_gather, smooth_phi] = ...
+function [phi2e, phi2eps, smooth_phi] = ...
     setup_levelset (phi, eps_lo, eps_hi, alpha_smooth)
 
 
@@ -33,5 +32,3 @@ phi2eps = @(phi) p2eps(phi2p(phi));
 % Re-initialization function to keep phi "well-behaved".
 smooth_phi = @(phi) signed_distance(phi, alpha_smooth);
 
-% Re-initialize phi.
-phi = smooth_phi(phi);
