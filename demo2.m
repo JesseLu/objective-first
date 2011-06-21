@@ -1,3 +1,4 @@
+function demo2()
 % DEMO2
 %
 % Update the structure using the c-go package.
@@ -38,7 +39,28 @@ phi = lset_box([0 0], [1000 10]);
 phi = lset_complement(phi);
 
 % Initialize phi, and create conversion functions.
-[phi2p, phi2e, phi_smooth] = setup_levelset(phi, 1.0, 12.25, 1e-3);
+[phi2e, phi2eps, phi_smooth] = setup_levelset(phi, 1.0, 12.25, 1e-3);
+
+
+    %
+    % Obtain the field.
+    %
+
+% Get the matrix to solve for the field.
+[A] = my_field_physics(omega, phi2eps(phi)); 
+
+% Initial values.
+[Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
+
+% Obtain the matrices for the boundary-value problem.
+[Ahat, bhat, add_border] = ...
+    setup_border_insert(A, [Ex(:); Ey(:); Hz(:)]);
+
+% Solve the boundary-value problem.
+xhat = Ahat \ -bhat;
+
+% Obtain the full field (re-insert the field values at the boundary).
+x = add_border(xhat);
 
 
     %
@@ -46,7 +68,7 @@ phi = lset_complement(phi);
     %
 
 % Objective function and its gradient.
-[f, g] = em_physics(omega, phi2eps(phi)); 
+[f, g] = my_structure_physics(omega, x);
 
 % Setup constraints
 tp = ones(dims);
@@ -56,9 +78,6 @@ tp = [tp(:); tp(:); tp(:)];
 
 c = @(v, dv, s) struct('x', v.x - s * (tp .* dv.x));
 
-% Initial values.
-[Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
-v.x = [Ex(:); Ey(:); Hz(:)];
 
 
     %
@@ -82,3 +101,25 @@ figure(1); plot_fields(dims, ...
     {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});
 
 figure(2); cgo_visualize(fval, ss_hist);
+
+
+
+function [A] = my_field_physics(omega, eps)
+
+
+    %
+    % Helper functions for building matrices.
+    %
+
+global S_ DIMS_ D_
+N = prod(DIMS_); 
+
+% Define the curl operators as applied to E and H, respectively.
+Ecurl = [   -(S_(0,1)-S_(0,0)),  (S_(1,0)-S_(0,0))];  
+Hcurl = [   (S_(0,0)-S_(0,-1)); -(S_(0,0)-S_(-1,0))]; 
+
+e = [eps.x(:); eps.y(:)];
+
+A = [Ecurl, -i*omega*speye(N); i*omega*D_(e), Hcurl];
+
+function [f, g] = my_structure_physics(omega, x)
