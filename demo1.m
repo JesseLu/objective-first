@@ -10,28 +10,65 @@ path(path, '~/level-set'); % Make sure we have access to level-set.
 
 dims = [80 80]; % Size of the grid.
 omega = 0.15; % Angular frequency of desired mode.
-[f, g] = em_physics(omega, dims);
+
+    %
+    % Helper function for determining derivative matrices.
+    % Also, helper global variables for prettier argument passing.
+    %
+
+global S_ D_ DIMS_ 
+
+% Shortcut to form a derivative matrix.
+S_ = @(sx, sy) shift_mirror(dims, -[sx sy]); % Mirror boundary conditions.
+
+% Shortcut to make a sparse diagonal matrix.
+D_ = @(x) spdiags(x(:), 0, numel(x), numel(x));
+
+DIMS_ = dims;
+N = prod(dims);
+
 
 lset_grid(dims);
 phi = lset_box([0 0], [1000 10]);
-phi = lset_union(phi, lset_box([0 0], [10 1000])); % Cross-beam.
 phi = lset_complement(phi);
 
 % Initialize phi, and create conversion functions.
 [phi, phi2p, phi2e, phi2eps, p2e, e2p, p2eps, eps2p, ...
     A_spread, A_gather, phi_smooth] = ...
-    setup_levelset(dims, phi, 1.0, 12.25, 1e-3);
+    setup_levelset(phi, 1.0, 12.25, 1e-3);
 
-v.eps = phi2eps(phi);
-v.eps = [v.eps.x(:); v.eps.y(:)];
+eps = phi2eps(phi);
 
-[Ex, Ey, Hz] = setup_border_vals({'x-', 'y-'}, omega, phi2eps(phi));
+[f, g] = em_physics(omega, phi2eps(phi));
+[Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
+% v.E = [Ex(:); Ey(:)];
+% v.H = Hz(:);
+v.x = [Ex(:); Ey(:); Hz(:)];
+
+
+% Setup constraints
+tp = ones(dims);
+tp([1,dims(1)],:) = 0;
+tp(:,[1,dims(2)]) = 0;
+tp = [tp(:); tp(:); tp(:)];
+
+c = @(v, dv, s) struct( ...
+    'E', v.E - s * ([tp; tp] .* dv.E), ...
+    'H', v.H - s * (tp .* dv.H));
+c = @(v, dv, s) struct('x', v.x - s * (tp .* dv.x));
+
+[v, fval, ss_hist] = opt(f, g, c, v, 1e4);
+
+Ex = reshape(v.x(1:N), dims);
+Ey = reshape(v.x(N+1:2*N), dims);
+Hz = reshape(v.x(2*N+1:3*N), dims);
 
 figure(1); plot_fields(dims, ...
     {'Re(Ex)', real(Ex)}, {'Re(Ey)', real(Ey)}, {'Re(Hz)', real(Hz)}, ...
     {'Im(Ex)', imag(Ex)}, {'Im(Ey)', imag(Ey)}, {'Im(Hz)', imag(Hz)}, ...
     {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});
 
+figure(2); cgo_visualize(fval, ss_hist);
 return
 N = prod(dims);
 
