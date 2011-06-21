@@ -1,8 +1,4 @@
-<<<<<<< HEAD:setup_levelset.m
 function [phi2e, phi2eps, smooth_phi] = ...
-=======
-function [phi2p, phi2e, smooth_phi] = ...
->>>>>>> 77fffd6eebe0f975dbda37e6f59403b119d87e73:setup_levelset.m
     setup_levelset (phi, eps_lo, eps_hi, alpha_smooth)
 
 

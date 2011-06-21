@@ -36,3 +36,10 @@ N = prod(dims);
 plot_fields(dims, ...
     {'Re(Ex)', real(Ex)}, {'Re(Ey)', real(Ey)}, {'Re(Hz)', real(Hz)}, ...
     {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});
+
+% make the physics matrices.
+% Define the curl operators as applied to E and H, respectively.
+Ecurl = [   -(S_(0,1)-S_(0,0)),  (S_(1,0)-S_(0,0))];  
+Hcurl = [   (S_(0,0)-S_(0,-1)); -(S_(0,0)-S_(-1,0))]; 
+
+A = @(e) [Ecurl, -i*omega*speye(N); i*omega*D_(e), Hcurl];
