@@ -1,6 +1,5 @@
 function [f, g] = em_physics(omega, eps)
 
-a
     %
     % Helper functions for building matrices.
     %

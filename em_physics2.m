@@ -20,9 +20,10 @@ B = @(x) i * omega * D_(x(1:2*N)) * A_spread;
 d = @(x) -Hcurl * x(2*N+1:3*N);
 
 % Physics residual.
-f = @(v) 0.5 * norm(A(v.p)*v.x)^2;
+f = @(v) 0.5 * norm(field_template .* (A(v.p)*v.x))^2;
 
 % Gradient.
 g = @(v) struct('x', A(v.p)'*(A(v.p)*v.x), ...
                 'p', (A_spread'*A_spread) \ (B(v.x)'*(B(v.x)*v.p - d(v.x))));
+                % 'p', (B(v.x)'*(B(v.x)*v.p - d(v.x))));
 
