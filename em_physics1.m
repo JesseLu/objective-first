@@ -22,9 +22,10 @@ switch field_or_struct
     case 'struct'
         A0 = @(x) i * omega * D_(x(1:2*N)) * A_spread; 
         b0 = @(x) -Hcurl * x(2*N+1:3*N);
+        M = N;
 end
 
-ind = find(template == 1);
+ind = find(template(:) == 1);
 n = length(ind);
 S = sparse(ind, 1:n, ones(n,1), M, n);
 

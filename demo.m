@@ -91,14 +91,19 @@ v.p = v.p(:);
     % Optimize by directly solving the matrix equation.
     %
 
-[A, b, reinsert] = em_physics1('field', omega, tp, v.x);
-v.x = reinsert(A(v.p) \ b(v.p));
+        [A, b, reinsert] = em_physics1('field', omega, tp, v.x);
+        v.x = reinsert(A(v.p) \ b(v.p));
+switch(field_or_struct)
+    case 'struct'
+        [A, b, reinsert] = em_physics1('struct', omega, eta<0, v.p);
+        v0.p = reinsert(A(v.x) \ b(v.x));
+end
 
-%     %
-%     % Optimize using the c-go package.
-%     %
-% 
-% [v, fval, ss_hist] = opt(f, g, c, v, 1e2);
+    %
+    % Optimize using the c-go package.
+    %
+
+[v, fval, ss_hist] = opt(f, g, c, v, 1e2);
 
 
     %
@@ -114,7 +119,7 @@ figure(1); plot_fields(dims, ...
     {'Im(Ex)', imag(Ex)}, {'Im(Ey)', imag(Ey)}, {'Im(Hz)', imag(Hz)}, ...
     {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});
 
-figure(2); plot_fields(dims, {'p', v.p});
+figure(2); plot_fields(dims, {'p', v0.p});
 
 % figure(3); cgo_visualize(fval, ss_hist);
 
