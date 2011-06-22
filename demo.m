@@ -1,5 +1,5 @@
-function demo()
-% DEMO
+function demo(cgo_iters)
+% DEMO(CGO_ITERS)
 %
 % Update the field using the c-go package.
 help demo
@@ -34,7 +34,7 @@ N = prod(dims);
 
 lset_grid(dims);
 phi = lset_box([0 0], [1000 10]);
-eta = lset_box([0 0], [40 40]);
+eta = lset_box([0 0], dims/2);
 phi = lset_intersect(phi, lset_complement(eta));
 phi = lset_complement(phi);
 
@@ -55,24 +55,25 @@ tp([1,dims(1)],:) = 0;
 tp(:,[1,dims(2)]) = 0;
 tp = [tp(:); tp(:); tp(:)];
 
-% c = @(v, dv, s) struct( 'x', v.x - s * (tp .* dv.x), ...
-%                         'p', v.p - s * ((eta(:) < 0) .* dv.p));
-
 c = @(v, dv, s) struct( 'x', v.x - s * (tp .* dv.x), ...
-                        'p', v.p);
+                        'p', v.p - s * ((eta(:) < 0) .* dv.p));
 
-c = @(v, dv, s) struct( 'x', v.x, ...
-                        'p', v.p + s * dv.p); 
+% c = @(v, dv, s) struct( 'x', v.x - s * (tp .* dv.x), ...
+%                         'p', v.p);
+% 
+% c = @(v, dv, s) struct( 'x', v.x, ...
+%                         'p', v.p - s * ((eta(:) < 0) .* dv.p)); 
 
-c = @(v, dv, s) test(v, dv, s);
+% c = @(v, dv, s) test(v, dv, s);
 
 % Initial values.
 [Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
 v.x = [Ex(:); Ey(:); Hz(:)];
+% randn('state', 1);
 % v.x = randn(size(v.x));
 v.p = phi2p(phi);
 v.p = v.p(:);
-v.p = randn(N, 1);
+% v.p = randn(N, 1);
 
 
     %
@@ -81,8 +82,6 @@ v.p = randn(N, 1);
 
 [v, fval, ss_hist] = opt(f, g, c, v, 1e2);
 
-fval
-ss_hist
 
     %
     % Plot results.
@@ -102,7 +101,3 @@ figure(2); plot_fields(dims, {'p', v.p});
 figure(3); cgo_visualize(fval, ss_hist);
 
 
-function [v] = test(v, dv, s)
-s
-
-v = struct( 'x', v.x, 'p', v.p + s * dv.p); 
