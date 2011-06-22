@@ -24,6 +24,6 @@ f = @(v) 0.5 * norm(field_template .* (A(v.p)*v.x))^2;
 
 % Gradient.
 g = @(v) struct('x', A(v.p)'*(A(v.p)*v.x), ...
-                'p', (A_spread'*A_spread) \ (B(v.x)'*(B(v.x)*v.p - d(v.x))));
-                % 'p', (B(v.x)'*(B(v.x)*v.p - d(v.x))));
+                'p', (B(v.x)'*(B(v.x)*v.p - d(v.x))));
+                % 'p', (A_spread'*A_spread) \ (B(v.x)'*(B(v.x)*v.p - d(v.x))));
 

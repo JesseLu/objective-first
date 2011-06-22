@@ -71,8 +71,10 @@ N = prod(dims);
 lset_grid(dims);
 phi = lset_box([0 0], [1000 10]);
 eta = lset_box([0 0], dims/2);
-% phi = lset_intersect(phi, lset_complement(eta));
+phi2 = lset_intersect(phi, lset_complement(eta));
 phi = lset_complement(phi);
+eta2 = lset_box([0 0], dims/2 + 2);
+phi2 = lset_complement(phi2);
 
 % Initialize phi, and create conversion functions.
 [phi2p, phi2eps, phi_smooth] = setup_levelset(phi, 1.0, 12.25, 1e-3);
@@ -96,7 +98,7 @@ switch field_or_struct
                                 'p', v.p);
     case 'struct'
         c = @(v, dv, s) struct( 'x', v.x, ...
-                                'p', v.p - s * ((eta(:) < 0) .* dv.p)); 
+                                'p', v.p - s * ((eta2(:) < 0) .* dv.p)); 
     otherwise
         error('Invalid parameter for FIELD_OR_STRUCT.');
 end
@@ -119,9 +121,10 @@ v.p = v.p(:);
 tic; fprintf('Direct solve: ');
 [A, b, reinsert] = em_physics1('field', omega, field_template, v.x);
 v0.x = reinsert(A(v.p) \ b(v.p));
-v0.p = v.p;
+v0.p = phi2p(phi2);
+v0.p = v0.p(:);
 if strcmp(field_or_struct, 'struct')
-        [A, b, reinsert] = em_physics1('struct', omega, eta<0, v.p);
+        [A, b, reinsert] = em_physics1('struct', omega, eta2<0, v0.p);
         v0.p = reinsert(A(v0.x) \ b(v0.x));
 end
 fprintf('%e, ', f(v0)); toc
@@ -134,10 +137,7 @@ fprintf('%e, ', f(v0)); toc
 tic; fprintf('Gradient solve: ');
 if strcmp(field_or_struct, 'struct')
     v.x = v0.x;
-    eta = lset_box([0 0], dims/2 - 2);
-    phi = lset_intersect(lset_complement(phi), lset_complement(eta));
-    phi = lset_complement(phi);
-    v.p = phi2p(phi);
+    v.p = phi2p(phi2);
     v.p = v.p(:);
 end
 fval = [];

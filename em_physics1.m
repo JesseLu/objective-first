@@ -25,7 +25,7 @@ switch field_or_struct
         M = N;
 end
 
-ind = find(template(:) == 1);
+ind = find(template(:) > 0);
 n = length(ind);
 S = sparse(ind, 1:n, ones(n,1), M, n);
 
