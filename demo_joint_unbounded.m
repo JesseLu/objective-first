@@ -86,6 +86,7 @@ v.p = v.p(:);
     % Optimize using the c-go package.
     %
 
+tic;
 fval = [];
 ss_hist = [];
 for k = 1 : ceil(cgo_iters/1e2)
