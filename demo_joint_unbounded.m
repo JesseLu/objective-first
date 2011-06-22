@@ -1,5 +1,5 @@
-function demo_joint_unbounded(dims, cgo_iters)
-% DEMO_JOINT_UNBOUNDED(DIMS, CGO_ITERS)
+function demo_joint_unbounded(dims, cgo_iters, savefile)
+% DEMO_JOINT_UNBOUNDED(DIMS, CGO_ITERS, SAVEFILE)
 %
 % Description
 %     Jointly move the field and unbounded structure variables in the direction 
@@ -51,7 +51,7 @@ N = prod(dims);
 lset_grid(dims);
 phi = lset_box([0 0], [1000 10]);
 eta = lset_box([0 0], dims/2);
-phi2 = lset_intersect(phi, lset_complement(eta));
+phi2 = lset_union(phi, (eta));
 phi = lset_complement(phi);
 eta2 = lset_box([0 0], dims/2 + 2);
 phi2 = lset_complement(phi2);
@@ -94,7 +94,7 @@ for k = 1 : ceil(cgo_iters/1e2)
     fval = [fval, fval0];
     ss_hist = [ss_hist, ss_hist0];
     my_plot(v, fval, ss_hist);
-    save temp.mat v fval ss_hist
+    save(savefile, 'v', 'fval', 'ss_hist');
     fprintf('%d: %e\n', k*1e2, fval(end));
 end
 fprintf('%e, ', f(v)); toc
