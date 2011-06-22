@@ -1,5 +1,5 @@
-function [err] = demo(dims, field_or_struct, cgo_iters)
-% [ERR] = DEMO(DIMS, FIELD_OR_STRUCT, CGO_ITERS)
+function demo(dims, field_or_struct, cgo_iters)
+% DEMO(DIMS, FIELD_OR_STRUCT, CGO_ITERS)
 %
 % Description
 %     Independently test the optimization routines for the field and 
@@ -34,8 +34,12 @@ function [err] = demo(dims, field_or_struct, cgo_iters)
 %         optimization routine.
 % 
 % Output
-%     ERR: Positive number.
-%         Difference in the physics residual between the two solutions.
+%     None.
+% 
+% Examples
+%     % Quick, small examples runs.
+%     demo([30 30], 'field', 1e4);
+%     demo([30 30], 'struct', 1e4);
 
 path(path, '~/c-go'); % Make sure we have access to c-go.
 path(path, '~/level-set'); % Make sure we have access to level-set.
@@ -128,18 +132,30 @@ fprintf('%e, ', f(v0)); toc
     %
 
 tic; fprintf('Gradient solve: ');
-[v, fval, ss_hist] = opt(f, g, c, v, cgo_iters); 
+if strcmp(field_or_struct, 'struct')
+    v.x = v0.x;
+    eta = lset_box([0 0], dims/2 - 2);
+    phi = lset_intersect(lset_complement(phi), lset_complement(eta));
+    phi = lset_complement(phi);
+    v.p = phi2p(phi);
+    v.p = v.p(:);
+end
+fval = [];
+ss_hist = [];
+for k = 1 : ceil(cgo_iters/1e2)
+    [v, fval0, ss_hist0] = opt(f, g, c, v, 1e2); 
+    fval = [fval, fval0];
+    ss_hist = [ss_hist, ss_hist0];
+    my_plot(v, v0, fval, ss_hist);
+end
 fprintf('%e, ', f(v)); toc
 
 
-    %
-    % Plot results.
-    %
-
-Ex = reshape(v.x(1:N), dims);
-Ey = reshape(v.x(N+1:2*N), dims);
-Hz = reshape(v.x(2*N+1:3*N), dims);
-
+function my_plot(v, v0, fval, ss_hist)
+    
+global DIMS_
+dims = DIMS_;
+N = prod(dims);
 figure(1); plot_fields(dims, ...
     {'Re(Ex)', real(v.x(1:N))}, {'|Ex|', abs(v.x(1:N))}, {'p', v.p});
 
@@ -154,5 +170,8 @@ figure(2); plot_fields(dims, ...
 % figure(2); plot_fields(dims, {'p', v0.p});
 % 
 figure(3); cgo_visualize(fval, ss_hist);
+
+drawnow
+
 
 
