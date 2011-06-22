@@ -1,4 +1,5 @@
-function [f, g] = em_physics(omega, eps)
+function [f, g] = em_physics(omega)
+
 
     %
     % Helper functions for building matrices.
@@ -11,23 +12,18 @@ N = prod(DIMS_);
 Ecurl = [   -(S_(0,1)-S_(0,0)),  (S_(1,0)-S_(0,0))];  
 Hcurl = [   (S_(0,0)-S_(0,-1)); -(S_(0,0)-S_(-1,0))]; 
 
-e = [eps.x(:); eps.y(:)];
+A_spread = 0.5 * [S_(0,0)+S_(1,0); S_(0,0)+S_(0,1)];
+A = @(p) [Ecurl, -i*omega*speye(N); i*omega*D_(A_spread*p), Hcurl];
 
-A = [Ecurl, -i*omega*speye(N); i*omega*D_(e), Hcurl];
-
-% Physics residual.
-f = @(v) 0.5 * (norm(Ecurl * v.E - i * omega * v.H)^2 + ...
-                norm(Hcurl * v.H + i * omega * (e .* v.E))^2);
-f = @(v) 0.5 * norm(A*v.x)^2;
-
-% Gradient.
-g = @(v) struct( ...
-    'E', Ecurl' * (Ecurl * v.E - i * omega * v.H), ...  
-    'H', Hcurl' * (Hcurl * v.H + i * omega * (e .* v.E)));
-g = @(v) struct('x', A'*(A*v.x));
-
-return
-% Primary physics matrix, electromagnetic wave equation.
 
 B = @(x) i * omega * D_(x(1:2*N)) * A_spread; 
 d = @(x) -Hcurl * x(2*N+1:3*N);
+
+% Physics residual.
+f = @(v) 0.5 * norm(field_template .* (A(v.p)*v.x))^2;
+
+% Gradient.
+g = @(v) struct('x', A(v.p)'*(A(v.p)*v.x), ...
+                'p', (B(v.x)'*(B(v.x)*v.p - d(v.x))));
+                % 'p', (A_spread'*A_spread) \ (B(v.x)'*(B(v.x)*v.p - d(v.x))));
+

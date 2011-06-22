@@ -1,4 +1,4 @@
-function [A, b, reinsert] = em_physics1(field_or_struct, omega, template, init_val)
+function [A, b, reinsert] = em_physics_direct(field_or_struct, omega, template, init_val)
 
 
     %

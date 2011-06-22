@@ -1,5 +1,5 @@
-function demo(dims, field_or_struct, cgo_iters)
-% DEMO(DIMS, FIELD_OR_STRUCT, CGO_ITERS)
+function demo_indep_unbounded(dims, field_or_struct, cgo_iters)
+% DEMO_INDEP_UNBOUNDED(DIMS, FIELD_OR_STRUCT, CGO_ITERS)
 %
 % Description
 %     Independently test the optimization routines for the field and 
@@ -38,8 +38,8 @@ function demo(dims, field_or_struct, cgo_iters)
 % 
 % Examples
 %     % Quick, small examples runs.
-%     demo([30 30], 'field', 1e4);
-%     demo([30 30], 'struct', 1e4);
+%     demo_indep_unbounded([30 30], 'field', 1e4);
+%     demo_indep_unbounded([30 30], 'struct', 1e4);
 
 path(path, '~/c-go'); % Make sure we have access to c-go.
 path(path, '~/level-set'); % Make sure we have access to level-set.
@@ -85,7 +85,7 @@ phi2 = lset_complement(phi2);
     %
 
 % Objective function and its gradient.
-[f, g] = em_physics2(omega); 
+[f, g] = em_physics(omega); 
 
 
 % % This constraint function allows both variables to change.
@@ -119,12 +119,12 @@ v.p = v.p(:);
     %
 
 tic; fprintf('Direct solve: ');
-[A, b, reinsert] = em_physics1('field', omega, field_template, v.x);
+[A, b, reinsert] = em_physics_direct('field', omega, field_template, v.x);
 v0.x = reinsert(A(v.p) \ b(v.p));
 v0.p = phi2p(phi2);
 v0.p = v0.p(:);
 if strcmp(field_or_struct, 'struct')
-        [A, b, reinsert] = em_physics1('struct', omega, eta2<0, v0.p);
+        [A, b, reinsert] = em_physics_direct('struct', omega, eta2<0, v0.p);
         v0.p = reinsert(A(v0.x) \ b(v0.x));
 end
 fprintf('%e, ', f(v0)); toc
