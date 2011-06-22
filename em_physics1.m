@@ -1,4 +1,4 @@
-function [f, g] = em_physics2(omega)
+function [A, b, B, d] = em_physics1(omega)
 
 
     %

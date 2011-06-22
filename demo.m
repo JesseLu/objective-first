@@ -1,13 +1,19 @@
-function demo(cgo_iters)
-% DEMO(CGO_ITERS)
+function demo(dims, field_or_struct, cgo_iters)
+% DEMO(DIMS, FIELD_OR_STRUCT, CGO_ITERS)
 %
-% Update the field using the c-go package.
+% Description
+%     Independently test the optimization routines for the field and 
+%     structure variables. Results are verified against "known" solutions.
+% 
+%     Basically, eye-ball it to see if the result from matrix-inversion makes
+%     sense, then compare that (especially the value of the physics residual)
+%     to the result given by gradient optimization.
+
 help demo
 
 path(path, '~/c-go'); % Make sure we have access to c-go.
 path(path, '~/level-set'); % Make sure we have access to level-set.
 
-dims = [80 80]; % Size of the grid.
 omega = 0.15; % Angular frequency of desired mode.
 
 
@@ -35,7 +41,7 @@ N = prod(dims);
 lset_grid(dims);
 phi = lset_box([0 0], [1000 10]);
 eta = lset_box([0 0], dims/2);
-phi = lset_intersect(phi, lset_complement(eta));
+% phi = lset_intersect(phi, lset_complement(eta));
 phi = lset_complement(phi);
 
 % Initialize phi, and create conversion functions.
@@ -55,16 +61,21 @@ tp([1,dims(1)],:) = 0;
 tp(:,[1,dims(2)]) = 0;
 tp = [tp(:); tp(:); tp(:)];
 
-c = @(v, dv, s) struct( 'x', v.x - s * (tp .* dv.x), ...
-                        'p', v.p - s * ((eta(:) < 0) .* dv.p));
-
+% % This constraint function allows both variables to change.
 % c = @(v, dv, s) struct( 'x', v.x - s * (tp .* dv.x), ...
-%                         'p', v.p);
-% 
-% c = @(v, dv, s) struct( 'x', v.x, ...
-%                         'p', v.p - s * ((eta(:) < 0) .* dv.p)); 
+%                         'p', v.p - s * ((eta(:) < 0) .* dv.p));
 
-% c = @(v, dv, s) test(v, dv, s);
+switch field_or_struct
+    case 'field'
+        c = @(v, dv, s) struct( 'x', v.x - s * (tp .* dv.x), ...
+                                'p', v.p);
+    case 'struct'
+        c = @(v, dv, s) struct( 'x', v.x, ...
+                                'p', v.p - s * ((eta(:) < 0) .* dv.p)); 
+    otherwise
+        error('Invalid parameter for FIELD_OR_STRUCT.');
+end
+
 
 % Initial values.
 [Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
