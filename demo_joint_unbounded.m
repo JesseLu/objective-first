@@ -86,7 +86,6 @@ v.p = v.p(:);
     % Optimize using the c-go package.
     %
 
-tic; fprintf('Gradient solve: ');
 fval = [];
 ss_hist = [];
 for k = 1 : ceil(cgo_iters/1e2)
@@ -94,7 +93,8 @@ for k = 1 : ceil(cgo_iters/1e2)
     fval = [fval, fval0];
     ss_hist = [ss_hist, ss_hist0];
     my_plot(v, fval, ss_hist);
-    save temp.mat v
+    save temp.mat v fval ss_hist
+    fprintf('%d: %e\n', k*1e2, fval(end));
 end
 fprintf('%e, ', f(v)); toc
 
@@ -104,10 +104,11 @@ function my_plot(v, fval, ss_hist)
 global DIMS_
 dims = DIMS_;
 N = prod(dims);
-figure(1); plot_fields(dims, ...
-    {'Re(Ex)', real(v.x(1:N))}, {'|Ex|', abs(v.x(1:N))}, {'p', v.p});
+% figure(1); 
+plot_fields(dims, ...
+    {'Re(Ey)', real(v.x(N+1:2*N))}, {'|Ey|', abs(v.x(N+1:2*N))}, {'p', v.p});
 
-figure(2); cgo_visualize(fval, ss_hist);
+% figure(2); cgo_visualize(fval, ss_hist);
 
 drawnow
 
