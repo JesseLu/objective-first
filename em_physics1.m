@@ -1,4 +1,4 @@
-function [A, b, B, d] = em_physics1(omega)
+function [A, b, reinsert] = em_physics1(field_or_struct, omega, template, init_val)
 
 
     %
@@ -13,16 +13,21 @@ Ecurl = [   -(S_(0,1)-S_(0,0)),  (S_(1,0)-S_(0,0))];
 Hcurl = [   (S_(0,0)-S_(0,-1)); -(S_(0,0)-S_(-1,0))]; 
 
 A_spread = 0.5 * [S_(0,0)+S_(1,0); S_(0,0)+S_(0,1)];
-A = @(p) [Ecurl, -i*omega*speye(N); i*omega*D_(A_spread*p), Hcurl];
 
+switch field_or_struct
+    case 'field'
+        A0 = @(p) [Ecurl, -i*omega*speye(N); i*omega*D_(A_spread*p), Hcurl];
+        b0 = @(p) 0;
+        M = 3*N;
+    case 'struct'
+        A0 = @(x) i * omega * D_(x(1:2*N)) * A_spread; 
+        b0 = @(x) -Hcurl * x(2*N+1:3*N);
+end
 
-B = @(x) i * omega * D_(x(1:2*N)) * A_spread; 
-d = @(x) -Hcurl * x(2*N+1:3*N);
+ind = find(template == 1);
+n = length(ind);
+S = sparse(ind, 1:n, ones(n,1), M, n);
 
-% Physics residual.
-f = @(v) 0.5 * norm(A(v.p)*v.x)^2;
-
-% Gradient.
-g = @(v) struct('x', A(v.p)'*(A(v.p)*v.x), ...
-                'p', (A_spread'*A_spread) \ (B(v.x)'*(B(v.x)*v.p - d(v.x))));
-
+A = @(v) A0(v) * S;
+b = @(v) b0(v) - A0(v) * init_val;
+reinsert = @(v) S * v + init_val;

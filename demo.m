@@ -88,10 +88,17 @@ v.p = v.p(:);
 
 
     %
-    % Optimize using the c-go package.
+    % Optimize by directly solving the matrix equation.
     %
 
-[v, fval, ss_hist] = opt(f, g, c, v, 1e2);
+[A, b, reinsert] = em_physics1('field', omega, tp, v.x);
+v.x = reinsert(A(v.p) \ b(v.p));
+
+%     %
+%     % Optimize using the c-go package.
+%     %
+% 
+% [v, fval, ss_hist] = opt(f, g, c, v, 1e2);
 
 
     %
@@ -109,6 +116,6 @@ figure(1); plot_fields(dims, ...
 
 figure(2); plot_fields(dims, {'p', v.p});
 
-figure(3); cgo_visualize(fval, ss_hist);
+% figure(3); cgo_visualize(fval, ss_hist);
 
 
