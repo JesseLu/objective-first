@@ -74,10 +74,10 @@ if is_bounded
     bound = @(x) 1.0 * (x < 1.0) + 12.25 * (x > 12.25) + ...
         x .* ((x >= 1.0) & (x <= 12.25));
     c = @(v, dv, s) struct( 'x', v.x - s * (field_template .* dv.x), ...
-                            'p', bound(v.p - s * ((eta2(:) < 0) .* dv.p)));
+                            'p', real(bound(v.p - s * ((eta2(:) < 0) .* dv.p))));
 else
     c = @(v, dv, s) struct( 'x', v.x - s * (field_template .* dv.x), ...
-                            'p', v.p - s * ((eta2(:) < 0) .* dv.p));
+                            'p', real(v.p - s * ((eta2(:) < 0) .* dv.p)));
 end
 
 % Initial values.
