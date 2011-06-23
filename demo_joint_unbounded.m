@@ -1,5 +1,5 @@
-function demo_joint_unbounded(dims, cgo_iters, savefile)
-% DEMO_JOINT_UNBOUNDED(DIMS, CGO_ITERS, SAVEFILE)
+function demo_joint_unbounded(dims, cgo_iters, is_bounded, savefile)
+% DEMO_JOINT_UNBOUNDED(DIMS, CGO_ITERS, IS_BOUNDED, SAVEFILE)
 %
 % Description
 %     Jointly move the field and unbounded structure variables in the direction 
@@ -51,7 +51,8 @@ N = prod(dims);
 lset_grid(dims);
 phi = lset_box([0 0], [1000 10]);
 eta = lset_box([0 0], dims/2);
-phi2 = lset_union(phi, (eta));
+% phi2 = lset_union(phi, (eta)); % filled.
+phi2 = lset_intersect(phi, lset_complement(eta));
 phi = lset_complement(phi);
 eta2 = lset_box([0 0], dims/2 + 2);
 phi2 = lset_complement(phi2);
@@ -69,8 +70,15 @@ phi2 = lset_complement(phi2);
 
 
 % This constraint function allows both variables to change.
-c = @(v, dv, s) struct( 'x', v.x - s * (field_template .* dv.x), ...
-                        'p', v.p - s * ((eta2(:) < 0) .* dv.p));
+if is_bounded
+    bound = @(x) 1.0 * (x < 1.0) + 12.25 * (x > 12.25) + ...
+        x .* ((x >= 1.0) & (x <= 12.25));
+    c = @(v, dv, s) struct( 'x', v.x - s * (field_template .* dv.x), ...
+                            'p', bound(v.p - s * ((eta2(:) < 0) .* dv.p)));
+else
+    c = @(v, dv, s) struct( 'x', v.x - s * (field_template .* dv.x), ...
+                            'p', v.p - s * ((eta2(:) < 0) .* dv.p));
+end
 
 % Initial values.
 [Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
