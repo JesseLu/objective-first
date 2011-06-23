@@ -143,7 +143,7 @@ end
 fval = [];
 ss_hist = [];
 for k = 1 : ceil(cgo_iters/1e2)
-    [v, fval0, ss_hist0] = opt(f, g, c, v, 1e2); 
+    [v, fval0, ss_hist0] = opt(f, g, c, v, 1e2, 2.^[-10:20]); 
     fval = [fval, fval0];
     ss_hist = [ss_hist, ss_hist0];
     my_plot(v, v0, fval, ss_hist);
