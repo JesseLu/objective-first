@@ -89,7 +89,7 @@ phi2 = lset_complement(phi2);
 % c = @(v, dv, s) struct( 'x', v.x - s * (tp .* dv.x), ...
 %                         'p', v.p - s * ((eta(:) < 0) .* dv.p));
 
-c = @(p, dp, s) p - s * ((eta2(:) < 0) .* dp); 
+c = @(phi, dphi, s) levelset_step(phi, (eta2 < 0) .* reshape(real(dphi), dims), s); 
 
 % Initial values.
 [Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
@@ -102,49 +102,32 @@ p = p(:);
 x = reinsert(A(p) \ b(p));
 
 % Objective function and its gradient.
-[f, g] = em_physics_levelset(omega, x); 
+[f, g] = em_physics_levelset(omega, phi2p, x); 
 
-
-
-    %
-    % Optimize by directly solving the matrix equation.
-    %
-% 
-% tic; fprintf('Direct solve: ');
-% [A, b, reinsert] = em_physics_direct('field', omega, field_template, v.x);
-% v0.x = reinsert(A(v.p) \ b(v.p));
-% v0.p = phi2p(phi2);
-% v0.p = v0.p(:);
-% if strcmp(field_or_struct, 'struct')
-%         [A, b, reinsert] = em_physics_direct('struct', omega, eta2<0, v0.p);
-%         v0.p = reinsert(A(v0.x) \ b(v0.x));
-% end
-% fprintf('%e, ', f(v0)); toc
-% 
-% 
+ 
     %
     % Optimize using the c-go package.
     %
 
 tic; fprintf('Gradient solve: ');
-p = phi2p(phi2);
+phi = phi2;
 fval = [];
 ss_hist = [];
-for k = 1 : ceil(cgo_iters/1e2)
-    [p, fval0, ss_hist0] = opt(f, g, c, p(:), 1e2, 2.^[-10:20]); 
+for k = 1 : ceil(cgo_iters/1)
+    [phi, fval0, ss_hist0] = opt(f, g, c, phi, 1, 2.^[-10:20]); 
     fval = [fval, fval0];
     ss_hist = [ss_hist, ss_hist0];
-    my_plot(p, fval, ss_hist);
+    my_plot(phi, fval, ss_hist);
 end
-fprintf('%e, ', f(p)); toc
+fprintf('%e, ', f(phi)); toc
 
 
-function my_plot(p, fval, ss_hist)
+function my_plot(phi, fval, ss_hist)
     
 global DIMS_
 dims = DIMS_;
 N = prod(dims);
-figure(1); plot_fields(dims, {'p', p});
+figure(1); lset_plot(phi);
 
 figure(2); cgo_visualize(fval, ss_hist);
 
