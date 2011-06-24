@@ -13,3 +13,5 @@ s_max = 1 / max(abs(nb(H_normal)));
 
 % Update phi.
 phi = phi -  min([s, s_max]) * H_normal;
+
+[phi, err] = signed_distance(phi, 1e-2); % Make phi more sdf-like.

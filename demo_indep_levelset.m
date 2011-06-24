@@ -117,17 +117,18 @@ for k = 1 : ceil(cgo_iters/1)
     [phi, fval0, ss_hist0] = opt(f, g, c, phi, 1, 2.^[-10:20]); 
     fval = [fval, fval0];
     ss_hist = [ss_hist, ss_hist0];
-    my_plot(phi, fval, ss_hist);
+    my_plot(phi, phi2p(phi), fval, ss_hist);
 end
 fprintf('%e, ', f(phi)); toc
 
 
-function my_plot(phi, fval, ss_hist)
+function my_plot(phi, p, fval, ss_hist)
     
 global DIMS_
 dims = DIMS_;
 N = prod(dims);
-figure(1); lset_plot(phi);
+figure(1); plot_fields(dims, {'p', p}, {'p', p});
+subplot 121; lset_plot(phi);
 
 figure(2); cgo_visualize(fval, ss_hist);
 
