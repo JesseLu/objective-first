@@ -1,46 +1,4 @@
 function demo_indep_unbounded(dims, cgo_iters)
-% DEMO_INDEP_UNBOUNDED(DIMS, FIELD_OR_STRUCT, CGO_ITERS)
-%
-% Description
-%     Independently test the optimization routines for the field and 
-%     structure variables. Results are verified against "known" solutions.
-% 
-%     Basically, eye-ball it to see if the result from matrix-inversion makes
-%     sense, then compare that (especially the value of the physics residual)
-%     to the result given by gradient optimization.
-%
-% Inputs
-%     DIMS: 2-element vector of positive integers.
-%         The size of the grid over which to optimize.
-% 
-%     FIELD_OR_STRUCT: Character string.
-%         Must be either 'field' or 'struct'.
-% 
-%         If 'field' is chosen, then the following two results will be compared:
-%         1.  Direct solve of field of a straight waveguide, and
-%         2.  Gradient-descent optimized field for a straight waveguide.
-% 
-%         If 'struct' is chosen, then the direct solve of the field for a 
-%         straight waveguide is first computed. Then the central (varying) 
-%         region of the structure is removed and the following two results
-%         are compared:
-%         1.  Direct solve for the central structure area, and
-%         2.  Gradient-descent optimized structure area.
-%         Note that the "isotropic" value of epsilon is unbounded in these 
-%         optimizations.
-% 
-%     CGO_ITERS: Positive integer.
-%         The number of iterations to perform for the gradient-descent
-%         optimization routine.
-% 
-% Output
-%     None.
-% 
-% Examples
-%     % Quick, small examples runs.
-%     demo_indep_unbounded([30 30], 'field', 1e4);
-%     demo_indep_unbounded([30 30], 'struct', 1e4);
-
 path(path, '~/c-go'); % Make sure we have access to c-go.
 path(path, '~/level-set'); % Make sure we have access to level-set.
 
@@ -74,6 +32,8 @@ eta = lset_box([0 0], dims/2);
 phi2 = lset_intersect(phi, lset_complement(eta));
 phi = lset_complement(phi);
 eta2 = lset_box([0 0], dims/2 + 2);
+small_box = lset_box([0 0], dims/2 - 2);
+phi2 = lset_union(phi2, lset_intersect(small_box, lset_checkered));
 phi2 = lset_complement(phi2);
 
 % Initialize phi, and create conversion functions.
