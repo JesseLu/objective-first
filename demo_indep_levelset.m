@@ -32,7 +32,7 @@ eta = lset_box([0 0], dims/2);
 phi2 = lset_intersect(phi, lset_complement(eta));
 phi = lset_complement(phi);
 eta2 = lset_box([0 0], dims/2 + 2);
-small_box = lset_box([0 0], dims/2 - 2);
+small_box = lset_box([0 0], dims/2 - 10);
 phi2 = lset_union(phi2, lset_intersect(small_box, lset_checkered));
 phi2 = lset_complement(phi2);
 

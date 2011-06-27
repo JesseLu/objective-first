@@ -34,7 +34,7 @@ eta = lset_box([0 0], dims/2);
 phi2 = lset_intersect(phi, lset_complement(eta));
 phi = lset_complement(phi);
 eta2 = lset_box([0 0], dims/2 + 2);
-small_box = lset_box([0 0], dims/2 - 10);
+small_box = lset_box([0 0], dims/2 - 2);
 phi2 = lset_union(phi2, lset_intersect(small_box, lset_checkered));
 phi2 = lset_complement(phi2);
 
@@ -52,17 +52,23 @@ phi2 = lset_complement(phi2);
 
 % This constraint function allows both variables to change.
 c = @(v, dv, s) struct( 'x', v.x - s * (field_template .* dv.x), ...
-    'phi', levelset_step(v.phi, (eta2 < 0) .* reshape(real(v.phi), dims), s)); 
+    'phi', levelset_step(v.phi, (eta2 < 0) .* reshape(real(dv.phi), dims), s)); 
 
+% c = @(v, dv, s) struct( 'x', v.x, ...
+%     'phi', levelset_step(v.phi, (eta2 < 0) .* reshape(real(dv.phi), dims), s)); 
 % Initial values.
 [Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
 v.x = [Ex(:); Ey(:); Hz(:)];
 % randn('state', 1);
 % v.x = randn(size(v.x));
 v.phi = phi2;
-v.phi = signed_distance(v.phi, 1e-2); % Make phi more sdf-like.
+% v.phi = signed_distance(v.phi, 1e-2); % Make phi more sdf-like.
 % v.p = randn(N, 1);
 
+% Get the field.
+% [A, b, reinsert] = em_physics_direct('field', omega, field_template, v.x);
+% v.x = reinsert(A(phi2p(v.phi)) \ b(phi2p(v.phi)));
+% v.phi = phi2;
 
     %
     % Optimize using the c-go package.
@@ -71,11 +77,13 @@ v.phi = signed_distance(v.phi, 1e-2); % Make phi more sdf-like.
 tic;
 fval = [];
 ss_hist = {[], []};
+    figure(1);
     my_plot(v, phi2p, fval, ss_hist);
-    pause
 for k = 1 : ceil(cgo_iters/interval)
     [v, fval0, ss_hist0] = cgo_opt(f, g, c, v, interval, 2.^[-20:20]); 
+    % [v, fval0, ss_hist0] = opt(f, g, c, v, interval, 2.^[-20:20]); 
     fval = [fval, fval0];
+    % ss_hist = [ss_hist, ss_hist0];
     ss_hist{1} = [ss_hist{1}, ss_hist0{1}];
     ss_hist{2} = [ss_hist{2}, ss_hist0{2}];
     my_plot(v, phi2p, fval, ss_hist);
@@ -84,6 +92,7 @@ for k = 1 : ceil(cgo_iters/interval)
 end
 fprintf('%e, ', f(v)); toc
 
+% figure(2); cgo_visualize(fval, ss_hist);
 figure(2); cgo_visualize(fval, ss_hist{1});
 figure(3); cgo_visualize(fval, ss_hist{2});
 
