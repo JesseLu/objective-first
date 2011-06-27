@@ -102,7 +102,7 @@ p = p(:);
 x = reinsert(A(p) \ b(p));
 
 % Objective function and its gradient.
-[f, g] = em_physics_levelset(omega, phi2p, x); 
+[f, g] = em_physics_levelset_only(omega, phi2p, x); 
 
  
     %

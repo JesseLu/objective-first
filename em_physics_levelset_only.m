@@ -1,4 +1,4 @@
-function [f, g] = em_physics_levelset(omega, phi2p)
+function [f, g] = em_physics_levelset_only(omega, phi2p, x)
 
 
     %
@@ -20,9 +20,8 @@ B = @(x) i * omega * D_(x(1:2*N)) * A_spread;
 d = @(x) -Hcurl * x(2*N+1:3*N);
 
 % Physics residual.
-f = @(v) 0.5 * norm(field_template .* (A(phi2p(v.phi))*v.x))^2;
+f = @(phi) 0.5 * norm(field_template .* (A(phi2p(phi))*x))^2;
 
 % Gradient.
-g = @(v) struct('x', A(phi2p(v.phi))'*(A(phi2p(v.phi))*v.x), ...
-    'phi', B(v.x)'*(B(v.x)*phi2p(v.phi) - d(v.x)));
+g = @(phi) B(x)'*(B(x)*phi2p(phi) - d(x));
 
