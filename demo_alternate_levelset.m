@@ -77,10 +77,11 @@ v.phi = phi2;
 tic;
 fval = [];
 ss_hist = {[], []};
-    figure(1);
-    my_plot(v, phi2p, fval, ss_hist);
+figure(1);
+my_plot(v, phi2p, fval, ss_hist);
+
 for k = 1 : ceil(cgo_iters/interval)
-    [v, fval0, ss_hist0] = cgo_opt(f, g, c, v, interval, 2.^[-20:20]); 
+    [v, fval0, ss_hist0] = cgo_opt2(f, g, c, v, interval, 2.^[-20:20]); 
     % [v, fval0, ss_hist0] = opt(f, g, c, v, interval, 2.^[-20:20]); 
     fval = [fval, fval0];
     % ss_hist = [ss_hist, ss_hist0];
