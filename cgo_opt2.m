@@ -67,10 +67,16 @@ for k = 1 : max_iters
             else
                 ss_ind{l}(k) = ss_ind{l}(k) + 1;
 
-                % If we just tried smallest step, we are done! 
-                if (ss_ind{l}(k) > length(step_sizes))
+                % If we just tried both smallest steps, we are done! 
+                if (ss_ind{1}(end) > length(step_sizes)) & ...
+                    (ss_ind{2}(end) > length(step_sizes))
                     ss_hist{l}(k) = 0;
                     return
+                elseif (ss_ind{l}(end) > length(step_sizes))
+                    ss_ind{l}(k) = ss_ind{l}(k) - 1;
+                    ss_ind{l}(k+1) = ss_ind{l}(k);
+                    fval(k+1) = fval(k); 
+                    break
                 end
             end
         end
