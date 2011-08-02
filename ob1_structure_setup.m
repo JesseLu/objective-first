@@ -27,7 +27,7 @@ function [phi, phi2eps, phi_update] = ...
 %         of epsilon (permittivity) on the grid.
 % 
 %     PHI_UPDATE: Function handle.
-%         PHI_UPDATE(PHI, X) returns an updated level-set function which 
+%         PHI_UPDATE(X, PHI) returns an updated level-set function which 
 %         decreases the physics residual of the system.
 
        

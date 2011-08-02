@@ -65,7 +65,7 @@ path(path, '~/wave-tools/helper');
 
 % The input is the fundamental incoming waveguide mode on the left, and the
 % outgoing mode is the fundamental outgoing mode on the right.
-[x, x_update] = ob1_field_setup(omega, phi2eps(phi), ...
+[x, x_update] = ob1_field_setup(omega, phi, phi2eps, ...
     {'x-', 'in', 1}, {'x+', 'out', 1});
 
 
