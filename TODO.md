@@ -1,7 +1,8 @@
 Now...
 ======
 
-1.  pseudo-code the ob1_wgcoupler function.
+1. Code setup for structure
+1. Code setup for fields
 
 Next...
 =======

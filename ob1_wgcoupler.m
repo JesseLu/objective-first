@@ -21,7 +21,7 @@ function [phi, residuals] = ob1_wgcoupler(omega, epsilon, active_box)
 %         Unitless frequency.
 % 
 %     EPSILON: 2D array.
-%         The initial structure.
+%         The initial structure, which must be composed of only two materials.
 %        
 %     ACTIVE_BOX: 2-element array.
 %         ACTIVE_BOX(1) and ACTIVE_BOX(2) describe the width and height of the
@@ -34,6 +34,43 @@ function [phi, residuals] = ob1_wgcoupler(omega, epsilon, active_box)
 % 
 %     RESIDUALS: Vector.
 %         The value of the physics residual at every sub-iteration.
+% 
+% Notes
+%     Requires both lset-opt and wave-tools packages, both of which can be
+%     found at github.com/JesseLu.
 
+
+% Add access to the lset-opt and the wave-tools packages.
+path(path, '~/lset-opt/matlab');
+path(path, '~/wave-tools/em_bval_2dte');
+path(path, '~/wave-tools/helper');
+
+
+    % 
+    % Structure setup including:
+    %   * converting EPSILON to a valid phi (level-set function),
+    %   * determining the limiting values of EPSILON,
+    %   * forming the phi2eps conversion function, and
+    %   * forming the update structure function.
+    %
+
+[phi, phi2eps, phi_update] = ob1_structure_setup(omega, epsilon, active_box);
+
+
+    %
+    % Field setup including:
+    %   * determining the input and output waveguide modes, and
+    %   * forming the update field function.
+    %
+
+% The input is the fundamental incoming waveguide mode on the left, and the
+% outgoing mode is the fundamental outgoing mode on the right.
+[x, x_update] = ob1_field_setup(omega, phi2eps(phi), ...
+    {'x-', 'in', 1}, {'x+', 'out', 1});
+
+
+    %
+    % Perform the field and structure optimization.
+    %
 
 
