@@ -45,6 +45,8 @@ path(path, '~/lset-opt/matlab');
 path(path, '~/wave-tools/em_bval_2dte');
 path(path, '~/wave-tools/helper');
 
+dims = size(epsilon);
+
 
     % 
     % Structure setup including:
@@ -73,4 +75,12 @@ path(path, '~/wave-tools/helper');
     % Perform the field and structure optimization.
     %
 
+ob1_plot(x, phi2eps(phi), dims, 'quick');
 
+for k = 1 : 1e4
+    [x, res(k)] = x_update(x, phi);
+end
+ob1_plot(x, phi2eps(phi), dims, 'full');
+figure(3); semilogy(res);
+
+% phi_update(x, phi)

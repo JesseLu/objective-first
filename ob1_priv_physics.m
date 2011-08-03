@@ -3,6 +3,8 @@ function [A, B, d, A_spread] = ob1_priv_physics(omega, dims)
 % Description
 %     Form the underlying matrices (and vectors) that represent the physics.
 
+N = prod(dims);
+
 % Shortcut to form a derivative matrix.
 S_ = @(sx, sy) shift_mirror(dims, -[sx sy]); % Mirror boundary conditions.
 

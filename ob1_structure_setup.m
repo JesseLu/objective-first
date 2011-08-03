@@ -44,7 +44,7 @@ phi = lso_regularize(epsilon - mean(eps_lims));
     %
 
 [A, B, d, A_spread] = ob1_priv_physics(omega, size(phi));
-phi2eps = @(phi) A_spread * ...
+phi2eps = @(phi) ...
     reshape(diff(eps_lims)/2 * lso_fracfill(phi) + mean(eps_lims), ...
     numel(phi), 1);
 
@@ -53,4 +53,5 @@ phi2eps = @(phi) A_spread * ...
     % Form update function for phi.
     %
 
-phi_update = nan;
+phys_res = @(x, phi) norm(B(x) * phi2eps(phi) - d(x))^2;
+phi_update = phys_res;

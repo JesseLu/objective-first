@@ -33,8 +33,10 @@ N = prod(dims);
     %
 
 % Find epsilon.
-eps = phi2eps(phi);
+[A, B, d, A_spread] = ob1_priv_physics(omega, dims);
+eps = A_spread * phi2eps(phi);
 eps = struct('x', reshape(eps(1:N), dims), 'y', reshape(eps(N+1:2*N), dims));
+
 
 % Solve for the input and output waveguide modes.
 x = ob1_priv_wgmode(omega, eps, in{1}, in{2}, 0) + ...
@@ -42,7 +44,31 @@ x = ob1_priv_wgmode(omega, eps, in{1}, in{2}, 0) + ...
 
 
     %
+    % Form the physics residual function.
+    %
+
+phys_res = @(x, phi) norm(A(phi2eps(phi)) * x)^2;
+
+
+    %
     % Form the field update function based on gradient descent.
     %
 
-x_update = nan;
+tp = ones(dims);
+tp([1,dims(1)],:) = 0;
+tp(:,[1,dims(2)]) = 0;
+template = [tp(:); tp(:); tp(:)];
+x_update = @(x, phi) my_update_x(A(phi2eps(phi)), template, x);
+% fprintf('%e\n', phys_res(x, phi));
+
+
+function [x, res] = my_update_x(A, P, x)
+
+r = A * x; % Residual.
+g = P .* (A' * r); % Gradient.
+h = A * g; % Used to calculate step.
+s = (g'*g) / (h'*h); % supposed optimal step size.
+
+x = x - s * g;
+
+res = norm(A*x)^2;
