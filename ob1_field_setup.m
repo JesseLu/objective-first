@@ -25,18 +25,24 @@ function [x, x_update] = ob1_field_setup(omega, phi, phi2eps, in, out)
 %         X_UPDATE(X, PHI) returns X such that the physics residual is 
 %         decreased.
 
+dims = size(phi);
+N = prod(dims);
 
     %
     % Determine input and output waveguide modes, based on structure.
     %
 
 % Find epsilon.
+eps = phi2eps(phi);
+eps = struct('x', reshape(eps(1:N), dims), 'y', reshape(eps(N+1:2*N), dims));
 
 % Solve for the input and output waveguide modes.
-
-% For combined x with a guessed phase difference.
+x = ob1_priv_wgmode(omega, eps, in{1}, in{2}, 0) + ...
+    ob1_priv_wgmode(omega, eps, out{1}, out{2}, 0);
 
 
     %
     % Form the field update function based on gradient descent.
     %
+
+x_update = nan;
