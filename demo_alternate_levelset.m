@@ -104,8 +104,8 @@ dims = DIMS_;
 N = prod(dims);
 % figure(1); 
 plot_fields(dims, ...
-    {'Re(Ey)', real(v.x(N+1:2*N))}, {'|Ey|', abs(v.x(N+1:2*N))}, ...
-    {'p', phi2p(v.phi)});
+    {'|Hz|', abs(v.x(2*N+1:3*N))}, {'p', phi2p(v.phi)});
+
 
 % figure(2); cgo_visualize(fval, ss_hist);
 

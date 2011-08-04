@@ -77,10 +77,12 @@ dims = size(epsilon);
 
 ob1_plot(x, phi2eps(phi), dims, 'quick');
 
-for k = 1 : 1e4
-    [x, res(k)] = x_update(x, phi);
+for k = 1 : 1e3
+    [x, x_res(k)] = x_update(x, phi);
+    [phi, phi_res(k)] = phi_update(x, phi);
+    lso_plot(phi); pause(0.1);
 end
 ob1_plot(x, phi2eps(phi), dims, 'full');
-figure(3); semilogy(res);
+figure(3); semilogy([x_res; phi_res]');
 
 % phi_update(x, phi)

@@ -15,4 +15,4 @@ s_max = 1 / max(abs(nb(H_normal)));
 phi = phi - min([s, s_max]) * H_normal;
 % fprintf('phi step: %e\n', min([s, s_max]));
 
-[phi, err] = signed_distance(phi, 1e0); % Make phi more sdf-like.
+% [phi, err] = signed_distance(phi, 1e0); % Make phi more sdf-like.

@@ -54,12 +54,13 @@ phys_res = @(x, phi) norm(A(phi2eps(phi)) * x)^2;
     % Form the field update function based on gradient descent.
     %
 
-tp = ones(dims);
-tp([1,dims(1)],:) = 0;
-tp(:,[1,dims(2)]) = 0;
-template = [tp(:); tp(:); tp(:)];
+% Create template to hold border values constant.
+tp = zeros(dims);
+tp(2:end-1,2:end-1) = 1;
+template = repmat(tp(:), 3, 1);
+
+% Form the update x function.
 x_update = @(x, phi) my_update_x(A(phi2eps(phi)), template, x);
-% fprintf('%e\n', phys_res(x, phi));
 
 
 function [x, res] = my_update_x(A, P, x)
@@ -67,8 +68,7 @@ function [x, res] = my_update_x(A, P, x)
 r = A * x; % Residual.
 g = P .* (A' * r); % Gradient.
 h = A * g; % Used to calculate step.
-s = (g'*g) / (h'*h); % supposed optimal step size.
+s = (g'*g) / (h'*h); % Optimal step size (may have numerical error).
 
-x = x - s * g;
-
-res = norm(A*x)^2;
+x = x - s * g; % Update x.
+res = norm(A*x)^2; % New residual.
