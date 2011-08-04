@@ -1,4 +1,6 @@
 function demo_alternate_levelset(dims, cgo_iters, interval, savefile)
+% Try:
+%     demo_alternate_levelset([30 30], 1e4, 100, 'test.mat');
 
 path(path, '~/c-go'); % Make sure we have access to c-go.
 path(path, '~/level-set'); % Make sure we have access to level-set.
