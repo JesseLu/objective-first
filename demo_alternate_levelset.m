@@ -4,6 +4,7 @@ function demo_alternate_levelset(dims, cgo_iters, interval, savefile)
 
 path(path, '~/c-go'); % Make sure we have access to c-go.
 path(path, '~/level-set'); % Make sure we have access to level-set.
+path(path, '~/lset-opt/matlab'); % Make sure we have access to level-set.
 
 omega = 0.15; % Angular frequency of desired mode.
 
@@ -30,7 +31,8 @@ N = prod(dims);
     %
 
 lset_grid(dims);
-phi = lset_box([0 0], [1000 10]);
+phi = lset_union(lset_box([-dims(1)/2 0], [dims(1) 10]), ...
+    lset_box([0, -dims(2)/2], [10 dims(2)]));
 eta = lset_box([0 0], dims/2);
 % phi2 = lset_union(phi, (eta)); % filled.
 phi2 = lset_intersect(phi, lset_complement(eta));
@@ -59,7 +61,7 @@ c = @(v, dv, s) struct( 'x', v.x - s * (field_template .* dv.x), ...
 % c = @(v, dv, s) struct( 'x', v.x, ...
 %     'phi', levelset_step(v.phi, (eta2 < 0) .* reshape(real(dv.phi), dims), s)); 
 % Initial values.
-[Ex, Ey, Hz] = setup_border_vals({'x-', 'x+'}, omega, phi2eps(phi));
+[Ex, Ey, Hz] = setup_border_vals({'x-', 'y-'}, omega, phi2eps(phi));
 v.x = [Ex(:); Ey(:); Hz(:)];
 % randn('state', 1);
 % v.x = randn(size(v.x));

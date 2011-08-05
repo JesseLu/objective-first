@@ -16,3 +16,8 @@ phi = phi - min([s, s_max]) * H_normal;
 % fprintf('phi step: %e\n', min([s, s_max]));
 
 % [phi, err] = signed_distance(phi, 1e0); % Make phi more sdf-like.
+try
+    phi = lso_regularize(phi);
+catch
+    phi = lso_quickreg(phi);
+end

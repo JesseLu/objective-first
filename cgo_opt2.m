@@ -70,6 +70,7 @@ for k = 1 : max_iters
                 % If we just tried smallest step, we are done! 
                 if (ss_ind{l}(k) > length(step_sizes))
                     ss_hist{l}(k) = 0;
+                    fprintf('.');
                     return
                 end
             end
