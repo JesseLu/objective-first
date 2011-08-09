@@ -80,12 +80,11 @@ dims = size(epsilon);
 
 ob1_plot(x, phi2eps(phi), dims, 'quick');
 
-for k = 1 : 10 
+for k = 1 : 100 
     [x, x_res(k)] = x_update(x, phi);
     [phi, phi_res(k)] = phi_update(x, phi);
-    if (mod(k, 1) == 1)
+    if (mod(k, 1) == 0)
         ob1_plot(x, phi2eps(phi), dims, 'quick');
-        pause
     end
 end
 ob1_plot(x, phi2eps(phi), dims, 'full');

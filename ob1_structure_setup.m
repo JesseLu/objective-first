@@ -54,7 +54,7 @@ switch initial_option
     case 'empty-box' % Empty active box.
         epsilon = template * eps_lims(1) + (~template) .* epsilon; 
     case 'cheese' % Put cheese in the active box.
-        epsilon = template * lso_cheese(dims) + (~template) .* epsilon; 
+        epsilon = template .* (mean(eps_lims) + lso_cheese(dims)) + (~template) .* epsilon; 
     otherwise
         error('Invalid option for initial structure.');
 end
@@ -96,7 +96,7 @@ switch update_option
 
         dp = reshape(-s * g, size(phi));
 
-        phi = lso_update(phi, 1e-1 * dp, phys_res, 2.^[-40:10], P);
+        phi = lso_update(phi, 1e0 * dp, phys_res, 2.^[-40:10], P);
         phi = lso_quickreg(phi);
         res = phys_res(phi);
         fprintf('%e -> %e\n', norm(r)^2, res);
