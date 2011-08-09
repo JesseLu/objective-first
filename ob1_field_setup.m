@@ -1,4 +1,5 @@
-function [x, x_update] = ob1_field_setup(omega, phi, phi2eps, in, out)
+function [x, x_update] = ob1_field_setup(omega, phi, phi2eps, in, out, ...
+    initial_option, update_option)
 % [X, X_UPDATE] = OB1_FIELD_SETUP(OMEGA, PHI, PHI2EPS, IN, OUT)
 % 
 % Description
@@ -42,6 +43,13 @@ eps = struct('x', reshape(eps(1:N), dims), 'y', reshape(eps(N+1:2*N), dims));
 x = ob1_priv_wgmode(omega, eps, in{1}, in{2}, 0) + ...
     ob1_priv_wgmode(omega, eps, out{1}, out{2}, 0);
 
+% Determine the initial value for x.
+switch initial_option
+    case 'border-vals' % Start with only the boundary values.
+    case 'soft-solve' % Start with a full soft-solve of the field.
+    otherwise
+        error('Invalid option for initial field.');
+end
 
     %
     % Form the physics residual function.
@@ -60,15 +68,30 @@ tp(2:end-1,2:end-1) = 1;
 template = repmat(tp(:), 3, 1);
 
 % Form the update x function.
-x_update = @(x, phi) my_update_x(A(phi2eps(phi)), template, x);
+x_update = @(x, phi) my_update_x(A(phi2eps(phi)), template, x, update_option);
 
 
-function [x, res] = my_update_x(A, P, x)
+function [x, res] = my_update_x(A, P, x, update_option)
 
-r = A * x; % Residual.
-g = P .* (A' * r); % Gradient.
-h = A * g; % Used to calculate step.
-s = (g'*g) / (h'*h); % Optimal step size (may have numerical error).
+switch update_option
+    case 'gradient'
+        r = A * x; % Residual.
+        g = P .* (A' * r); % Gradient.
+        h = A * g; % Used to calculate step.
+        s = (g'*g) / (h'*h); % Optimal step size (may have numerical error).
 
-x = x - s * g; % Update x.
-res = norm(A*x)^2; % New residual.
+        x = x - s * g; % Update x.
+        res = norm(A*x)^2; % New residual.
+    case 'optimal'
+        % Create selection matrix for active elements of x.
+        ind = find(P);
+        m = length(ind);
+        S = sparse(1:m, ind, ones(m, 1), m, length(x));
+
+        x0 = ~P .* x; % Constant border of x.
+
+        x = (A * S') \ -x0;
+        x = S' * x + x0;
+
+        res = norm(A*x)^2; % New residual.
+end

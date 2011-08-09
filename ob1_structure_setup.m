@@ -1,5 +1,5 @@
-function [phi, phi2eps, phi_update] = ...
-    ob1_structure_setup(omega, epsilon, active_box)
+function [phi, phi2eps, phi_update] = ob1_structure_setup(omega, epsilon, ...
+    active_box, initial_option, update_option)
 % [PHI, PHI2EPS, PHI_UPDATE] = OB1_STRUCTURE_SETUP(OMEGA, EPSILON, ACTIVE_BOX)
 % 
 % Description
@@ -43,11 +43,22 @@ template(round((dims(1)-active_box(1))/2):round((dims(1)+active_box(1))/2), ...
 
        
     %
-    % Convert epsilon to a valid phi (level-set function).
+    % Convert epsilon to a valid initial phi (level-set function).
     %
 
 eps_lims = [min(epsilon(:)), max(epsilon(:))]; % Find min and max epsilon.
-epsilon = template * eps_lims(1) + (~template) .* epsilon; % Empty active box.
+
+% Modify the initial epsilon according to various options.
+switch initial_option
+    case 'full-struct' % Keep the full structure (don't change it).
+    case 'empty-box' % Empty active box.
+        epsilon = template * eps_lims(1) + (~template) .* epsilon; 
+    case 'cheese' % Put cheese in the active box.
+        epsilon = template * lso_cheese(dims) + (~template) .* epsilon; 
+    otherwise
+        error('Invalid option for initial structure.');
+end
+
 phi = lso_regularize(epsilon - mean(eps_lims)); % Convert to level-set function.
 
 
@@ -65,20 +76,30 @@ phi2eps = @(phi) ...
     % Form update function for phi.
     %
 
-phi_update = @(x, phi) my_phi_update(B(x), d(x), template, phi, phi2eps);
+phi_update = @(x, phi) my_phi_update(B(x), d(x), template, phi, phi2eps, ...
+    update_option);
 
 
-function [phi, res] = my_phi_update(B, d, P, phi, phi2eps)
 
-r = B * phi2eps(phi) - d; % Residual.
-g = real(P(:) .* (B' * r)); % Gradient.
-h = B * g; % Used to calculate step.
-s = (g'*g) / abs(h'*h); % Optimal step size (may have numerical error).
-
-dp = reshape(-s * g, size(phi));
+function [phi, res] = my_phi_update(B, d, P, phi, phi2eps, update_option)
 
 phys_res = @(phi) norm(B * phi2eps(phi) - d)^2;
-phi = lso_update(phi, 1e-1 * dp, phys_res, 2.^[-40:10], P);
-phi = lso_quickreg(phi);
-res = phys_res(phi);
-fprintf('%e -> %e\n', norm(r)^2, res);
+switch update_option
+    case 'fixed' % Don't change phi.
+        res = phys_res(phi);
+    case 'unbounded' % Gradient-descent, without level-sets.
+    case 'level-set' % Use level-sets.
+        r = B * phi2eps(phi) - d; % Residual.
+        g = real(P(:) .* (B' * r)); % Gradient.
+        h = B * g; % Used to calculate step.
+        s = (g'*g) / abs(h'*h); % Optimal step size (may have numerical error).
+
+        dp = reshape(-s * g, size(phi));
+
+        phi = lso_update(phi, 1e-1 * dp, phys_res, 2.^[-40:10], P);
+        phi = lso_quickreg(phi);
+        res = phys_res(phi);
+        fprintf('%e -> %e\n', norm(r)^2, res);
+    otherwise
+        error('Invalid option for structure update.');
+end

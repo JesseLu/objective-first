@@ -1,4 +1,5 @@
-function [phi, residuals] = ob1_wgcoupler(omega, epsilon, active_box)
+function [phi, residuals] = ...
+    ob1_wgcoupler(omega, epsilon, active_box, initial_options, update_options)
 % [PHI, RESIDUALS] = OB1_WGCOUPLER(OMEGA, EPSILON, ACTIVE_BOX)
 % 
 % Description
@@ -56,7 +57,8 @@ dims = size(epsilon);
     %   * forming the update structure function.
     %
 
-[phi, phi2eps, phi_update] = ob1_structure_setup(omega, epsilon, active_box);
+[phi, phi2eps, phi_update] = ob1_structure_setup(omega, epsilon, active_box, ...
+    initial_options{1}, update_options{1});
 
 
     %
@@ -68,7 +70,8 @@ dims = size(epsilon);
 % The input is the fundamental incoming waveguide mode on the left, and the
 % outgoing mode is the fundamental outgoing mode on the right.
 [x, x_update] = ob1_field_setup(omega, phi, phi2eps, ...
-    {'x-', 'in', 1}, {'x+', 'out', 1});
+    {'x-', 'in', 1}, {'x+', 'out', 1}, ...
+    initial_options{2}, update_options{2});
 
 
     %
@@ -77,15 +80,15 @@ dims = size(epsilon);
 
 ob1_plot(x, phi2eps(phi), dims, 'quick');
 
-for k = 1 : 1e3
+for k = 1 : 3
     [x, x_res(k)] = x_update(x, phi);
     [phi, phi_res(k)] = phi_update(x, phi);
-    % lso_plot(phi); pause(0.1);
     if (mod(k, 100) == 1)
         ob1_plot(x, phi2eps(phi), dims, 'quick');
     end
 end
 ob1_plot(x, phi2eps(phi), dims, 'full');
-figure(3); semilogy([x_res; phi_res]');
+figure(3); semilogy([x_res; phi_res]', '.-');
+x_res
 
 % phi_update(x, phi)
