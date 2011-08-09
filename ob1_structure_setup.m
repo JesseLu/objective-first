@@ -65,19 +65,20 @@ phi2eps = @(phi) ...
     % Form update function for phi.
     %
 
-phi_update = @(x, phi) my_phi_update(B(x), d(x), 1 + 0*template(:), phi, phi2eps);
+phi_update = @(x, phi) my_phi_update(B(x), d(x), template, phi, phi2eps);
 
 
 function [phi, res] = my_phi_update(B, d, P, phi, phi2eps)
 
 r = B * phi2eps(phi) - d; % Residual.
-g = real(P .* (B' * r)); % Gradient.
+g = real(P(:) .* (B' * r)); % Gradient.
 h = B * g; % Used to calculate step.
 s = (g'*g) / abs(h'*h); % Optimal step size (may have numerical error).
 
 dp = reshape(-s * g, size(phi));
 
 phys_res = @(phi) norm(B * phi2eps(phi) - d)^2;
-phi = lso_update(phi, dp, phys_res, Inf, 2.^[-40:10]);
+phi = lso_update(phi, 1e-1 * dp, phys_res, 2.^[-40:10], P);
+phi = lso_quickreg(phi);
 res = phys_res(phi);
 fprintf('%e -> %e\n', norm(r)^2, res);
