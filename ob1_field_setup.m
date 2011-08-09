@@ -90,7 +90,7 @@ switch update_option
 
         x0 = ~P .* x; % Constant border of x.
 
-        x = (A * S') \ -x0;
+        x = (A * S') \ (-A * x0);
         x = S' * x + x0;
 
         res = norm(A*x)^2; % New residual.

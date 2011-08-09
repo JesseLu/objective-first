@@ -11,3 +11,8 @@ Next...
 
 1.  Fix bug in multiplication factor for dp.
 1.  Update documentation.
+
+Later...
+========
+
+1.  Implement use of higher-order waveguide modes.
