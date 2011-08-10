@@ -66,10 +66,15 @@ phi = lso_regularize(epsilon - mean(eps_lims)); % Convert to level-set function.
     % Form phi to epsilon conversion function.
     %
 
+% A hack, to enable direct optimization of epsilon.
 [A, B, d, A_spread] = ob1_priv_physics(omega, size(phi));
 phi2eps = @(phi) ...
     reshape(diff(eps_lims)/2 * lso_fracfill(phi) + mean(eps_lims), ...
     numel(phi), 1);
+if ~strcmp(update_option, 'level-set')
+    phi = reshape(phi2eps(phi), size(phi));
+    phi2eps = @(phi) phi(:);
+end
 
        
     %
@@ -87,7 +92,18 @@ phys_res = @(phi) norm(B * phi2eps(phi) - d)^2;
 switch update_option
     case 'fixed' % Don't change phi.
         res = phys_res(phi);
-    case 'unbounded' % Gradient-descent, without level-sets.
+    case 'unbounded' % direct minimization of esilon (unbounded).
+        % Create selection matrix for active elements of epsilon.
+        phys_res(phi)
+        P = P(:);
+        ind = find(P);
+        m = length(ind);
+        S = sparse(1:m, ind, ones(m, 1), m, numel(phi));
+
+        eps0 = ~P .* phi2eps(phi);
+        eps = (B * S') \ (d - B * eps0);
+        phi = reshape(S' * eps + eps0, size(phi));
+        res = phys_res(phi)
     case 'level-set' % Use level-sets.
         r = B * phi2eps(phi) - d; % Residual.
         g = real(P(:) .* (B' * r)); % Gradient.

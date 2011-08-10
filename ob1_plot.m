@@ -25,3 +25,5 @@ switch option
             {'Im(Ey)', imag(Ey)}, {'Im(Hz)', imag(Hz)}, ...
             {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});
 end
+
+drawnow;
