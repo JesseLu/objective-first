@@ -83,6 +83,7 @@ fval = [];
 ss_hist = {[], []};
 figure(1);
 my_plot(v, phi2p, fval, ss_hist);
+pause
 
 for k = 1 : ceil(cgo_iters/interval)
     [v, fval0, ss_hist0] = cgo_opt2(f, g, c, v, interval, 2.^[-20:20]); 
@@ -94,6 +95,7 @@ for k = 1 : ceil(cgo_iters/interval)
     my_plot(v, phi2p, fval, ss_hist);
     save(savefile, 'v', 'fval', 'ss_hist');
     fprintf('%d: %e\n', k*interval, fval(end));
+    pause;
 end
 fprintf('%e, ', f(v)); toc
 
