@@ -43,14 +43,6 @@ eps = struct('x', reshape(eps(1:N), dims), 'y', reshape(eps(N+1:2*N), dims));
 x = ob1_priv_wgmode(omega, eps, in{1}, in{2}, 0) + ...
     ob1_priv_wgmode(omega, eps, out{1}, out{2}, 0);
 
-% Determine the initial value for x.
-switch initial_option
-    case 'border-vals' % Start with only the boundary values.
-    case 'soft-solve' % Start with a full soft-solve of the field.
-    otherwise
-        error('Invalid option for initial field.');
-end
-
     %
     % Form the physics residual function.
     %
@@ -69,6 +61,15 @@ template = repmat(tp(:), 3, 1);
 
 % Form the update x function.
 x_update = @(x, phi) my_update_x(A(phi2eps(phi)), template, x, update_option);
+
+% Determine the initial value for x.
+switch initial_option
+    case 'border-vals' % Start with only the boundary values.
+    case 'soft-solve' % Start with a full soft-solve of the field.
+        x = my_update_x(A(phi2eps(phi)), template, x, 'optimal');
+    otherwise
+        error('Invalid option for initial field.');
+end
 
 
 function [x, res] = my_update_x(A, P, x, update_option)
