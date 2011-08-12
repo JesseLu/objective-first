@@ -1,7 +1,7 @@
 Now...
 ======
 
-1.  Get waveguide to work with H-fields only.
+1.  Get field and structure residuals to match.
 
 Next...
 =======

@@ -43,6 +43,7 @@ eps = struct('x', reshape(eps(1:N), dims), 'y', reshape(eps(N+1:2*N), dims));
 x = ob1_priv_wgmode(omega, eps, in{1}, in{2}) + ...
     ob1_priv_wgmode(omega, eps, out{1}, out{2});
 
+
     %
     % Form the physics residual function.
     %
@@ -56,8 +57,8 @@ phys_res = @(x, phi) norm(A(phi2eps(phi)) * x)^2;
 
 % Create template to hold border values constant.
 tp = zeros(dims);
-tp(2:end-1,2:end-1) = 1;
-template = repmat(tp(:), 3, 1);
+tp(3:end-2,3:end-2) = 1;
+template = repmat(tp(:), 1, 1);
 
 % Form the update x function.
 x_update = @(x, phi) my_update_x(A(phi2eps(phi)), template, x, update_option);

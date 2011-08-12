@@ -21,14 +21,27 @@ end
 
 switch in_out
     case 'in'
-        phase = -phase;
+        phase_pol = -1;
     case 'out'
-        phase = phase;
+        phase_pol = 1;
 end
 
 % Insert single mode into empty 2D array.
-[Ex, Ey, Hz] = mode_insert(mode, edge, in_out, phase);
+[Ex, Ey, Hz] = mode_insert(mode, edge, in_out, phase_pol * phase);
 
-x = [Ex(:); Ey(:); Hz(:)];
+% Double up
+x = Hz(:);
+
+switch edge
+    case 'x-'
+        shift = 1;
+        dp = -phase_pol * mode.beta;
+    case 'x+'
+        shift = -1;
+        dp = -phase_pol * mode.beta;
+end
+
+ind = find(x);
+x(ind+shift) = x(ind) * exp(i * dp);
 
 clear global DIMS_
