@@ -78,9 +78,8 @@ dims = size(epsilon);
     % Perform the field and structure optimization.
     %
 
-ob1_plot(x, phi2eps(phi), dims, 'quick');
 
-for k = 1 : 1e4
+for k = 1 : 1e1
     [x, x_res(k)] = x_update(x, phi);
     [phi, phi_res(k)] = phi_update(x, phi);
     if (mod(k, 1e1) == 1)
