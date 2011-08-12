@@ -40,8 +40,8 @@ eps = struct('x', reshape(eps(1:N), dims), 'y', reshape(eps(N+1:2*N), dims));
 
 
 % Solve for the input and output waveguide modes.
-x = ob1_priv_wgmode(omega, eps, in{1}, in{2}, 0) + ...
-    ob1_priv_wgmode(omega, eps, out{1}, out{2}, 0);
+x = ob1_priv_wgmode(omega, eps, in{1}, in{2}) + ...
+    ob1_priv_wgmode(omega, eps, out{1}, out{2});
 
     %
     % Form the physics residual function.

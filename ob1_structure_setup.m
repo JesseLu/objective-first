@@ -112,7 +112,7 @@ switch update_option
 
         dp = reshape(-s * g, size(phi));
 
-        phi = lso_update(phi, 1e0 * dp, phys_res, 2.^[-40:0], P);
+        phi = lso_update(phi, 1e0 * dp, phys_res, 2.^[-10:0], P);
         phi = lso_quickreg(phi);
         res = phys_res(phi);
         % fprintf('%e -> %e\n', norm(r)^2, res);
