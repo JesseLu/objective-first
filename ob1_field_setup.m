@@ -35,7 +35,7 @@ N = prod(dims);
 
 % Find epsilon.
 [A, B, d, A_spread] = ob1_priv_physics(omega, dims);
-eps = A_spread * phi2eps(phi);
+eps = 1./(A_spread * phi2eps(phi));
 eps = struct('x', reshape(eps(1:N), dims), 'y', reshape(eps(N+1:2*N), dims));
 
 

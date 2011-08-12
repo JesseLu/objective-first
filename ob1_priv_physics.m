@@ -20,7 +20,7 @@ A_spread = 0.5 * [S_(0,0)+S_(1,0); S_(0,0)+S_(0,1)];
 
 % Matrix for the field.
 % A = @(epsilon) [Ecurl, -i*omega*speye(N); i*omega*D_(A_spread*epsilon), Hcurl];
-A = @(epsilon) Ecurl * D_(A_spread*(epsilon.^-1)) * Hcurl - omega^2 * speye(N);
+A = @(epsilon) Ecurl * D_(A_spread*epsilon) * Hcurl - omega^2 * speye(N);
 
 % Matrix and vector for structure.
 B = @(x) Ecurl * D_(Hcurl * x) * A_spread; 

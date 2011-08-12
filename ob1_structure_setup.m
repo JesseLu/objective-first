@@ -46,20 +46,22 @@ template(round((dims(1)-active_box(1))/2):round((dims(1)+active_box(1))/2), ...
     % Convert epsilon to a valid initial phi (level-set function).
     %
 
-eps_lims = [min(epsilon(:)), max(epsilon(:))]; % Find min and max epsilon.
+eps_lims = [max(epsilon(:)), min(epsilon(:))]; % Find min and max epsilon.
 
 % Modify the initial epsilon according to various options.
 switch initial_option
     case 'full-struct' % Keep the full structure (don't change it).
     case 'empty-box' % Empty active box.
-        epsilon = template * eps_lims(1) + (~template) .* epsilon; 
+        epsilon = template * eps_lims(2) + (~template) .* epsilon; 
     case 'cheese' % Put cheese in the active box.
-        epsilon = template .* (mean(eps_lims) + lso_cheese(dims)) + (~template) .* epsilon; 
+        epsilon = template .* (mean(eps_lims) + lso_cheese(dims)) + ...
+            (~template) .* epsilon; 
     otherwise
         error('Invalid option for initial structure.');
 end
 
-phi = lso_regularize(epsilon - mean(eps_lims)); % Convert to level-set function.
+% Convert to level-set function.
+phi = lso_regularize(1./epsilon - mean(1./eps_lims)); 
 
 
     %
@@ -69,8 +71,9 @@ phi = lso_regularize(epsilon - mean(eps_lims)); % Convert to level-set function.
 % A hack, to enable direct optimization of epsilon.
 [A, B, d, A_spread] = ob1_priv_physics(omega, size(phi));
 phi2eps = @(phi) ...
-    reshape(diff(eps_lims)/2 * lso_fracfill(phi) + mean(eps_lims), ...
+    reshape((diff(1./eps_lims)/2 * lso_fracfill(phi) + mean(1./eps_lims)), ...
     numel(phi), 1);
+
 if ~strcmp(update_option, 'level-set')
     phi = reshape(phi2eps(phi), size(phi));
     phi2eps = @(phi) phi(:);
