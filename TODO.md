@@ -1,7 +1,7 @@
 Now...
 ======
 
-1.  Write some theory and change to H-only.
+1.  Get waveguide to work with H-fields only.
 
 Next...
 =======
