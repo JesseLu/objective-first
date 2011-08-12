@@ -1,8 +1,10 @@
 Now...
 ======
 
-1. Get the unbounded-optimal iteration to work.
+1.  Correct the struvture derivative.
+1.  Write simulater to test stuff.
 
 Next...
 =======
 
+1.  Document and clean-up this code mess!

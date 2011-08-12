@@ -7,7 +7,7 @@ N = prod(dims);
 % Hz = reshape(x(2*N+1:3*N), dims);
 Hz = reshape(x, dims);
 
-e = reshape(epsilon, dims);
+e = reshape(1./epsilon, dims);
 % ex = reshape(epsilon(1:N), dims);
 % ey = reshape(epsilon(N+1:2*N), dims);
 

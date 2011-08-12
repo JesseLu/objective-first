@@ -54,7 +54,7 @@ switch initial_option
     case 'empty-box' % Empty active box.
         epsilon = template * eps_lims(2) + (~template) .* epsilon; 
     case 'cheese' % Put cheese in the active box.
-        epsilon = template .* (mean(eps_lims) + lso_cheese(dims)) + ...
+        epsilon = template .* (mean(eps_lims) + diff(eps_lims)/2*lso_cheese(dims)) + ...
             (~template) .* epsilon; 
     otherwise
         error('Invalid option for initial structure.');
@@ -91,13 +91,17 @@ phi_update = @(x, phi) my_phi_update(B(x), d(x), template, phi, phi2eps, ...
 
 function [phi, res] = my_phi_update(B, d, P, phi, phi2eps, update_option)
 
-phys_res = @(phi) norm(B * phi2eps(phi) - d)^2;
+tp = zeros(size(phi));
+tp(3:end-2,3:end-2) = 1;
+template = repmat(tp(:), 1, 1);
+
+phys_res = @(phi) norm(template.*(B * phi2eps(phi) - d))^2;
 switch update_option
     case 'fixed' % Don't change phi.
         res = phys_res(phi);
     case 'unbounded' % direct minimization of esilon (unbounded).
         % Create selection matrix for active elements of epsilon.
-        phys_res(phi)
+        % phys_res(phi)
         P = P(:);
         ind = find(P);
         m = length(ind);
@@ -106,7 +110,7 @@ switch update_option
         eps0 = ~P .* phi2eps(phi);
         eps = (B * S') \ (d - B * eps0);
         phi = reshape(S' * eps + eps0, size(phi));
-        res = phys_res(phi)
+        res = phys_res(phi);
     case 'level-set' % Use level-sets.
         r = B * phi2eps(phi) - d; % Residual.
         g = real(P(:) .* (B' * r)); % Gradient.

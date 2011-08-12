@@ -76,6 +76,8 @@ end
 function [x, res] = my_update_x(A, P, x, update_option)
 
 switch update_option
+    case 'fixed'
+        res = norm(P.*(A*x))^2; % New residual.
     case 'gradient'
         r = A * x; % Residual.
         g = P .* (A' * r); % Gradient.
@@ -83,7 +85,7 @@ switch update_option
         s = (g'*g) / (h'*h); % Optimal step size (may have numerical error).
 
         x = x - s * g; % Update x.
-        res = norm(A*x)^2; % New residual.
+        res = norm(P.*(A*x))^2; % New residual.
     case 'optimal'
         % Create selection matrix for active elements of x.
         ind = find(P);
@@ -95,5 +97,5 @@ switch update_option
         x = (A * S') \ (-A * x0);
         x = S' * x + x0;
 
-        res = norm(A*x)^2; % New residual.
+        res = norm(P.*(A*x))^2; % New residual.
 end

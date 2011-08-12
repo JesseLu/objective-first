@@ -58,7 +58,7 @@ dims = size(epsilon);
     %
 
 [phi, phi2eps, phi_update] = ob1_structure_setup(omega, epsilon, active_box, ...
-    initial_options{1}, update_options{1});
+    'full-struct', update_options{1});
 
 
     %
@@ -73,16 +73,18 @@ dims = size(epsilon);
     {'x-', 'in', 1}, {'x+', 'out', 1}, ...
     initial_options{2}, update_options{2});
 
+[phi, phi2eps, phi_update] = ob1_structure_setup(omega, epsilon, active_box, ...
+    initial_options{1}, update_options{1});
 
     %
     % Perform the field and structure optimization.
     %
 
 
-for k = 1 : 1e1
+for k = 1 : 1e2
     [x, x_res(k)] = x_update(x, phi);
     [phi, phi_res(k)] = phi_update(x, phi);
-    if (mod(k, 1e1) == 1)
+    if (mod(k, 1e0)+1 == 1)
         ob1_plot(x, phi2eps(phi), dims, 'quick');
         fprintf('%d: %e %e\n', k, x_res(k), phi_res(k));
     end
