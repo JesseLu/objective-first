@@ -1,4 +1,4 @@
-function ob1_plot(x, epsilon, dims, option)
+function ob1_plot(x, p, dims, option)
 
 N = prod(dims);
 
@@ -7,7 +7,7 @@ N = prod(dims);
 % Hz = reshape(x(2*N+1:3*N), dims);
 Hz = reshape(x, dims);
 
-e = reshape(1./epsilon, dims);
+e = reshape(1./p, dims);
 % ex = reshape(epsilon(1:N), dims);
 % ey = reshape(epsilon(N+1:2*N), dims);
 

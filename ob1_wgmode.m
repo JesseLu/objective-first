@@ -1,8 +1,9 @@
-function [x] = ob1_priv_wgmode(omega, eps, edge, in_out)
+function [x] = ob1_wgmode(omega, eps, edge, in_out)
 % 
 % Description
 %     Solve for a particular waveguide mode at the edge of the grid.
 
+path(path, '~/wave-tools/em_bval_2dte');
 
 global DIMS_
 DIMS_ = size(eps.x);
