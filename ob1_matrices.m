@@ -1,4 +1,4 @@
-function [A, S] = ob1_setup_matrices(dims, active_box)
+function [A, S] = ob1_matrices(dims, active_box)
 
 path(path, '~/wave-tools/helper');
 

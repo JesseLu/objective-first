@@ -7,7 +7,7 @@ omega = 0.15;
     % Form matrices.
     %
 
-[A, S] = ob1_setup_matrices(dims, dims/2);
+[A, S] = ob1_matrices(dims, dims/2);
 
 
     % 
@@ -31,9 +31,19 @@ eps = struct('x', reshape(eps(1:N), dims), 'y', reshape(eps(N+1:2*N), dims));
 x0 = ob1_wgmode(omega, eps, 'x-', 'in') + ...
     ob1_wgmode(omega, eps, 'x+', 'out');
 
+
+    %
+    % Optimize.
+    %
+
 D_ = @(z) sparse(1:length(z), 1:length(z), z, length(z), length(z));
 
-Ahat = A{1} * D_(A{2} * p0) * A{3} - omega^2 * speye(N); 
-x = (Ahat * S.x) \ -(Ahat * x0);
+A_x = A{1} * D_(A{2} * p0) * A{3} - omega^2 * speye(N); 
+x = (A_x * S.x) \ -(A_x * x0);
 x = S.x * x + x0;
-ob1_plot(x, p0, dims, 'quick');
+
+A_p = A{1} * D_(A{3} * x) * A{2};
+b_p = omega^2 * x;
+p = (A_p * S.p) \ (b_p - A_p * p0);
+p = S.p * p + p0;
+ob1_plot(x, p, dims, 'quick');
