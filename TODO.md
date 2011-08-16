@@ -1,7 +1,6 @@
 Now...
 ======
 
-1.  Optimize with capped values of epsilon.
 1.  Build simulator to test stuff.
 
 Issues
