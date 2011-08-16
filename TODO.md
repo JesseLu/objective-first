@@ -1,10 +1,8 @@
 Now...
 ======
 
-1.  Correct the struvture derivative.
-1.  Write simulater to test stuff.
+1.  Write function to convert everything to linear algebra.
 
 Next...
 =======
 
-1.  Document and clean-up this code mess!
