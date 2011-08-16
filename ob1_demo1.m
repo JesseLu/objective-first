@@ -17,6 +17,8 @@ omega = 0.15;
 % Form a simple waveguide.
 epsilon = ones(dims);
 epsilon(:,(dims(2)-10)/2:(dims(2)+10)/2) = 12.25;
+epsilon((dims(1)-10)/2:(dims(1)+10)/2, :) = 12.25;
+% epsilon(dims(1)/3:2*dims(1)/3, :) = 1.0;
 
 p0 = 1 ./ epsilon(:);
 
@@ -55,8 +57,8 @@ fprintf('%d: %e, ', k, phys_res(x, p));
 
 A_hat = A_p * S.p;
 b_hat = b_p - A_p * p0;
-p = (A_p * S.p) \ (b_p - A_p * p0);
-% p = real(A_hat' * A_hat) \ real(A_hat' * b_hat);
+% p = (A_p * S.p) \ (b_p - A_p * p0);
+p = real(A_hat' * A_hat) \ real(A_hat' * b_hat);
 p = S.p * p + p0;
 
 fprintf('%e\n', phys_res(x, p));

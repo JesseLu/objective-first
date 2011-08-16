@@ -20,7 +20,7 @@ A{3} = [(S_(0,0)-S_(0,-1)); -(S_(0,0)-S_(-1,0))]; % Curl for H-field.
 
 S.x = my_selection(dims, [2 2]);
 S.p = my_selection(dims, ceil((dims - active_box) / 2));
-S.r = my_selection(dims, [2 2]);
+S.r = my_selection(dims, [1 1]);
 
 
 
