@@ -18,14 +18,15 @@ A{3} = [(S_(0,0)-S_(0,-1)); -(S_(0,0)-S_(-1,0))]; % Curl for H-field.
     % Form selection matrices, used to select active elements of x and p.
     %
 
-my_sel = @(ind) sparse(ind, 1:length(ind), ones(length(ind), 1), ...
-    prod(dims), length(ind));
+S.x = my_selection(dims, [2 2]);
+S.p = my_selection(dims, ceil((dims - active_box) / 2));
+S.r = my_selection(dims, [2 2]);
 
-S.x = zeros(dims);
-S.x(3:end-2, 3:end-2) = 1;
-S.x = my_sel(find(S.x));
 
-b = ceil((dims - active_box) / 2);
-S.p = zeros(dims);
-S.p(b(1)+1:end-b(1), b(2)+1:end-b(2)) = 1;
-S.p = my_sel(find(S.p));
+
+function [S] = my_selection(dims, border)
+S = zeros(dims);
+S(border(1)+1:end-border(1), border(2)+1:end-border(2)) = 1;
+ind = find(S);
+n = length(ind);
+S =  sparse(ind, 1:n, ones(n,1), prod(dims), n);
