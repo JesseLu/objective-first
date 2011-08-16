@@ -1,4 +1,4 @@
-function ob1_demo1(dims, num_iters)
+function [epsilon] =  ob1_demo1(dims, num_iters)
 
 N = prod(dims);
 omega = 0.15;
@@ -76,3 +76,5 @@ for k = 1 : num_iters
     fprintf('%e\n', phys_res(x, p));
     ob1_plot(x, p, dims, 'quick');
 end
+
+epsilon = reshape(1./p, dims);
