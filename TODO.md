@@ -1,7 +1,6 @@
 Now...
 ======
 
-1.  Build simulator to test stuff.
 
 Issues
 =======

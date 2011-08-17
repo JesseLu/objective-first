@@ -1,8 +1,10 @@
-function [epsilon] =  ob1_demo1(dims, num_iters)
+function [epsilon] =  ob1_demo1(dims, num_iters, option)
 
 N = prod(dims);
 omega = 0.15;
 path(path, genpath('~/lumos/cvx'));
+path(path, genpath('~/lset-opt/matlab'));
+
 
     %
     % Form matrices.
@@ -17,12 +19,14 @@ path(path, genpath('~/lumos/cvx'));
 
 % Form a simple waveguide.
 epsilon = ones(dims);
-epsilon(:,(dims(2)-10)/2:(dims(2)+10)/2) = 12.25;
-epsilon((dims(1)-10)/2:(dims(1)+10)/2,:) = 12.25;
-epsilon(dims(1)/3:2*dims(1)/3, :) = 12.25;
+epsilon(:,(dims(2)-6)/2:(dims(2)+6)/2) = 12.25;
 
-% p0 = 1 ./ (epsilon(:) - (S.p * S.p') * (epsilon(:) - 1));
-p0 = 1 ./ epsilon(:);
+% Add lso_cheese where we can vary p.
+
+cheese = (12.25-1)/2 * lso_cheese(dims) + 20;
+p0 = 1 ./ (epsilon(:) - (S.p * S.p') * (epsilon(:) - cheese(:)));
+p0 = (p0 < 1/12.25) * (1/12.25) + (p0 > 1) + ((p0 <= 1) & (p0 >= 1/12.25)) .* p0;
+% p0 = 1 ./ epsilon(:);
 
     
     % 
@@ -77,4 +81,5 @@ for k = 1 : num_iters
     ob1_plot(x, p, dims, 'quick');
 end
 
+% Export epsilon.
 epsilon = reshape(1./p, dims);
