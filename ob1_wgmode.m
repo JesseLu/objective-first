@@ -39,6 +39,12 @@ switch edge
     case 'x+'
         shift = -1;
         dp = -phase_pol * mode.beta;
+    case 'y-'
+        shift = dims(1);
+        dp = -phase_pol * mode.beta;
+    case 'y+'
+        shift = -dims(1);
+        dp = -phase_pol * mode.beta;
 end
 
 ind = find(x);

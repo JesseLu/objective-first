@@ -20,3 +20,8 @@ path('~/wave-tools/em_2dte', path);
 
 figure(3); 
 plot_fields(dims, {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});
+
+Dx = eps.x .* Ex;
+Dy = eps.y .* Ey;
+figure(4);
+plot_fields(dims, {'|Dx|', abs(Dx)}, {'|Dy|', abs(Dy)}, {'|Hz|', abs(Hz)});

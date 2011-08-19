@@ -1,32 +1,23 @@
-function [epsilon] =  ob1_demo1(dims, num_iters, option)
+function [epsilon] =  ob1_demo1(omega, epsilon, eps_lims, out_dir, num_iters, options)
 
+dims = size(epsilon);
 N = prod(dims);
-omega = 0.15;
 path(path, genpath('~/lumos/cvx'));
-path(path, genpath('~/lset-opt/matlab'));
 
 
     %
     % Form matrices.
     %
 
-[A, S] = ob1_matrices(dims, dims/2);
+[A, S] = ob1_matrices(dims, dims-4);
 
 
     % 
     % Get initial value of p.
     %
 
-% Form a simple waveguide.
-epsilon = ones(dims);
-epsilon(:,(dims(2)-6)/2:(dims(2)+6)/2) = 12.25;
-
-% Add lso_cheese where we can vary p.
-
-cheese = (12.25-1)/2 * lso_cheese(dims) + 20;
-p0 = 1 ./ (epsilon(:) - (S.p * S.p') * (epsilon(:) - cheese(:)));
-p0 = (p0 < 1/12.25) * (1/12.25) + (p0 > 1) + ((p0 <= 1) & (p0 >= 1/12.25)) .* p0;
-% p0 = 1 ./ epsilon(:);
+% Start with maximum epsilon within active box.
+p0 = 1 ./ (epsilon(:) - (S.p * S.p') * (epsilon(:) - eps_lims(2)));
 
     
     % 
@@ -36,8 +27,9 @@ p0 = (p0 < 1/12.25) * (1/12.25) + (p0 > 1) + ((p0 <= 1) & (p0 >= 1/12.25)) .* p0
 eps = A{2} * epsilon(:);
 eps = struct('x', reshape(eps(1:N), dims), 'y', reshape(eps(N+1:2*N), dims));
 
-x0 = ob1_wgmode(omega, eps, 'x-', 'in') + ...
-    ob1_wgmode(omega, eps, 'x+', 'out');
+mode = {ob1_wgmode(omega, eps, 'x-', 'in'), ...
+    ob1_wgmode(omega, eps, out_dir, 'out')};
+x0 = mode{1} + mode{2};
 
 
     %
@@ -48,24 +40,47 @@ x0 = ob1_wgmode(omega, eps, 'x-', 'in') + ...
 D_ = @(z) sparse(1:length(z), 1:length(z), z, length(z), length(z));
 
 % Physics residual calculation.
-phys_res = @(x, p) norm(S.r' * (A{1} * D_(A{2} * p) * A{3} * x - omega^2 * x))^2;
+phys_res = @(x, p) ...
+    norm(S.r' * (A{1} * D_(A{2} * p) * A{3} * x - omega^2 * x))^2;
 
+% Setup for the optimization.
 p = p0;
+theta = 0;
+dtheta = [-1 : 1] * options(1);
+
+% Optimize!
 for k = 1 : num_iters
 
-    % Solve sub-problem for field.
-    A_x = A{1} * D_(A{2} * p) * A{3} - omega^2 * speye(N); 
-    x = (A_x * S.x) \ -(A_x * x0);
-    x = S.x * x + x0;
-    fprintf('%d: %e, ', k, phys_res(x, p));
+        %
+        % Solve sub-problem for field.
+        %
 
-    % Solve sub-problem for structure.
+    % A_x = A{1} * D_(A{2} * p) * A{3} - omega^2 * speye(N) + eta * D_(env(:)); 
+    A_x = S.r' * (A{1} * D_(A{2} * p) * A{3} - omega^2 * speye(N));
+
+    % Try (slightly) different phases.
+    for l = 1 : length(dtheta)
+        phase = theta + dtheta(l);
+        x0 = mode{1} * exp(-i * phase/2) + mode{2} * exp(i * phase/2);
+        X{l} = (A_x * S.x) \ -(A_x * x0);
+        X{l} = S.x * X{l} + x0;
+        res(l) = phys_res(X{l}, p);
+    end
+    [temp, ind] = min(res);
+    x = X{ind};
+    theta = theta + dtheta(ind);
+    fprintf('%d: [%1.3f] %e, ', k, theta, phys_res(x, p));
+
+
+        %
+        % Solve sub-problem for structure.
+        %
+
     A_p = A{1} * D_(A{3} * x) * A{2};
     b_p = omega^2 * x;
 
     A_hat = A_p * S.p;
     b_hat = b_p - A_p * p0;
-    % p = (A_p * S.p) \ (b_p - A_p * p0);
     
     cvx_quiet(true);
     cvx_begin
@@ -78,6 +93,11 @@ for k = 1 : num_iters
     p = S.p * p + p0;
 
     fprintf('%e\n', phys_res(x, p));
+
+        %
+        % Plot results and update.
+        %
+
     ob1_plot(x, p, dims, 'quick');
 end
 
