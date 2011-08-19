@@ -15,12 +15,15 @@ switch name
         epsilon(dims(1)/2:end,(dims(2)-w(2))/2:(dims(2)+w(2))/2) = 2.25;
 
     case 'mim'
-        w = [10 4];
+        w = [10 dims(2)/2 4];
         epsilon(1:dims(1)/2,(dims(2)-w(1))/2:(dims(2)+w(1))/2) = 12.25;
 
-        epsilon(dims(1)/2:end,:) = -3;
-        epsilon(dims(1)/2:end,(dims(2)-w(2))/2:(dims(2)+w(2))/2) = 1.0;
+        epsilon(dims(1)/2:end,(dims(2)-w(2))/2:(dims(2)+w(2))/2) = -3.0;
+        epsilon(end-1:end,:) = -15.0;
+        epsilon(dims(1)/2:end,(dims(2)-w(3))/2:(dims(2)+w(3))/2) = 1.0;
 
+        epsilon(:,:) = -15.0;
+        epsilon(:,(dims(2)-w(3))/2:(dims(2)+w(3))/2) = 1.0;
     otherwise
         error('Invalid option for input parameter NAME.');
 end

@@ -29,9 +29,10 @@ end
 % Insert single mode into empty 2D array.
 [Ex, Ey, Hz] = mode_insert(mode, edge, in_out, phase_pol * phase);
 
-% Double up
+% Double up on the magnetic fields.
 x = Hz(:);
 
+% Find the required phase relations.
 switch edge
     case 'x-'
         shift = 1;
@@ -47,7 +48,14 @@ switch edge
         dp = -phase_pol * mode.beta;
 end
 
+% Implement the added phase.
 ind = find(x);
 x(ind+shift) = x(ind) * exp(i * dp);
 
 clear global DIMS_
+
+% Plot the mode.
+subplot 131; plot(abs(mode.El));
+subplot 132; plot(abs(mode.Et));
+subplot 133; plot(abs(mode.Ht));
+pause;
