@@ -1,6 +1,11 @@
 Now...
 ======
 
+1.  Get E-field to work.
+
+Next...
+=======
+
 1.  Bring in mode-solving and simulation files into this repository.
 1.  Merge back into H-field branch.
 1.  Merge back into master.
