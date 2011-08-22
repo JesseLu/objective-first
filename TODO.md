@@ -3,7 +3,6 @@ Status
 
 Seems to work...sorta. Residual easily gets stuck around 2e-2 but maybe that's okay?
 
-
 Now...
 ======
 
