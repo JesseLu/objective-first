@@ -17,14 +17,14 @@ path(path, genpath('~/lumos/cvx'));
     %
 
 % Start with maximum epsilon within active box.
-p0 = 1 ./ (epsilon(:) - (S.p * S.p') * (epsilon(:) - eps_lims(2)));
+p0 = (epsilon(:) - (S.p * S.p') * (epsilon(:) - eps_lims(2)));
 
     
     % 
     % Get initial value of x.
     %
 
-eps = A{2} * epsilon(:);
+eps = A.spread * epsilon(:);
 eps = struct('x', reshape(eps(1:N), dims), 'y', reshape(eps(N+1:2*N), dims));
 
 mode = {ob1_wgmode(omega, eps, 'x-', 'in'), ...
@@ -41,12 +41,15 @@ D_ = @(z) sparse(1:length(z), 1:length(z), z, length(z), length(z));
 
 % Physics residual calculation.
 phys_res = @(x, p) ...
-    norm(S.r' * (A{1} * D_(A{2} * p) * A{3} * x - omega^2 * x))^2;
+    norm(S.r' * (A.hcurl * A.ecurl * x - omega^2 * D_(A.spread * p) * x))^2;
 
 % Setup for the optimization.
 p = p0;
 theta = 0;
 dtheta = [-1 : 1] * options(1);
+
+    ob1_plot(x0, p0, dims, 'quick');
+    pause
 
 % Optimize!
 for k = 1 : num_iters
@@ -56,7 +59,8 @@ for k = 1 : num_iters
         %
 
     % A_x = A{1} * D_(A{2} * p) * A{3} - omega^2 * speye(N) + eta * D_(env(:)); 
-    A_x = S.r' * (A{1} * D_(A{2} * p) * A{3} - omega^2 * speye(N));
+    % A_x = S.r' * (A{1} * D_(A{2} * p) * A{3} - omega^2 * speye(N));
+    A_x = S.r' * (A.hcurl * A.ecurl - omega^2 * D_(A.spread * p));
 
     % Try (slightly) different phases.
     for l = 1 : length(dtheta)
@@ -76,8 +80,8 @@ for k = 1 : num_iters
         % Solve sub-problem for structure.
         %
 
-    A_p = A{1} * D_(A{3} * x) * A{2};
-    b_p = omega^2 * x;
+    A_p = D_(x) * A.spread;
+    b_p = A.hcurl * A.ecurl * x;
 
     A_hat = A_p * S.p;
     b_hat = b_p - A_p * p0;
@@ -87,8 +91,8 @@ for k = 1 : num_iters
         variable p(size(A_hat,2))
         minimize norm(A_hat * p - b_hat)
         subject to
-            p >= 1/12.25 - S.p' * p0
-            p <= 1 - S.p' * p0
+            p <= 12.25 - S.p' * p0
+            p >= 1 - S.p' * p0
     cvx_end
     p = S.p * p + p0;
 
