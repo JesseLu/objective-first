@@ -12,7 +12,7 @@ dims = size(epsilon);
 n = numel(epsilon);
 
 [A, S] = ob1_matrices(dims, 0);
-eps = A{2} * epsilon(:);
+eps = A.spread * epsilon(:);
 eps = struct('x', reshape(eps(1:n), dims), 'y', reshape(eps(n+1:2*n), dims));
 
 path('~/wave-tools/em_2dte', path);

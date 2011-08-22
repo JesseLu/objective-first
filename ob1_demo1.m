@@ -46,8 +46,8 @@ phys_res = @(x, p) ...
 % Setup for the optimization.
 x = x0;
 p = p0;
-theta = 0;
-dtheta = [-1 : 1] * options(1);
+eta = options(1);
+deta = options(2);
 
 ob1_plot(x, p, dims, 'quick');
 
@@ -65,7 +65,7 @@ for k = 1 : num_iters
 
     % x = (A_x * S.x) \ -(A_x * x0);
     x = ob1_priv_lseq(A_x * S.x, -(A_x * x0), ...
-        A_div * S.x, -A_div * x0);
+        A_div * S.x, -A_div * x0, eta);
     x = S.x * x + x0;
     fprintf('%d: (%e) %e, ', k, norm(A_div * x), phys_res(x, p));
 
@@ -97,6 +97,7 @@ for k = 1 : num_iters
         %
 
     ob1_plot(x, p, dims, 'quick');
+    eta = eta * deta;
 
 end
 

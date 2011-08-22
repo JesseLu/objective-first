@@ -1,7 +1,8 @@
 Status
 ======
 
-Doesn't seem to work since we can't always decrease the residual. This is because we force the field values to have zero-divergence.
+Seems to work...sorta. Residual easily gets stuck around 2e-2 but maybe that's okay?
+
 
 Now...
 ======

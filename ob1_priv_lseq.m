@@ -1,6 +1,6 @@
-function [x] = ob1_priv_lseq(A, b, C, d)
+function [x] = ob1_priv_lseq(A, b, C, d, eta)
 
-Ahat = [A'*A, C'; C, zeros(size(C,1))];
+Ahat = [A'*A+eta*speye(size(A,2)), C'; C, zeros(size(C,1))];
 bhat = [A'*b; d];
 
 z = Ahat \ bhat;
