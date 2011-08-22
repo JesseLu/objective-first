@@ -44,16 +44,15 @@ phys_res = @(x, p) ...
     norm(S.r' * (A.hcurl * A.ecurl * x - omega^2 * D_(A.spread * p) * x))^2;
 
 % Setup for the optimization.
+x = x0;
 p = p0;
 theta = 0;
 dtheta = [-1 : 1] * options(1);
 
-    ob1_plot(x0, p0, dims, 'quick');
-    pause
+ob1_plot(x, p, dims, 'quick');
 
 % Optimize!
 for k = 1 : num_iters
-
         %
         % Solve sub-problem for field.
         %
@@ -61,26 +60,21 @@ for k = 1 : num_iters
     % A_x = A{1} * D_(A{2} * p) * A{3} - omega^2 * speye(N) + eta * D_(env(:)); 
     % A_x = S.r' * (A{1} * D_(A{2} * p) * A{3} - omega^2 * speye(N));
     A_x = S.r' * (A.hcurl * A.ecurl - omega^2 * D_(A.spread * p));
+    A_div = S.d' * A.div * D_(A.spread * p);
+    % A_x = [A_x, A.div'; A.div, sparse(N, N)];
 
-    % Try (slightly) different phases.
-    for l = 1 : length(dtheta)
-        phase = theta + dtheta(l);
-        x0 = mode{1} * exp(-i * phase/2) + mode{2} * exp(i * phase/2);
-        X{l} = (A_x * S.x) \ -(A_x * x0);
-        X{l} = S.x * X{l} + x0;
-        res(l) = phys_res(X{l}, p);
-    end
-    [temp, ind] = min(res);
-    x = X{ind};
-    theta = theta + dtheta(ind);
-    fprintf('%d: [%1.3f] %e, ', k, theta, phys_res(x, p));
+    % x = (A_x * S.x) \ -(A_x * x0);
+    x = ob1_priv_lseq(A_x * S.x, -(A_x * x0), ...
+        A_div * S.x, -A_div * x0);
+    x = S.x * x + x0;
+    fprintf('%d: (%e) %e, ', k, norm(A_div * x), phys_res(x, p));
 
 
         %
         % Solve sub-problem for structure.
         %
 
-    A_p = D_(x) * A.spread;
+    A_p = omega^2 * D_(x) * A.spread;
     b_p = A.hcurl * A.ecurl * x;
 
     A_hat = A_p * S.p;
@@ -99,10 +93,11 @@ for k = 1 : num_iters
     fprintf('%e\n', phys_res(x, p));
 
         %
-        % Plot results and update.
+        % Plot results.
         %
 
     ob1_plot(x, p, dims, 'quick');
+
 end
 
 % Export epsilon.

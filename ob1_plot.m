@@ -22,7 +22,8 @@ switch option
 
         figure(2);
         plot_fields(dims, ...
-            {'Re(Hz)', real(Hz)}, {'Im(Hz)', imag(Hz)}, {'|Hz|', abs(Hz)});
+            {'Re(Ex)', real(Ex)}, {'Im(Ex)', imag(Ex)}, {'|Ex|', abs(Ex)}, ...
+            {'Re(Ey)', real(Ey)}, {'Im(Ey)', imag(Ey)}, {'|Ey|', abs(Ey)});
 end
 
 drawnow;
