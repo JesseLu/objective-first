@@ -1,7 +1,7 @@
 Now...
 ======
 
-1.  Make the "feed-in" epsilon system.
+1.  Bring in mode-solving and simulation files into this repository.
 1.  Merge back into H-field branch.
 1.  Merge back into master.
 1.  Try various other couplers: 
