@@ -1,4 +1,5 @@
-function [epsilon] =  ob1_demo1(omega, epsilon, eps_lims, out_dir, num_iters, options)
+function [epsilon] =  ob1_demo1(omega, epsilon, eps_lims, out_dir, ...
+    mode_nums, num_iters, options)
 
 dims = size(epsilon);
 N = prod(dims);
@@ -17,7 +18,7 @@ path(path, genpath('~/lumos/cvx'));
     %
 
 % Start with maximum epsilon within active box.
-p0 = 1 ./ (epsilon(:) - (S.p * S.p') * (epsilon(:) - eps_lims(2)));
+p0 = 1 ./ (epsilon(:) - (S.p * S.p') * (epsilon(:) - options(1)));
 
     
     % 
@@ -27,8 +28,8 @@ p0 = 1 ./ (epsilon(:) - (S.p * S.p') * (epsilon(:) - eps_lims(2)));
 eps = A{2} * epsilon(:);
 eps = struct('x', reshape(eps(1:N), dims), 'y', reshape(eps(N+1:2*N), dims));
 
-mode = {ob1_wgmode(omega, eps, 'x-', 'in'), ...
-    ob1_wgmode(omega, eps, out_dir, 'out')};
+mode = {ob1_wgmode(omega, eps, 'x-', 'in', mode_nums(1)), ...
+    ob1_wgmode(omega, eps, out_dir, 'out', mode_nums(2))};
 x0 = mode{1} + mode{2};
 
 
@@ -45,8 +46,7 @@ phys_res = @(x, p) ...
 
 % Setup for the optimization.
 p = p0;
-theta = 0;
-dtheta = [-1 : 1] * options(1);
+ob1_plot(x0, p, dims, 'quick', 0);
 
 % Optimize!
 for k = 1 : num_iters
@@ -59,17 +59,9 @@ for k = 1 : num_iters
     A_x = S.r' * (A{1} * D_(A{2} * p) * A{3} - omega^2 * speye(N));
 
     % Try (slightly) different phases.
-    for l = 1 : length(dtheta)
-        phase = theta + dtheta(l);
-        x0 = mode{1} * exp(-i * phase/2) + mode{2} * exp(i * phase/2);
-        X{l} = (A_x * S.x) \ -(A_x * x0);
-        X{l} = S.x * X{l} + x0;
-        res(l) = phys_res(X{l}, p);
-    end
-    [temp, ind] = min(res);
-    x = X{ind};
-    theta = theta + dtheta(ind);
-    fprintf('%d: [%1.3f] %e, ', k, theta, phys_res(x, p));
+    x = (A_x * S.x) \ -(A_x * x0);
+    x = S.x * x + x0;
+    fprintf('%d: %e, ', k, phys_res(x, p));
 
 
         %
@@ -98,7 +90,7 @@ for k = 1 : num_iters
         % Plot results and update.
         %
 
-    ob1_plot(x, p, dims, 'quick');
+    ob1_plot(x, p, dims, 'quick', k);
 end
 
 % Export epsilon.

@@ -1,4 +1,4 @@
-function ob1_plot(x, p, dims, option)
+function ob1_plot(x, p, dims, option, varargin)
 
 N = prod(dims);
 
@@ -25,3 +25,8 @@ switch option
 end
 
 drawnow;
+
+if ~isempty(varargin)
+    % Make a picture
+    saveas(gcf, ['temp/plot', num2str(1e4+varargin{1}), '.png']);
+end

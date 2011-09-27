@@ -1,15 +1,15 @@
-function [x] = ob1_wgmode(omega, eps, edge, in_out)
+function [x] = ob1_wgmode(omega, eps, edge, in_out, mode_num)
 % 
 % Description
 %     Solve for a particular waveguide mode at the edge of the grid.
 
-path('~/wave-tools/em_bval_2dte', path);
+path('./mode', path);
 global DIMS_
 DIMS_ = size(eps.x);
 dims = size(eps.x);
 
 % Find mode.
-mode = mode_solve(mode_cutout(eps, edge), omega, edge);
+mode = mode_solve(mode_cutout(eps, edge), omega, edge, mode_num);
 
 % Determine phase.
 switch edge(1)
