@@ -8,7 +8,25 @@ global DIMS_
 Ex = zeros(DIMS_);
 Ey = zeros(DIMS_);
 Hz = zeros(DIMS_);
-
+% 
+% 
+% switch (side)
+%     case '-x'
+%         Hz(x,y) = mode.Mt;
+%         Hz(x+1,y) = -mode.Mt * exp(-i * mode.beta);
+% 
+%     case '+x'
+%         Hz(x,y) = mode.Mt;
+%         Hz(x-1,y) = -mode.Mt * exp(-i * mode.beta);
+% 
+%     case '-y'
+%         Hz(x,y) = mode.Mt;
+%         Hz(x,y+1) = -mode.Mt * exp(-i * mode.beta);
+% 
+%     case '+y'
+%         Hz(x,y) = mode.Mt;
+%         Hz(x,y-1) = -mode.Mt * exp(-i * mode.beta);
+% end
 % Add the spatial-delay incurred by the offset in the Yee grid.
 d_phase = exp(i * mode.beta * 0.5);
 

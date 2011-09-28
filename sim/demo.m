@@ -1,12 +1,25 @@
-function [Ex, Ey, Hz] = sim_epsilon(omega, epsilon, dir)
+% DEMO
+% 
+% Excite the fundamental mode of a silicon waveguide surrounded by air.
+help demo
 
-dims = size(epsilon.x);
+
+    %
+    % Some optimization parameters.
+    %
+
+dims = [80 80]; % Size of the grid.
 N = prod(dims);
+
+eps_lo = 1.0; % Relative permittivity of air.
+eps_hi = 12.25; % Relative permittivity of silicon.
+
+omega = 0.2; % Angular frequency of desired mode.
 
 pml_thick = 10; % Thickness of pml.
 
 % Set the device boundary.
-dev.dims = round(dims/2);
+dev.dims = [40 40];
 dev.offset = round((dims - dev.dims)/2);
 
 
@@ -28,10 +41,26 @@ MY_DEVICE = dev;
 
 
     %
+    % Form the initial structure.
+    %
+
+lset_grid(dims);
+phi = lset_box([0 0], [10 1000]);
+phi = lset_complement(phi);
+
+% Initialize phi, and create conversion functions.
+[phi, phi2p, phi2e, p2e, e2p, phi_smooth] = ...
+    setup_levelset(phi, eps_lo, eps_hi, 1e-3);
+
+% lset_plot(phi); pause % Use to visualize the initial structure.
+
+
+    %
     % Find the input and output modes.
     %
 
-input = mode_solve(mode_cutout(epsilon, dir), omega, dir);
+dir = '-y';
+input = mode_solve(mode_cutout(phi2e(phi), dir), omega, dir);
 [Jx, Jy, M] = mode_insert(input, dir);
 J = [Jx, Jy];
 
@@ -41,10 +70,10 @@ J = [Jx, Jy];
     %
 
 % Obtain physics matrix.
-[A, b, E2H] = setup_physics(dims, omega, pml_thick);
+[A, b, E2H] = setup_physics(dims, omega, pml_thick, p2e, e2p);
 
 % Solve.
-x = A(epsilon) \ b(J,M);
+x = A(phi2e(phi)) \ b(J,M);
 
 % Back-out field components.
 Ex = reshape(x(1:N), dims);
@@ -57,7 +86,7 @@ Hz = reshape(E2H(x), dims);
     %
 
 % Plot the structure.
-eps = epsilon;
+eps = phi2e(phi);
 figure(1); plot_fields(dims, {'\epsilon_x', eps.x}, {'\epsilon_y', eps.y});
 
 % Plot the fields.

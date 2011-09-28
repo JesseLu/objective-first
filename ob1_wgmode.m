@@ -3,7 +3,6 @@ function [x] = ob1_wgmode(omega, eps, edge, in_out, mode_num)
 % Description
 %     Solve for a particular waveguide mode at the edge of the grid.
 
-path('./mode', path);
 global DIMS_
 DIMS_ = size(eps.x);
 dims = size(eps.x);
@@ -54,8 +53,8 @@ x(ind+shift) = x(ind) * exp(i * dp);
 
 clear global DIMS_
 
-% Plot the mode.
-subplot 131; plot(abs(mode.El));
-subplot 132; plot(abs(mode.Et));
-subplot 133; plot(abs(mode.Ht));
-pause;
+% % Plot the mode.
+% subplot 131; plot(abs(mode.El));
+% subplot 132; plot(abs(mode.Et));
+% subplot 133; plot(abs(mode.Ht));
+% pause;

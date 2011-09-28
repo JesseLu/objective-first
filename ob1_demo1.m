@@ -4,6 +4,9 @@ function [epsilon] =  ob1_demo1(omega, epsilon, eps_lims, out_dir, ...
 dims = size(epsilon);
 N = prod(dims);
 path(path, genpath('~/lumos/cvx'));
+path('mode', path);
+
+global OB1_EPS
 
 
     %
@@ -91,6 +94,10 @@ for k = 1 : num_iters
         %
 
     ob1_plot(x, p, dims, 'quick', k);
+
+    % Save epsilon to global variable (in case function aborts).
+    OB1_EPS = reshape(1./p, dims);
+
 end
 
 % Export epsilon.

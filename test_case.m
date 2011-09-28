@@ -14,7 +14,7 @@ switch name
         epsilon((1.3*dims(1)-w)/2:(1.3*dims(1)+w)/2, 1:dims(2)/2) = 12.25;
 
     case 'fiber'
-        w = [6 0.8*dims(2)];
+        w = [10 0.6*dims(2)];
         epsilon(1:dims(1)/2,(dims(2)-w(1))/2:(dims(2)+w(1))/2) = 12.25;
         epsilon(dims(1)/2:end,(dims(2)-w(2))/2:(dims(2)+w(2))/2) = 2.25;
 
