@@ -1,8 +1,13 @@
 Now...
 ======
 
-1. Code setup for structure
-1. Code setup for fields
+1.  Fix mode insert.
+1.  Figure out how to find plasmonic wg mode.
+1.  Save results to hdf5 file.
+1.  Learn how to do progressive start.
 
-Next...
+Issues
 =======
+
+
+
