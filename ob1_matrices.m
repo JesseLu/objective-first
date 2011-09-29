@@ -21,7 +21,6 @@ S.p = my_selection(dims, ceil((dims - active_box) / 2));
 S.r = my_selection(dims, [1 1]);
 
 
-
 function [S] = my_selection(dims, border)
 S = zeros(dims);
 S(border(1)+1:end-border(1), border(2)+1:end-border(2)) = 1;

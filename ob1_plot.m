@@ -13,7 +13,8 @@ e = reshape(1./p, dims);
 
 switch option
     case 'quick'
-        plot_fields(dims, {'\epsilon', e}, {'Im(Hz)', imag(Hz)}, {'|Hz|', abs(Hz)});
+        plot_fields(dims, {'\epsilon', e}, {'Im(Hz)', imag(Hz)}, ...
+            {'|Hz|', abs(Hz)});
         
     case 'full'
         figure(1);
