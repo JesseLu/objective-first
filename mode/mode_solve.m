@@ -22,7 +22,7 @@ end
 D_ = @(x) spdiags(x(:), 0, numel(x), numel(x)); % Diagonalization function.
 
 % Shortcut to form a derivative matrix.
-S = @(sx, sz) shift_circle(size(eps.x), -[sx sz]); % Mirror boundary conditions.
+S = @(sx, sz) shift_mirror(size(eps.x), -[sx sz]); % Mirror boundary conditions.
 
 div = S(0,0) - S(-1,0); % Divergence.
 grad = S(1,0) - S(0,0); % Gradient.
@@ -45,7 +45,7 @@ E2Hy = @(Ex, Ey, beta) 1 / (i*omega) * (i * beta * Ex - grad * Ey);
 [V, C] = eig(full(A));
 
 % Obtain the wave-vector (beta) and the transverse field.
-[beta2, ind] = sort(diag(C), 'descend');
+[beta2, ind] = sort(real(diag(C)), 'descend');
 beta = sqrt(beta2(mode_num));
 Ex = V(:,ind(mode_num));
 
@@ -74,7 +74,7 @@ Hy = E2Hy(Ex, Ez, beta);
     % Normalize power (Poynting vector) to 1.
     %
 
-P = sum(Ex .* Hy);
+P = abs(sum(sign(eps.x) .* Ex .* Hy));
 Ex = Ex ./ sqrt(P);
 Ez = Ez ./ sqrt(P);
 Hy = Hy ./ sqrt(P);

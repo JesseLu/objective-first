@@ -34,6 +34,8 @@ MY_DEVICE = dev;
 input = mode_solve(mode_cutout(epsilon, dir), omega, dir);
 [Jx, Jy, M] = mode_insert(input, dir);
 J = [Jx, Jy];
+plot(imag([input.Jt(:), input.Jl(:), input.Mt(:)]), '.-')
+pause
 
 
     %

@@ -53,8 +53,8 @@ x(ind+shift) = x(ind) * exp(i * dp);
 
 clear global DIMS_
 
-% % Plot the mode.
-% subplot 131; plot(abs(mode.El));
-% subplot 132; plot(abs(mode.Et));
-% subplot 133; plot(abs(mode.Ht));
-% pause;
+% Plot the mode.
+subplot 131; plot(imag(mode.El));
+subplot 132; plot(real(mode.Et));
+subplot 133; plot(real(mode.Ht));
+pause;

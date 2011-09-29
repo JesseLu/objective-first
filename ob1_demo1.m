@@ -1,5 +1,5 @@
 function [epsilon] =  ob1_demo1(omega, epsilon, eps_lims, out_dir, ...
-    mode_nums, num_iters, options)
+    mode_nums, num_iters, varargin)
 
 dims = size(epsilon);
 N = prod(dims);
@@ -20,8 +20,12 @@ global OB1_EPS
     % Get initial value of p.
     %
 
-% Start with maximum epsilon within active box.
-p0 = 1 ./ (epsilon(:) - (S.p * S.p') * (epsilon(:) - options(1)));
+if isempty(varargin)
+    p0 = 1 ./ epsilon(:);
+else
+    % Manually determine epsilon within active box.
+    p0 = 1 ./ (epsilon(:) - (S.p * S.p') * (epsilon(:) - varargin{1}));
+end
 
     
     % 

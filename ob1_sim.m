@@ -27,6 +27,7 @@ eps = struct('x', reshape(eps(1:n), dims), 'y', reshape(eps(n+1:2*n), dims));
 
 figure(3); 
 plot_fields(dims, {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});
+% plot_fields(dims, {'|Ex|', real(Ex)}, {'|Ey|', real(Ey)}, {'|Hz|', real(Hz)});
 
 % Dx = eps.x .* Ex;
 % Dy = eps.y .* Ey;
