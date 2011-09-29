@@ -43,9 +43,16 @@ E2Hy = @(Ex, Ey, beta) 1 / (i*omega) * (i * beta * Ex - grad * Ey);
 
 % Solve the eigenproblem.
 [V, C] = eig(full(A));
-
+% b = diag(C)
+% 
+% for k = 1 : size(V, 2)
+%     plot((V(:,k)), '.-')
+%     b(k)
+% 
+%     pause
+% end
 % Obtain the wave-vector (beta) and the transverse field.
-[beta2, ind] = max(diag(C));
+[beta2, ind] = max(real(diag(C)));
 beta = sqrt(beta2);
 Ex = V(:,ind);
 
