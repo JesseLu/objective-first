@@ -1,4 +1,4 @@
-function [Ex, Ey, Hz] = sim_epsilon(omega, epsilon, dir)
+function [Ex, Ey, Hz] = sim_epsilon(omega, epsilon, dir, mode_num)
 
 dims = size(epsilon.x);
 N = prod(dims);
@@ -31,7 +31,7 @@ MY_DEVICE = dev;
     % Find the input and output modes.
     %
 
-input = mode_solve(mode_cutout(epsilon, dir), omega, dir);
+input = mode_solve(mode_cutout(epsilon, dir), omega, dir, mode_num);
 [Jx, Jy, M] = mode_insert(input, dir);
 J = [Jx, Jy];
 plot(imag([input.Jt(:), input.Jl(:), input.Mt(:)]), '.-')

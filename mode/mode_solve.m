@@ -22,7 +22,7 @@ end
 D_ = @(x) spdiags(x(:), 0, numel(x), numel(x)); % Diagonalization function.
 
 % Shortcut to form a derivative matrix.
-S = @(sx, sz) shift_mirror(size(eps.x), -[sx sz]); % Mirror boundary conditions.
+S = @(sx, sz) shift_circle(size(eps.x), -[sx sz]); % Mirror boundary conditions.
 
 div = S(0,0) - S(-1,0); % Divergence.
 grad = S(1,0) - S(0,0); % Gradient.

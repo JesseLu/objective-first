@@ -22,8 +22,7 @@ n = numel(epsilon);
 eps = A{2} * epsilon(:);
 eps = struct('x', reshape(eps(1:n), dims), 'y', reshape(eps(n+1:2*n), dims));
 
-% [Ex, Ey, Hz] = sim_epsilon(omega, eps, 'x-', mode_num);
-[Ex, Ey, Hz] = sim_epsilon(omega, eps, '-x');
+[Ex, Ey, Hz] = sim_epsilon(omega, eps, '-x', mode_num);
 
 figure(3); 
 plot_fields(dims, {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});

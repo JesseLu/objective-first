@@ -18,6 +18,36 @@ switch name
         epsilon(1:dims(1)/2,(dims(2)-w(1))/2:(dims(2)+w(1))/2) = 12.25;
         epsilon(dims(1)/2:end,(dims(2)-w(2))/2:(dims(2)+w(2))/2) = 2.25;
 
+    case 'air-core-only'
+        l = 30;
+        qw_air = round(l/4);
+        qw_si = round(qw_air/3.5);
+        eps = [ones(1, qw_air), 12.25*ones(1, qw_si)];
+        % Create quarter-wavelength stack.
+        epsilon = repmat(eps, 1, ceil(dims(2)/2/(qw_air + qw_si))); 
+        epsilon = epsilon(1:dims(2)/2); % Trim.
+        epsilon = [epsilon(end:-1:1), epsilon]; % Mirror, to create cavity.
+
+        % Stretch out to fill space.
+        epsilon = repmat(epsilon, dims(1), 1);
+
+    case 'air-core'
+        % Frequency of 0.25 recommended, relevant mode is #10.
+        w = 10;
+        epsilon(:,(dims(2)-w)/2:(dims(2)+w)/2) = 12.25;
+
+        l = 30;
+        qw_air = round(l/4);
+        qw_si = round(qw_air/3.5);
+        eps = [ones(1, qw_air), 12.25*ones(1, qw_si)];
+        % Create quarter-wavelength stack.
+        epsilon1 = repmat(eps, 1, ceil(dims(2)/2/(qw_air + qw_si))); 
+        epsilon1 = epsilon1(1:dims(2)/2); % Trim.
+        epsilon1 = [epsilon1(end:-1:1), epsilon1]; % Mirror, to create cavity.
+
+        % Stretch out to fill space.
+        epsilon(end-1:end,:)  = repmat(epsilon1, 2, 1);
+
     case 'mim'
         w = [30 4];
         epsilon(:,(dims(2)-w(1))/2:(dims(2)+w(1))/2) = 12.25;

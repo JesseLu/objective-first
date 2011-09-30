@@ -1,4 +1,4 @@
-function [mode] = mode_solve(eps, omega, dir)
+function [mode] = mode_solve(eps, omega, dir, mode_num)
 
 
     %
@@ -43,18 +43,34 @@ E2Hy = @(Ex, Ey, beta) 1 / (i*omega) * (i * beta * Ex - grad * Ey);
 
 % Solve the eigenproblem.
 [V, C] = eig(full(A));
+
 % b = diag(C)
-% 
+% [temp, ind] = sort(b, 'descend');
+% subplot 111;
 % for k = 1 : size(V, 2)
-%     plot((V(:,k)), '.-')
-%     b(k)
+%     plot((V(:,ind(k))), '.-')
+%     sqrt(b(ind(k)))
 % 
 %     pause
 % end
+
+% % Use this to plot air-core mode.
+% b = (diag(C))
+% [temp, ind] = min(b + (b < 0) * 1e9)
+% plot(V(:,ind), '.-')
+% sqrt(b(ind))
+% pause
+% 
+
+fprintf('number of propagating modes: %d\n', sum(diag(C) > 0))
+
+
+
+
 % Obtain the wave-vector (beta) and the transverse field.
-[beta2, ind] = max(real(diag(C)));
-beta = sqrt(beta2);
-Ex = V(:,ind);
+[beta2, ind] = sort(real(diag(C)), 'descend');
+beta = sqrt(beta2(mode_num));
+Ex = V(:,ind(mode_num));
 
 % Simple scheme to remove arbitrary coefficients/phases in the field.
 if (abs(max(Ex)) < abs(min(Ex)))
