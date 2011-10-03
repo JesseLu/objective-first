@@ -32,3 +32,15 @@ plot_fields(dims, {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});
 % Dy = eps.y .* Ey;
 % figure(4);
 % plot_fields(dims, {'|Dx|', abs(Dx)}, {'|Dy|', abs(Dy)}, {'|Hz|', abs(Hz)});
+
+
+% Extra plotting for postdeadline Fios submission.
+figure(4);
+dims = size(epsilon)
+plot_fields([160 100], {'', real(Ey(21:180,31:130))})
+
+figure(5);
+imagesc(reshape(real(epsilon(21:180,31:130)), [160 100])'); axis equal tight;
+set(gca, 'YDir', 'normal');
+cmap = colormap('bone');
+colormap(cmap(end:-1:1,:));

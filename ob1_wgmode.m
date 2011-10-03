@@ -53,8 +53,15 @@ x(ind+shift) = x(ind) * exp(i * dp);
 
 clear global DIMS_
 
-% Plot the mode.
-subplot 131; plot(imag(mode.El));
-subplot 132; plot(real(mode.Et));
-subplot 133; plot(real(mode.Ht));
+% % Plot the mode.
+% subplot 131; plot(imag(mode.El));
+% subplot 132; plot(real(mode.Et));
+% subplot 133; plot(real(mode.Ht));
+% pause;
+
+% Plotting for fios.
+subplot 111;
+area(1:length(mode.Et), real(mode.Et));
+c = 1.5 * max(abs(mode.Et));
+axis([0 length(mode.Et)+1 -c c])
 pause;
