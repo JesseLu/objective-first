@@ -75,13 +75,15 @@ A = Ecurl * inv_eps * Hcurl - spec.omega^2 * speye(prod(dims));
 % For one-way excitation in the forward (to the right) direction,
 % we simple cancel out excitation in the backward (left) direction.
 b = zeros(dims);
+% b(round(dims(1)/2), :) = 1
 b(round(dims(1)/2), pad(3)+1:end-pad(4)) = spec.in.Hz;
+
 % b(round(pad(1)/2), pad(3)+1:end-pad(4)) = spec.in.Hz;
 % b(round(pad(1)/2)-1, pad(3)+1:end-pad(4)) = -spec.in.Hz * ...
 %                                             exp(i * spec.in.beta);
 
 % Normalization factor so that the input power is unity.
-b = spec.omega / (1 - exp(-i * 2 * spec.in.beta)) / 2 * b;
+% b = spec.omega / (1 - exp(-i * 2 * spec.in.beta)) / 2 * b;
 
 
     %
@@ -99,6 +101,8 @@ Hz = reshape(Hz, dims);
 
 max(abs(Hz(:)))
 
+subplot 121; imagesc(real(Hz)')
 subplot 121; imagesc(abs(Hz)')
+subplot 121; plot(real(Hz(:,48)), '.-')
 subplot 122; plot(abs(Hz(:,48)), '.-')
 % subplot 121; plot([eps_x(dims(2)/2,:);eps_y(dims(2)/2,:)]', '.-');

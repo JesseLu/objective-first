@@ -45,7 +45,7 @@ beta = sqrt(beta2);
 % Sort the mode profiles.
 Hz = V(:,ind);
 
-% Orient them so that the largest magnitude element is always positive.
+% Orient modes so that the largest magnitude element is always positive.
 Hz = Hz * diag((max(Hz) > max(-Hz)) - (max(Hz) <= max(-Hz)));
 
 % Calculate Ey.
