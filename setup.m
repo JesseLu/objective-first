@@ -12,7 +12,9 @@ function [spec] = setup(omega, eps0, eps_lims, mode_nums, varargin)
 %         The design (angular) frequency. 
 % 
 %     EPS0: 2-d array.
-%         The initial permittivity of the structure.
+%         The initial permittivity of the structure. It is recommended that
+%         the permittivities in the two leftmost and two rightmost layers of
+%         cells be uniform, since the fields are fixed in those cells.
 %     
 %     EPS_LIMS: 2-element vector.
 %         The minimum and maximum allowable values for the permittivity.
@@ -32,22 +34,22 @@ function [spec] = setup(omega, eps0, eps_lims, mode_nums, varargin)
 %         Default value assumes that the input and output modes each propagate 
 %         through half of the design space.
 % 
+%         Note that the length of the design space is considered to be
+%         size(EPS, 1) - 1.
+% 
 % Outputs
 %     SPEC: Structure.
 %         Contains the input and output information which defines the design 
-%         problem. The input and output waveguide modes have been normalized 
-%         to have a Poynting vector (power throughput) of unity.
-%         SPEC is mainly used as an input to the DESIGN() function.
+%         problem. Sets up the boundary-value formulation for use as the 
+%         design objective. 
 % 
-% Examples
+%         SPEC is mainly used as an input to the DESIGN() function.
 
 dims = size(eps0);
 
 % Create the specification structure.
 spec.omega = omega;
 spec.eps0 = eps0;
-spec.in.eps = eps0(1,:);
-spec.out.eps = eps0(end,:);
 spec.eps_lims = sort(eps_lims);
 
 
@@ -58,12 +60,30 @@ spec.eps_lims = sort(eps_lims);
 figure(1);
 fprintf('Input mode calculation (figure 1)\n');
 [spec.in.beta, spec.in.Hz, spec.in.Ey] = ...
-    ob1_wgmode(spec.omega, spec.in.eps, mode_nums(1));
+    ob1_wgmode(spec.omega, eps0(1,:), mode_nums(1));
 
 figure(2);
 fprintf('Output mode calculation (figure 2)\n');
 [spec.out.beta, spec.out.Hz, spec.out.Ey] = ...
-    ob1_wgmode(spec.omega, spec.out.eps, mode_nums(2));
+    ob1_wgmode(spec.omega, eps0(end,:), mode_nums(2));
 
 
+    %
+    % Set up the boundary values.
+    %
 
+% Determine phase relation between input and output modes.
+if isempty(varargin)
+    phase = mean([spec.in.beta, spec.out.beta]) * (size(eps, 1) - 1);
+else
+    phase = varargin{1};
+end
+
+% Create boundary field conditions.
+% Two layers of Hz fields are needed since we must fix Hz as well as its 
+% derivative in the normal direction.
+spec.Hz0 = zeros(dims);
+spec.Hz0(1,:) = spec.in.Hz;
+spec.Hz0(2,:) = spec.in.Hz * exp(i * spec.in.beta); 
+spec.Hz0(end-1,:) = spec.out.Hz * exp(i * (phase - spec.out.beta)); 
+spec.Hz0(end,:) = spec.out.Hz * exp(i * phase); 

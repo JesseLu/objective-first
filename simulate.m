@@ -16,10 +16,13 @@ function [P_out] = simulate(spec, eps, dims)
 %         These values should be considerable larger than size(EPS).
 % 
 % Outputs
-%     EFF: Non-negative scalar.
-%         The coupling efficiency where 1.0 is 100% conversion efficiency.
-% 
-% Examples
+%     P_OUT: Non-negative scalar.
+%         The power in the desired ouput mode. The input mode is excited
+%         with power ~ 1.0. 
+%         
+%         For accurate efficiency calculations, measure the output power for
+%         an unbroken version of the input waveguide, this is the true
+%         (accurate) amount of power excited in the input mode.
 
 % Hard-coded parameters.
 t_pml = 10; % Thickness of PML.
