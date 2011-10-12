@@ -5,7 +5,7 @@ function [beta, Hz, Ey] = ob1_wgmode(omega, eps, order)
 % eigenvectors, and then selects the correct order of eigenvalue.
 % Assumes that the mode is propagating in the x-direction.
 % 
-% If ORDER = [], then asks user to select one of the plotted modes.
+% If ORDER = 0, then asks user to select one of the plotted modes.
 % 
 % If user has selected an evanescent mode, then gives a warning.
 
@@ -61,7 +61,7 @@ Ey = Ey * diag(power.^-0.5);
     % Choose the desired mode.
     %
 
-if isempty(order) % Cycle through modes one at a time and let user choose.
+if (order == 0) % Cycle through modes one at a time and let user choose.
     fprintf('Enter "" (blank) to view next mode, or "select" to choose mode\n');
 
     for k = 1 : N

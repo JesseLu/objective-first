@@ -1,28 +1,36 @@
-function [spec] = setup(omega, eps_in, order_in, eps_out, order_out)
-% SPEC = SETUP(OMEGA, EPS_IN, ORDER_IN, EPS_OUT, ORDER_OUT)
+function [spec] = setup(omega, eps0, eps_lims, mode_nums, varargin)
+% SPEC = SETUP(OMEGA, EPS0, EPS_LIMS, MODE_NUMS, [PHASE])
 %
 % Description
 %     Sets up the nanophotonic waveguide coupler design problem.
 % 
-%     Specifically, SETUP() determines the input and output waveguide modes,
-%     based on the dielectric structure of the input and output waveguides.
+%     Specifically, SETUP() determines the boundary values at the 
+%     input and output edges of the device (left and right respectively).
 % 
 % Inputs
 %     OMEGA: Positive scalar.
 %         The design (angular) frequency. 
 % 
-%     EPS_IN, EPS_OUT: 1-d arrays.
-%         The (relative) permittivities for the input and output waveguides,
-%         respectively.
+%     EPS0: 2-d array.
+%         The initial permittivity of the structure.
+%     
+%     EPS_LIMS: 2-element vector.
+%         The minimum and maximum allowable values for the permittivity.
 % 
-%     ORDER_IN, ORDER_OUT: Positive integers.
+%     MODE_NUMS: 2-element vector of integers.
 %         The order of the input and output waveguide modes, respectively.
-%         For example, to select the fundamental mode, use ORDER_IN or 
-%         ORDER_OUT = 1. For second-order mode, use ORDER_IN or ORDER_OUT = 2.
-%         To interactively select modes, user ORDER_IN or ORDER_OUT = [].
+%         For example, to select the fundamental mode for the input and
+%         the second-order mode for the output use MODE_NUMS = [1 2].
 % 
-%         If the selected mode is non-propagating (evanesent), a warning will 
+%         To interactively select a mode, input a mode number of 0.
+% 
+%         If the selected modes are non-propagating (evanesent), a warning will 
 %         be issued.
+% 
+%     PHASE: Scalar (optional).
+%         The relative phase of the output mode relative to the input mode.
+%         Default value assumes that the input and output modes each propagate 
+%         through half of the design space.
 % 
 % Outputs
 %     SPEC: Structure.
@@ -33,19 +41,29 @@ function [spec] = setup(omega, eps_in, order_in, eps_out, order_out)
 % 
 % Examples
 
+dims = size(eps0);
+
 % Create the specification structure.
 spec.omega = omega;
-spec.in.eps = reshape(eps_in, 1, length(eps_in));
-spec.out.eps = reshape(eps_out, 1, length(eps_out));
+spec.eps0 = eps0;
+spec.in.eps = eps0(1,:);
+spec.out.eps = eps0(end,:);
+spec.eps_lims = sort(eps_lims);
 
 
-fprintf('Input mode calculation\n');
+    %
+    % Calculate the input and output modes.
+    %
+
+figure(1);
+fprintf('Input mode calculation (figure 1)\n');
 [spec.in.beta, spec.in.Hz, spec.in.Ey] = ...
-    ob1_wgmode(spec.omega, spec.in.eps, order_in);
+    ob1_wgmode(spec.omega, spec.in.eps, mode_nums(1));
 
-fprintf('Output mode calculation\n');
+figure(2);
+fprintf('Output mode calculation (figure 2)\n');
 [spec.out.beta, spec.out.Hz, spec.out.Ey] = ...
-    ob1_wgmode(spec.omega, spec.out.eps, order_out);
+    ob1_wgmode(spec.omega, spec.out.eps, mode_nums(2));
 
 
 
