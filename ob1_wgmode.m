@@ -97,12 +97,15 @@ end
 
 err = norm(A * Hz - beta^2 * Hz);
 power = Ey' * Hz;
+
 fprintf('Mode number: %d\n', order);
+fprintf('Beta (wave-vector): %1.3f\n', beta);
 fprintf('Error in eigenvalue equation: %1.1e\n', err);
 fprintf('Power: %1.3f\n\n', power);
 
 % Plot result.
 my_mode_plot(Hz, Ey);
+
 
 
 function my_mode_plot(Hz, Ey)

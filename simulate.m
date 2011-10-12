@@ -1,5 +1,5 @@
-function [eff] = simulate(spec, eps, dims)
-% EFF = SIMULATE(SPEC, EPS, DIMS)
+function [P_out] = simulate(spec, eps, dims)
+% P_OUT = SIMULATE(SPEC, EPS, DIMS)
 % 
 % Description
 %     Simulates the design and determines the performance.
@@ -24,7 +24,7 @@ function [eff] = simulate(spec, eps, dims)
 % Hard-coded parameters.
 t_pml = 10; % Thickness of PML.
 sigma_pml = 1 / spec.omega; % Strength of PML.
-exp_pml = 3.5; % Exponential spatial increase in pml strength.
+exp_pml = 2.5; % Exponential spatial increase in pml strength.
 
     
     % 
@@ -72,37 +72,73 @@ A = Ecurl * inv_eps * Hcurl - spec.omega^2 * speye(prod(dims));
     % Determine the input excitation.
     %
 
+b = zeros(dims); % Input excitation, equivalent to magnetic current source.
+in_pos = max([t_pml+1, round(pad(1)/2)]); % Location of input excitation.
+
 % For one-way excitation in the forward (to the right) direction,
 % we simple cancel out excitation in the backward (left) direction.
-b = zeros(dims);
-% b(round(dims(1)/2), :) = 1
-b(round(dims(1)/2), pad(3)+1:end-pad(4)) = spec.in.Hz;
+b(in_pos+1, pad(3)+1:end-pad(4)) = spec.in.Hz;
+b(in_pos, pad(3)+1:end-pad(4)) = -spec.in.Hz * exp(i * spec.in.beta);
 
-% b(round(pad(1)/2), pad(3)+1:end-pad(4)) = spec.in.Hz;
-% b(round(pad(1)/2)-1, pad(3)+1:end-pad(4)) = -spec.in.Hz * ...
-%                                             exp(i * spec.in.beta);
+b = b ./ eps_y; % Convert from field to current source.
 
 % Normalization factor so that the input power is unity.
-% b = spec.omega / (1 - exp(-i * 2 * spec.in.beta)) / 2 * b;
+b = -i * 2 * spec.in.beta / (1 - exp(i * 2 * spec.in.beta)) *  b;
+
+b = b(:); % Vectorize.
 
 
     %
     % Solve.
     %
 
+Hz = A \ b; % This should be using sparse matrix factorization. 
 
-Hz = A \ b(:);
+E = 1/spec.omega * inv_eps * Hcurl * Hz; % Obtain E-fields.
+
+% Reshape and extract all three fields.
+Ex = reshape(E(1:prod(dims)), dims);
+Ey = reshape(E(prod(dims)+1:end), dims);
 Hz = reshape(Hz, dims);
 
+
     %
-    % Calculate efficiency.
+    % Calculate power output to desired mode.
     %
         
+% Location for power calculation.
+out_pos = min([round(dims(1)-pad(2)/2), dims(1)-t_pml-1]); 
 
-max(abs(Hz(:)))
+% Project y onto x.
+proj = @(x, y) (dot(x(:), y(:)) / norm(x(:))^2) * x(:);
 
-subplot 121; imagesc(real(Hz)')
-subplot 121; imagesc(abs(Hz)')
-subplot 121; plot(real(Hz(:,48)), '.-')
-subplot 122; plot(abs(Hz(:,48)), '.-')
-% subplot 121; plot([eps_x(dims(2)/2,:);eps_y(dims(2)/2,:)]', '.-');
+% Calculate the power in the desired output mode.
+P_out = abs(dot(proj(spec.out.Hz, Hz(out_pos,pad(3)+1:end-pad(4))), ...
+                proj(spec.out.Ey * exp(i * 0.5 * spec.out.beta), ...
+                    Ey(out_pos,pad(3)+1:end-pad(4)))));
+            
+
+    %
+    % Print and plot results.
+    %
+
+fprintf('Output power in desired mode (input power approx. 1.0) : %1.3f\n', ...
+    P_out);
+
+ob1_plot(dims, {'\epsilon', eps}, {'|Hz|', abs(Hz)}, {'Re(Hz)', real(Hz)});
+
+% % The following commands may be used (uncommented) in order to plot more
+% % field information.
+% % figure(1); 
+% ob1_plot(dims, {'\epsilon', eps}, {'|Hz|', abs(Hz)}, {'Re(Hz)', real(Hz)});
+% 
+% % Plot all fields.
+% figure(2); 
+% ob1_plot(dims, ...
+%     {'Re(Ex)', real(Ex)}, {'Re(Ey)', real(Ey)}, {'Re(Hz)', real(Hz)}, ...
+%     {'Im(Ex)', imag(Ex)}, {'Im(Ey)', imag(Ey)}, {'Im(Hz)', imag(Hz)}, ...
+%     {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});
+% 
+% % Plot absolute value of all three fields.
+% figure(3);
+% ob1_plot(dims, {'|Ex|', abs(Ex)}, {'|Ey|', abs(Ey)}, {'|Hz|', abs(Hz)});

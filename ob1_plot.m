@@ -1,33 +1,23 @@
-function ob1_plot(x, p, dims, option, varargin)
+function ob1_plot(dims, varargin)
+% A simple function for plotting multiple fields.
 
-N = prod(dims);
+N = length(varargin);
 
-% Ex = reshape(x(1:N), dims);
-% Ey = reshape(x(N+1:2*N), dims);
-% Hz = reshape(x(2*N+1:3*N), dims);
-Hz = reshape(x, dims);
+f = factor(N);
+f = f(end:-1:1);
+n = length(f);
 
-e = reshape(1./p, dims);
-% ex = reshape(epsilon(1:N), dims);
-% ey = reshape(epsilon(N+1:2*N), dims);
+xx = prod(f(1:2:n));
+yy = prod(f(2:2:n));
 
-switch option
-    case 'quick'
-        plot_fields(dims, {'\epsilon', e}, {'Im(Hz)', imag(Hz)}, ...
-            {'|Hz|', abs(Hz)});
-        
-    case 'full'
-        figure(1);
-        plot_fields(dims, {'\epsilon', e});
-
-        figure(2);
-        plot_fields(dims, ...
-            {'Re(Hz)', real(Hz)}, {'Im(Hz)', imag(Hz)}, {'|Hz|', abs(Hz)});
+for k = 1 : N
+    v = varargin{k};
+    subplot(yy, xx, k);
+    imagesc(real(reshape(v{2}, dims))', 1 * max(abs(v{2}(:)) + eps) * [-1 1]);
+    title(v{1});
+    axis equal tight;
+    set(gca, 'Ydir', 'normal');
 end
+colormap('jet');
+drawnow
 
-drawnow;
-
-if ~isempty(varargin)
-    % Make a picture
-    saveas(gcf, ['temp/plot', num2str(1e4+varargin{1}), '.png']);
-end
