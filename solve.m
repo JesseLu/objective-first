@@ -143,7 +143,6 @@ switch method
             fprintf('(p) '); print_prog(k, x_int, p_int)
 
             % Visualize.
-            figure(1);
             ob1_plot(dims,  {'p', p_full(p_int)}, ...
                             {'|x|', abs(x_full(x_int))}, ...
                             {'Re(x)', real(x_full(x_int))});
@@ -154,8 +153,6 @@ switch method
                 break
             end
         end
-
-
 
     otherwise
         error('Invalid choice of METHOD (%s).', method);
@@ -173,7 +170,6 @@ fprintf('Final physics residual: %1.5e\nFinal gradient norm: %1.5e\n', ...
     progress(x_int, p_int));
 
 % Visualize.
-figure(1);
 ob1_plot(dims,  {'p', p_full(p_int)}, ...
                 {'|x|', abs(x_full(x_int))}, ...
                 {'Re(x)', real(x_full(x_int))});
