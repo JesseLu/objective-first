@@ -65,29 +65,11 @@ Basic usage consists of the following three commands:
 1.  solve(), run the design algorithm;
 1.  simulate(), determine the actual performance of the design.
 
-
-Examples
---------
-
-*** Put examples here!!
+See the example.m file for an example optimization.
 
 Please consult the documentation of use help command, 
 where command is setup, optimize, or simulate, 
 for more information on how to use these commands.
-
-
-Known Issues
-============
-
-Current
--------
-
-1.  Clean up and put everything into one folder. 
-    This includes merging the mode and sim (and tools) folders.
-1.  Learn how to do progressive start.
-
-To be addressed later
----------------------
 
 
 License
