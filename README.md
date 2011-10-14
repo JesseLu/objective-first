@@ -12,6 +12,9 @@ See the following paper for details on objective-first optimization:
     "Objective-first design of nanophotonic waveguide couplers," 
     (to be submitted)
 
+Draft can be found at:
+https://github.com/JesseLu/misc/blob/master/presentations/ob1_wg_paper/paper.pdf
+
 
 Installation
 ============
