@@ -130,14 +130,12 @@ switch method
             x_int1 = A1 \ b1;
             fprintf('(x) '); print_prog(k, x_int1, p_int)
 
-            % Try solving using poblano.
-            out = lbfgs(@(x) pob(A1, b1, x), x_int, ...
-                'StopTol', 1e-7, 'MaxIters', 1e5, 'MaxFuncEvals', 1e6, ...
-                'RelFuncTol', 1e-10)
+%             % Try solving using poblano.
+%             out = lbfgs(@(x) pob(A1, b1, x), x_int, 'Display', 'final', ...
+%                 'StopTol', 1e-7, 'MaxIters', 1e5, 'MaxFuncEvals', 1e6, ...
+%                 'RelFuncTol', 1e-10)
 
             x_int = x_int1;
-            norm(out.X - x_int) / length(x_int1)
-            x_int = out.X;
 
             % Solve for p_int.
             cvx_quiet(true);
