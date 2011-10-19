@@ -39,7 +39,7 @@ A = my_diag(eps_y) * (-Dy' * my_diag(eps_x.^-1) * Dy + omega^2 * speye(N));
 [V, D] = eig(full(A)); % Just use the dense eigenvalue solver.
 
 % Sort modes based on descending beta^2.
-[beta2, ind] = sort(diag(D), 'descend');
+[beta2, ind] = sort(real(diag(D)), 'descend');
 beta = sqrt(beta2);
 
 % Sort the mode profiles.
@@ -62,22 +62,23 @@ Ey = Ey * diag(power.^-0.5);
     %
 
 if (order == 0) % Cycle through modes one at a time and let user choose.
-    fprintf('Enter "" (blank) to view next mode, or "select" to choose mode\n');
+    fprintf('Enter "" (blank) to view next mode, ');
+    fprintf('or the number of the mode to be selected.\n');
 
     for k = 1 : N
         my_mode_plot(Hz(:,k), Ey(:,k)); % Let user see the mode.
         prompt = sprintf('mode %d: ', k); % Tell the user which mode this is.
         choice = input(prompt, 's'); % Ask the user if they want it.
 
-        if strcmp(choice, 'select') % User wants this mode.
-            order = k;
+        if strcmp(choice, '') % User wants to see next mode.
+            % Delete previous line so we can write on-top of it.
+            fprintf(repmat('\b', 1, length(prompt) + length(choice) + 1));
+        else % User has chosen a mode
+            order = str2num(choice);
             beta = beta(order);
             Hz = Hz(:,order);
             Ey = Ey(:,order);
             break
-        else % User wants to see next mode.
-            % Delete previous line so we can write on-top of it.
-            fprintf(repmat('\b', 1, length(prompt) + length(choice) + 1));
         end
     end
 
