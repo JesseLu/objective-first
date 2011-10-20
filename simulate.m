@@ -27,7 +27,7 @@ function [P_out] = simulate(spec, eps, dims)
 % Hard-coded parameters.
 t_pml = 10; % Thickness of PML.
 sigma_pml = 1 / spec.omega; % Strength of PML.
-exp_pml = 2.5; % Exponential spatial increase in pml strength.
+exp_pml = 3.5; % Exponential spatial increase in pml strength.
 
     
     % 
@@ -77,6 +77,7 @@ A = Ecurl * inv_eps * Hcurl - spec.omega^2 * speye(prod(dims));
 
 b = zeros(dims); % Input excitation, equivalent to magnetic current source.
 in_pos = max([t_pml+1, round(pad(1)/2)]); % Location of input excitation.
+in_pos = 5;
 
 % For one-way excitation in the forward (to the right) direction,
 % we simple cancel out excitation in the backward (left) direction.
@@ -113,12 +114,29 @@ Hz = reshape(Hz, dims);
 out_pos = min([round(dims(1)-pad(2)/2), dims(1)-t_pml-1]); 
 
 % Project y onto x.
-proj = @(x, y) (dot(x(:), y(:)) / norm(x(:))^2) * x(:);
+proj = @(x, y) (dot(y(:), x(:)) / norm(x(:))^2) * x(:);
 
 % Calculate the power in the desired output mode.
-P_out = abs(dot(proj(spec.out.Hz, Hz(out_pos,pad(3)+1:end-pad(4))), ...
-                proj(spec.out.Ey * exp(i * 0.5 * spec.out.beta), ...
-                    Ey(out_pos,pad(3)+1:end-pad(4)))));
+calcP = @(loc) 0.5 * real(...
+                dot(proj(spec.out.Ey, Ey(out_pos,pad(3)+1:end-pad(4))), ...
+                    proj(spec.out.Hz, Hz(out_pos,pad(3)+1:end-pad(4)))));
+
+out_pos = round(dims(1) - pad(2)) : dims(1) - t_pml - 1;
+for k = 1 : length(out_pos)
+    P_out(k) = calcP(out_pos(k));
+end
+plot(P_out, '.-')
+P_out = mean(P_out)
+
+% Calculate power leaving a box.
+Pbox = @(x,y) dot(Ey(x,y), Hz(x,y));
+box_pad = t_pml + 5;
+box = [box_pad, dims(1)-box_pad, box_pad, dims(2)-box_pad];
+bottom = 0.5 * real(Pbox(box(1):box(2),box(3)))
+top = 0.5 * real(Pbox(box(1):box(2),box(4)))
+left = 0.5 * real(Pbox(box(1),box(3):box(4)))
+right = 0.5 * real(Pbox(box(2),box(3):box(4)))
+Pbox_total = bottom + top + left + right
             
 
     %

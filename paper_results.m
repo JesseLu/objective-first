@@ -22,7 +22,8 @@ num_iters = 400;
 % Create the specifications for the various design problems.
 specs = create_specs(dims, eps_lims, eps_uniform);
 
-for k = 1 : length(specs)
+% for k = 1 : length(specs)
+for k = 4 : 5
     eps{k} = solve(specs{k}, num_iters, 1e-6);
     simulate(specs{k}, eps{k}, [200 160]);
 end
@@ -94,7 +95,7 @@ eps(end-1:end, :) = -1.1; % Output plasmonic wg.
 eps(end-1:end,  (dims(2)-w(2))/2:(dims(2)+w(2))/2) = 1; 
 eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
 
-spec{4} = setup(0.20, eps, eps_lims, [1 1]);
+spec{4} = setup(0.25, eps, eps_lims, [1 1]);
 
 
     %
@@ -107,4 +108,4 @@ eps(1:2,        (dims(2)-w(1))/2:(dims(2)+w(1))/2) = 12.25; % Input wg.
 eps(end-1:end,  (dims(2)-w(2))/2:(dims(2)+w(2))/2) = -1.1; % Output wg.
 eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
 
-spec{5} = setup(0.20, eps, eps_lims, [1 1]);
+spec{5} = setup(0.25, eps, eps_lims, [1 1]);
