@@ -1,38 +1,80 @@
-function [P_out] = ob1_calc_power(spec, Ex, Ey, Hz, t_pml, pad)
+function [Pout, err] = ob1_calc_power(E, H, mode)
+% Description
+%     Calculate power in an output mode. Assumes that all the power in the
+%     mode is propagating to the right (no reflections).
 
-dims = size(Ex);
+dims = size(E);
+
+    
+    % 
+    % Obtain magnitude of mode in both E and H fields.
     %
-    % Calculate power output to desired mode.
+
+E_mag = calc_mag(mode.Ey, E);
+H_mag = calc_mag(mode.Hz, H);
+
+fields = [E_mag(:), H_mag(:)];
+
+    
+    % 
+    % Estimate the amplitude, wave-vector and phase of the mode.
     %
-        
-% Location for power calculation.
-out_pos = min([round(dims(1)-pad(2)/2), dims(1)-t_pml-1]); 
 
-% Project y onto x.
-proj = @(x, y) (dot(y(:), x(:)) / norm(x(:))^2) * x(:);
+phase = unwrap(angle(fields));
+x = [[1:dims(1)]-0.5; [1:dims(1)]]'; % Accounts for offset in Yee grid.
 
-% Calculate the power in the desired output mode.
-calcP = @(loc) 0.5 * real(...
-                dot(proj(spec.out.Hz, Hz(loc,pad(3)+1:end-pad(4))), ...
-                    proj(spec.out.Ey * exp(0.0 * i * spec.out.beta), ...
-                        Ey(loc,pad(3)+1:end-pad(4)))));
+A = mean(abs(fields), 1); 
+[beta(1), phi(1)] = my_linear_regression(x(:,1), phase(:,1));
+[beta(2), phi(2)] = my_linear_regression(x(:,2), phase(:,2));
 
-out_pos = round(dims(1) - pad(2)) : dims(1) - t_pml - 1;
-for k = 1 : length(out_pos)
-    P_out(k) = calcP(out_pos(k));
+
+    %
+    % Local optimization to tune fit parameters.
+    %
+
+p = mean([A; beta; phi], 2);
+fun = @(p) p(1) * exp(i * (p(2) * x + p(3)));
+err_fun = @(p) (1/norm(fields, 'fro')) * ...
+        norm(fields - fun(p));
+options = optimset('MaxFunEvals', 1e3);
+p = fminsearch(err_fun, p, options); % Optimize.
+
+
+    %
+    % Calculate output power and error.
+    %
+
+amplitude = p(1);
+Pout = amplitude^2;
+
+err = err_fun(p);
+err_limit = 1e-3;
+if (err > err_limit) % If error is somewhat large, tell user.
+    warning('Error in fit exceeds threshold (%e > %e).', err, err_limit);
 end
-plot(P_out, '.-')
-P_out
-pause
-P_out = mean(P_out)
 
-% Calculate power leaving a box.
-Pbox = @(x,y) dot(Hz(x,y), Ey(x,y));
-box_pad = t_pml + 5;
-box = [box_pad, dims(1)-box_pad, box_pad, dims(2)-box_pad];
-% bottom = 0.5 * real(Pbox(box(1):box(2),box(3)))
-% top = 0.5 * real(Pbox(box(1):box(2),box(4)))
-% left = 0.5 * real(Pbox(box(1),box(3):box(4)))
-right = 0.5 * real(Pbox(box(2),box(3):box(4)))
-% Pbox_total = bottom + top + left + right
-  
+% Plot.
+plot(real(fields), 'o-');
+hold on
+plot(real(fun(p)), '.-');
+hold off
+
+
+function [mag] = calc_mag (ref, field)
+% Project y onto x.
+my_dot = @(x, y) (dot(y(:), x(:)) / norm(x(:))^2);
+
+for k = 1 : size(field, 1)
+    mag(k) = my_dot(ref, field(k,:));
+end
+
+
+
+function [a, b] = my_linear_regression(x, y)
+% Fit data to simple model, y = a * x + b
+y_ctr = y - mean(y);
+x_ctr = x - mean(x);
+a = (x_ctr' * y_ctr) / norm(x_ctr)^2;
+b = -(a * mean(x) - mean(y));
+
+

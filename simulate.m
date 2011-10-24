@@ -24,8 +24,6 @@ function [P_out] = simulate(spec, eps, dims)
 %         an unbroken version of the input waveguide, this is the true
 %         (accurate) amount of power excited in the input mode.
 
-% Hard-coded parameters.
-t_pml = 10; % Thickness of PML.
 
     
     % 
@@ -38,28 +36,43 @@ pad = [ floor((dims(1) - size(eps, 1))/2), ...
         floor((dims(2) - size(eps, 2))/2), ...
         ceil((dims(2) - size(eps, 2))/2)];
 
-% Expand eps to the full simulation size.
-eps = cat(1, repmat(eps(1,:), pad(1), 1), eps, repmat(eps(end,:), pad(2), 1));
-eps = cat(2, repmat(eps(:,1), 1, pad(3)), eps, repmat(eps(:,end), 1, pad(4)));
+eps = ob1_pad_eps(eps, pad);
 
 
-[Ex, Ey, Hz] = ob1_fdfd(spec, eps, t_pml, pad); % Solve.
+    %
+    % Determine input power by solving a structure with only an input
+    % waveguide.
+    %
 
-[P_out] = ob1_calc_power(spec, Ex, Ey, Hz, t_pml, pad);
+[Ex, Ey, Hz] = ob1_fdfd(spec.omega, repmat(eps(1,:), size(eps,1), 1), spec.in);
+
+x_out = round(dims(1)-pad(2)/2+1) : dims(1);
+y_out = pad(3)+1 : dims(2)-pad(4);
+P_in = ob1_calc_power(Ey(x_out,y_out), Hz(x_out,y_out), spec.in);
+
+
+    %
+    % Calculate output power for the structure (and actual output mode).
+    %
+
+[Ex, Ey, Hz] = ob1_fdfd(spec.omega, eps, spec.in);
+P_out = ob1_calc_power(Ey(x_out,y_out), Hz(x_out,y_out), spec.out);
+
+
     %
     % Print and plot results.
     %
 
-fprintf('Output power in desired mode (input power approx. 1.0) : %1.3f\n', ...
-    P_out);
+fprintf('P_in: %1.3e \nP_out: %1.3e \neff: %1.3f%%\n', ...
+    P_in, P_out, 100 * P_out / P_in);
 
 ob1_plot(dims, {'\epsilon', eps}, {'|Hz|', abs(Hz)}, {'Re(Hz)', real(Hz)});
 
-% % The following commands may be used (uncommented) in order to plot more
-% % field information.
-% % figure(1); 
-% ob1_plot(dims, {'\epsilon', eps}, {'|Hz|', abs(Hz)}, {'Re(Hz)', real(Hz)});
-% 
+% The following commands may be used (uncommented) in order to plot more
+% field information.
+% figure(1); 
+ob1_plot(dims, {'\epsilon', eps}, {'|Hz|', abs(Hz)}, {'Re(Hz)', real(Hz)});
+
 % % Plot all fields.
 % figure(2); 
 % ob1_plot(dims, ...
