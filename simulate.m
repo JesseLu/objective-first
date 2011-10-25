@@ -1,5 +1,5 @@
-function [P_out] = simulate(spec, eps, dims)
-% P_OUT = SIMULATE(SPEC, EPS, DIMS)
+function [eff, Ex, Ey, Hz] = simulate(spec, eps, dims)
+% [EFF, Ex, Ey, Hz] = SIMULATE(SPEC, EPS, DIMS)
 % 
 % Description
 %     Simulates the design and determines the performance.
@@ -16,14 +16,17 @@ function [P_out] = simulate(spec, eps, dims)
 %         These values should be considerable larger than size(EPS).
 % 
 % Outputs
-%     P_OUT: Non-negative scalar.
-%         The power in the desired ouput mode. The input mode is excited
-%         with power ~ 1.0. 
+%     EFF : Non-negative scalar.
+%         Conversion efficiency from input to output mode. EFF is calculated by
+%         first exciting an unbroken waveguide and measuring its power output.
+%         This number is then taken as the input power for the actual 
+%         simulation, where the coupler device is used.
 %         
-%         For accurate efficiency calculations, measure the output power for
-%         an unbroken version of the input waveguide, this is the true
-%         (accurate) amount of power excited in the input mode.
-
+%     EX, EY, HZ: 2-d arrays.
+%         Simulation values of the 2D TE fields. The fields will be of size 
+%         DIMS. Perfectly-matched layers (PML) absorbing boundaries are used
+%         in the simulation, but the field values are excluded from the 
+%         EX, EY, and HZ output values.
 
     
     % 
@@ -63,8 +66,9 @@ P_out = ob1_calc_power(Ey(x_out,y_out), Hz(x_out,y_out), spec.out);
     % Print and plot results.
     %
 
+eff = P_out / P_in;
 fprintf('P_in: %1.3e \nP_out: %1.3e \neff: %1.3f%%\n', ...
-    P_in, P_out, 100 * P_out / P_in);
+    P_in, P_out, 100 * eff);
 
 ob1_plot(dims, {'\epsilon', eps}, {'|Hz|', abs(Hz)}, {'Re(Hz)', real(Hz)});
 

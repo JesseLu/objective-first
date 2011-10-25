@@ -48,16 +48,18 @@ amplitude = p(1);
 Pout = amplitude^2;
 
 err = err_fun(p);
-err_limit = 1e-3;
+err_limit = 1e-2;
 if (err > err_limit) % If error is somewhat large, tell user.
     warning('Error in fit exceeds threshold (%e > %e).', err, err_limit);
 end
 
-% Plot.
-plot(real(fields), 'o-');
-hold on
-plot(real(fun(p)), '.-');
-hold off
+% % Plot.
+% subplot 111
+% plot(real(fields), 'o-');
+% hold on
+% plot(real(fun(p)), '.-');
+% hold off
+% pause
 
 
 function [mag] = calc_mag (ref, field)

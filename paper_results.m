@@ -14,23 +14,41 @@ function [] = paper_results()
 % In order to recalculate the results, the first section of this script must
 % be uncommented.
 
-dims = [40 80]; % Dimensions of all the couplers.
-eps_uniform = 9.0; % Uniform value of epsilon within design area.
-eps_lims = [1 12.25]; % Limited range of epsilon.
-num_iters = 400;
-
-% Create the specifications for the various design problems.
-specs = create_specs(dims, eps_lims, eps_uniform);
-
+% 
+%     %
+%     % Generate the five designs found in the paper.
+%     % This section must be uncommented if you want to re-generate the results
+%     % yourself.
+%     %
+% 
+% dims = [40 80]; % Dimensions of all the couplers.
+% eps_uniform = 9.0; % Uniform value of epsilon within design area.
+% eps_lims = [1 12.25]; % Limited range of epsilon.
+% num_iters = 400; % Number of iterations to run the design optimization for.
+% 
+% % Create the specifications for the various design problems.
+% specs = create_specs(dims, eps_lims, eps_uniform);
+% 
 % for k = 1 : length(specs)
-for k = 4 : 5
-    eps{k} = solve(specs{k}, num_iters, 1e-6);
-    simulate(specs{k}, eps{k}, [200 160]);
+%     eps{k} = solve(specs{k}, num_iters, 1e-6);
+%     simulate(specs{k}, eps{k}, [200 160]);
+% end
+% 
+% save('precomp_results.mat', 'eps', 'specs');
+%
+
+    %
+    % Load data and simulate.
+    %
+
+results = load('precomp_results_0.mat', 'eps', 'specs');
+specs = results.specs;
+eps = results.eps;
+for k = 1 : length(specs)
+    fprintf('\nSimulating result #%d...\n', k);
+    eff(k) = simulate(specs{k}, eps{k}, [160 100]);
+    pause;
 end
-
-save('precomp_results.mat', 'eps', 'specs');
-% Note: to make figures pretty, keep only central 160x100 pixels.
-
 
 function [spec] = create_specs(dims, eps_lims, eps_uniform)
 
@@ -91,7 +109,7 @@ spec{3} = setup(0.25, eps, eps_lims, [1 9]);
 w = [10 2]; % Widths of input and output waveguides.
 eps = ones(dims);
 eps(1:2,        (dims(2)-w(1))/2:(dims(2)+w(1))/2) = 12.25; % Input wg.
-eps(end-1:end, :) = -1.1; % Output plasmonic wg.
+eps(end-1:end, :) = -2; % Output plasmonic wg.
 eps(end-1:end,  (dims(2)-w(2))/2:(dims(2)+w(2))/2) = 1; 
 eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
 
@@ -105,7 +123,7 @@ spec{4} = setup(0.25, eps, eps_lims, [1 1]);
 w = [10 2]; % Widths of input and output waveguides.
 eps = ones(dims);
 eps(1:2,        (dims(2)-w(1))/2:(dims(2)+w(1))/2) = 12.25; % Input wg.
-eps(end-1:end,  (dims(2)-w(2))/2:(dims(2)+w(2))/2) = -1.1; % Output wg.
+eps(end-1:end,  (dims(2)-w(2))/2:(dims(2)+w(2))/2) = -2; % Output wg.
 eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
 
 spec{5} = setup(0.25, eps, eps_lims, [1 1]);
