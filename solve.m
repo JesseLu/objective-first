@@ -36,6 +36,8 @@ function [eps] = solve(spec, max_iters, min_grad, varargin)
 % *   For numerical reasons (convexity in the p variable) we use the inverse
 %     of epsilon instead of epsilon itself.
 
+% Make sure we have access to the cvx package.
+path(path, genpath('cvx'));
 
 dims = size(spec.eps0);
 N = prod(dims);
