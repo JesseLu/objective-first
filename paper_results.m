@@ -41,44 +41,67 @@ function [] = paper_results()
     % Load data and generate figures.
     %
 
+% Load the data.
 results = load('precomp_results.mat', 'eps', 'specs');
 specs = results.specs;
 eps = results.eps;
+
+% Generate the figures.
 for k = 1 : length(specs)
+    K = num2str(k);
     fprintf('\n\nGenerating plots used for result #%d...\n===\n', k);
 
-    fprintf('Simulation results:\n');
+    fprintf('Simulation results:\n'); % Simulate.
     [eff(k), eps_sim, Ex, Ey, Hz] = simulate(specs{k}, eps{k}, [160 100]);
 
-    fprintf('\nInput/output mode profiles...\n');
-    figure(1); subplot 111; % Save to file.
-    my_area_plot(specs{k}.in.Hz, [num2str(k), 'a']);
-    my_area_plot(specs{k}.out.Hz, [num2str(k), 'b']);
+    fprintf('\nInput/output mode profiles (figure 1)...\n');
+    figure(1); subplot 111; % Generate image files.
+    my_area_plot(specs{k}.in.Hz, [K, 'a']);
+    my_area_plot(specs{k}.out.Hz, [K, 'b']);
     figure(1); % Plot images for user.
-    subplot 121; image(imread([num2str(k), 'a.png'])); 
-    axis equal tight; title('Input mode (Hz)');
-    subplot 122; image(imread([num2str(k), 'b.png'])); 
-    axis equal tight; title('Output mode (Hz)');
-
-    fprintf('\nDesign results...\n');
-    figure(2); subplot 111; % Save to file.
+    my_plot_images({['fig/', K, 'a.png'], 'Input mode (Hz)'}, ...
+                   {['fig/', K, 'b.png'], 'Output mode (Hz)'});
+                   
+    fprintf('\nDesign results (figure 2)...\n');
+    figure(2); subplot 111; % Generate image files.
     my_imagesc(eps_sim, flipud(colormap('bone')), ...
         [min(eps{k}(:)), max(eps{k}(:))], [num2str(k), 'c']);
     my_imagesc(abs(Hz), colormap('hot'), ...
         mean(max(abs(Hz(1:20,50)))) * [0 1], [num2str(k), 'd']);
     my_imagesc(real(Hz), colormap('jet'), ...
         mean(max(real(Hz(1:20,50)))) * [-1 1], [num2str(k), 'e']);
-    % pause;
+    figure(2); % Plot images for user.
+    my_plot_images({['fig/', K, 'c.png'], 'Relative permittivity'}, ...
+                   {['fig/', K, 'd.png'], '|Hz| (simulation)'}, ...
+                   {['fig/', K, 'e.png'], 'Re(Hz) (simulation)'});
+
+    fprintf('\nPress enter to continue...\n'); pause; % Wait for user.
 end
 
 function my_plot_images(varargin)
 % Plot the images for the user to see.
+N = length(varargin);
+for k = 1 : N
+    subplot(1, N, k); 
+    [im, map] = imread(varargin{k}{1}); 
+    if ~isempty(map) % Try to convert to RGB values if needed (mapped data).
+        try
+            im = idx2rgb(im, map ); 
+        catch 
+            colormap('jet');
+        end
+    end
+    image(im);
+    title(varargin{k}{2});
+    axis equal tight; 
+end
 
 function my_imagesc(z, map, lims, filename)
 % Write out a mapped image.
 z = (((z)-lims(1)) / diff(lims) * 63) + 1;
 z = 1 * (z < 1) + 64 * (z > 64) + z .* ((z >= 1) & (z <= 64));
 imwrite(z', map, ['fig/', filename, '.png']);
+imwrite([64:-1:1]', map, ['fig/', filename, '_cbar.png']); % Colorbar.
 
 
 function my_area_plot(z, filename)
