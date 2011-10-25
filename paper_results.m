@@ -38,19 +38,66 @@ function [] = paper_results()
 %
 
     %
-    % Load data and simulate.
+    % Load data and generate figures.
     %
 
-results = load('precomp_results_0.mat', 'eps', 'specs');
+results = load('precomp_results.mat', 'eps', 'specs');
 specs = results.specs;
 eps = results.eps;
 for k = 1 : length(specs)
-    fprintf('\nSimulating result #%d...\n', k);
-    eff(k) = simulate(specs{k}, eps{k}, [160 100]);
-    pause;
+    fprintf('\n\nGenerating plots used for result #%d...\n===\n', k);
+
+    fprintf('Simulation results:\n');
+    [eff(k), eps_sim, Ex, Ey, Hz] = simulate(specs{k}, eps{k}, [160 100]);
+
+    fprintf('\nInput/output mode profiles...\n');
+    figure(1); subplot 111; % Save to file.
+    my_area_plot(specs{k}.in.Hz, [num2str(k), 'a']);
+    my_area_plot(specs{k}.out.Hz, [num2str(k), 'b']);
+    figure(1); % Plot images for user.
+    subplot 121; image(imread([num2str(k), 'a.png'])); 
+    axis equal tight; title('Input mode (Hz)');
+    subplot 122; image(imread([num2str(k), 'b.png'])); 
+    axis equal tight; title('Output mode (Hz)');
+
+    fprintf('\nDesign results...\n');
+    figure(2); subplot 111; % Save to file.
+    my_imagesc(eps_sim, flipud(colormap('bone')), ...
+        [min(eps{k}(:)), max(eps{k}(:))], [num2str(k), 'c']);
+    my_imagesc(abs(Hz), colormap('hot'), ...
+        mean(max(abs(Hz(1:20,50)))) * [0 1], [num2str(k), 'd']);
+    my_imagesc(real(Hz), colormap('jet'), ...
+        mean(max(real(Hz(1:20,50)))) * [-1 1], [num2str(k), 'e']);
+    % pause;
 end
 
+function my_plot_images(varargin)
+% Plot the images for the user to see.
+
+function my_imagesc(z, map, lims, filename)
+% Write out a mapped image.
+z = (((z)-lims(1)) / diff(lims) * 63) + 1;
+z = 1 * (z < 1) + 64 * (z > 64) + z .* ((z >= 1) & (z <= 64));
+imwrite(z', map, ['fig/', filename, '.png']);
+
+
+function my_area_plot(z, filename)
+% Normalized area plot.
+h = area(1:length(z), z./max(abs(z)));
+axis([1 length(z) -3 3]);
+set(gca, 'ytick', []); % No ticks wanted.
+print(gcf, '-dpng', '-r150', ['fig/', filename]); % Save image.
+[im] = imread(['fig/', filename, '.png']); % Reload image.
+im = my_add_border(im(300:569,160:1059,:), 0); % Crop and add border.
+imwrite(uint8(im), ['fig/', filename, '.png'], 'png'); % Save.
+
+function [A1] = my_add_border(A0, val)
+% Add a one pixel border around image.
+A1 = val * ones(size(A0));
+A1(2:end-1,2:end-1,:) = A0(2:end-1,2:end-1,:);
+
 function [spec] = create_specs(dims, eps_lims, eps_uniform)
+% Create the specifications for all five results.
 
     %
     % Coupler to fundamental mode of wide, low-index waveguide.

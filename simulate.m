@@ -1,5 +1,5 @@
-function [eff, Ex, Ey, Hz] = simulate(spec, eps, dims)
-% [EFF, Ex, Ey, Hz] = SIMULATE(SPEC, EPS, DIMS)
+function [eff, eps, Ex, Ey, Hz] = simulate(spec, eps, dims)
+% [EFF, EPS, EX, EY, HZ] = SIMULATE(SPEC, EPS, DIMS)
 % 
 % Description
 %     Simulates the design and determines the performance.
@@ -22,11 +22,11 @@ function [eff, Ex, Ey, Hz] = simulate(spec, eps, dims)
 %         This number is then taken as the input power for the actual 
 %         simulation, where the coupler device is used.
 %         
-%     EX, EY, HZ: 2-d arrays.
+%     EPS, EX, EY, HZ: 2-d arrays.
 %         Simulation values of the 2D TE fields. The fields will be of size 
 %         DIMS. Perfectly-matched layers (PML) absorbing boundaries are used
 %         in the simulation, but the field values are excluded from the 
-%         EX, EY, and HZ output values.
+%         EPS, EX, EY, and HZ output values.
 
     
     % 

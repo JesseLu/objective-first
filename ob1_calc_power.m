@@ -48,7 +48,7 @@ amplitude = p(1);
 Pout = amplitude^2;
 
 err = err_fun(p);
-err_limit = 1e-2;
+err_limit = 1e-1;
 if (err > err_limit) % If error is somewhat large, tell user.
     warning('Error in fit exceeds threshold (%e > %e).', err, err_limit);
 end
