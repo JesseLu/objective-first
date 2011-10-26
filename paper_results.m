@@ -107,6 +107,7 @@ imwrite([64:-1:1]', map, ['fig/', filename, '_cbar.png']); % Colorbar.
 function my_area_plot(z, filename)
 % Normalized area plot.
 h = area(1:length(z), z./max(abs(z)));
+% set(h, 'FaceColor', [255 194 0]./256); % Tangerine.
 axis([1 length(z) -3 3]);
 set(gca, 'ytick', []); % No ticks wanted.
 print(gcf, '-dpng', '-r150', ['fig/', filename]); % Save image.
