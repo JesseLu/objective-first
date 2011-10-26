@@ -68,7 +68,7 @@ for k = 1 : length(specs)
         cmap = flipud([colormap('bone'); flipud(fliplr(colormap('bone')))]);
         r = (abs(min(eps{k}(:))) + 1) / (max(eps{k}(:)) - 1); % Ratio.
         n = size(cmap, 1);
-        ind = round(n/2 * (1 - r));
+        ind = round(n/2 * (1 - r))+2;
         cmap = interp1(cmap, ind:(n-ind)/64:n);
     else
         cmap = flipud(colormap('bone'));
