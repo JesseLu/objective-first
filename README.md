@@ -20,11 +20,11 @@ Installation
 ============
 
 This package requires the basic version of Matlab,
-as well as CVX (a convex optimization package for Matlab).
-CVX can be freely obtained from www.stanford.edu/~boyd/cvx.
+The CVX software (www.stanford.edu/~boyd/cvx)
+is included verbatim in this repository as well.
 
-Once Matlab and then CVX are installed, 
-place all the files in this package in a directory.
+To install, just unzip all files in a directory.
+Then to use, just open matlab from the directory.
 
 You can also run example.m to for a demo of the package.
 To do this, simply type 'example' in the Matlab command line.
