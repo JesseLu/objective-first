@@ -48,7 +48,7 @@ eps = results.eps;
 
 % Generate the figures.
 for k = 1 : length(specs)
-    K = num2str(k);
+    basename = ['fig/res', num2str(k), '/'];
     fprintf('\n\nGenerating plots used for result #%d...\n===\n', k);
 
     fprintf('Simulation results:\n'); % Simulate.
@@ -56,24 +56,33 @@ for k = 1 : length(specs)
 
     fprintf('\nInput/output mode profiles (figure 1)...\n');
     figure(1); subplot 111; % Generate image files.
-    my_area_plot(specs{k}.in.Hz, [K, 'a']);
-    my_area_plot(specs{k}.out.Hz, [K, 'b']);
+    my_area_plot(specs{k}.in.Hz, [basename, 'a']);
+    my_area_plot(specs{k}.out.Hz, [basename, 'b']);
     figure(1); % Plot images for user.
-    my_plot_images({['fig/', K, 'a.png'], 'Input mode (Hz)'}, ...
-                   {['fig/', K, 'b.png'], 'Output mode (Hz)'});
+    my_plot_images({[basename, 'a.png'], 'Input mode (Hz)'}, ...
+                   {[basename, 'b.png'], 'Output mode (Hz)'});
                    
     fprintf('\nDesign results (figure 2)...\n');
     figure(2); subplot 111; % Generate image files.
-    my_imagesc(eps_sim, flipud(colormap('bone')), ...
-        [min(eps{k}(:)), max(eps{k}(:))], [num2str(k), 'c']);
+    if (min(eps{k}(:)) < 0) % Custom colormap if we have metallic devices.
+        cmap = flipud([colormap('bone'); flipud(fliplr(colormap('bone')))]);
+        r = (abs(min(eps{k}(:))) + 1) / (max(eps{k}(:)) - 1); % Ratio.
+        n = size(cmap, 1);
+        ind = round(n/2 * (1 - r));
+        cmap = interp1(cmap, ind:(n-ind)/64:n);
+    else
+        cmap = flipud(colormap('bone'));
+    end
+    my_imagesc(eps_sim, cmap, ...
+        [min(eps{k}(:)), max(eps{k}(:))], [basename, 'c']);
     my_imagesc(abs(Hz), colormap('hot'), ...
-        mean(max(abs(Hz(1:20,50)))) * [0 1], [num2str(k), 'd']);
+        mean(max(abs(Hz(1:20,50)))) * [0 1], [basename, 'd']);
     my_imagesc(real(Hz), colormap('jet'), ...
-        mean(max(real(Hz(1:20,50)))) * [-1 1], [num2str(k), 'e']);
+        mean(max(real(Hz(1:20,50)))) * [-1 1], [basename, 'e']);
     figure(2); % Plot images for user.
-    my_plot_images({['fig/', K, 'c.png'], 'Relative permittivity'}, ...
-                   {['fig/', K, 'd.png'], '|Hz| (simulation)'}, ...
-                   {['fig/', K, 'e.png'], 'Re(Hz) (simulation)'});
+    my_plot_images({[basename, 'c.png'], 'Relative permittivity'}, ...
+                   {[basename, 'd.png'], '|Hz| (simulation)'}, ...
+                   {[basename, 'e.png'], 'Re(Hz) (simulation)'});
 
     fprintf('\nPress enter to continue...\n'); pause; % Wait for user.
 end
@@ -100,8 +109,8 @@ function my_imagesc(z, map, lims, filename)
 % Write out a mapped image.
 z = (((z)-lims(1)) / diff(lims) * 63) + 1;
 z = 1 * (z < 1) + 64 * (z > 64) + z .* ((z >= 1) & (z <= 64));
-imwrite(z', map, ['fig/', filename, '.png']);
-imwrite([64:-1:1]', map, ['fig/', filename, '_cbar.png']); % Colorbar.
+imwrite(z', map, [filename, '.png']);
+imwrite([64:-1:1]', map, [filename, '_cbar.png']); % Colorbar.
 
 
 function my_area_plot(z, filename)
@@ -110,10 +119,10 @@ h = area(1:length(z), z./max(abs(z)));
 % set(h, 'FaceColor', [255 194 0]./256); % Tangerine.
 axis([1 length(z) -3 3]);
 set(gca, 'ytick', []); % No ticks wanted.
-print(gcf, '-dpng', '-r150', ['fig/', filename]); % Save image.
-[im] = imread(['fig/', filename, '.png']); % Reload image.
+print(gcf, '-dpng', '-r150', [filename]); % Save image.
+[im] = imread([filename, '.png']); % Reload image.
 im = my_add_border(im(300:569,160:1059,:), 0); % Crop and add border.
-imwrite(uint8(im), ['fig/', filename, '.png'], 'png'); % Save.
+imwrite(uint8(im), [filename, '.png'], 'png'); % Save.
 
 function [A1] = my_add_border(A0, val)
 % Add a one pixel border around image.
