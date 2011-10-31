@@ -12,6 +12,8 @@ fun.f = @(x) 0.5 * norm(A * x - b)^2;
 fun.g = @(x) A' * (A * x - b);
 fun.h = @(x) A' * A;
 
+fun.f_cvx = @(x) norm(A * x - b);
+
 % Equality constraint.
 A_eq = randn(p, n);
 b_eq = randn(p, 1);
@@ -20,4 +22,4 @@ b_eq = randn(p, 1);
 A_in = speye(n);
 b_in = zeros(n, 1);
 
-interior_newton(fun, ones(n, 1), A_eq, b_eq, A_in, b_in, 1, 0.1, 0.995, err_tol);
+interior_newton(fun, ones(n, 1), A_eq, b_eq, A_in, b_in, 1, 0.01, 0.995, err_tol);

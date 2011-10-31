@@ -70,3 +70,25 @@ for mu = mu_0 * sigma.^[0:100]
 end
 
 semilogy(hist.err, '.-');
+xlabel('Error in KKT equations');
+ylabel('iterations');
+title('Interior Primal-Dual Full Newton Step Convergence');
+
+
+    %
+    % Compare against cvx.
+    %
+
+path(path, genpath('../cvx'));
+cvx_quiet(true);
+cvx_begin
+    variable x_star(length(x))
+    % minimize norm(fun.A*x_star - fun.b)
+    minimize fun.f_cvx(x_star)
+    subject to
+        A_eq * x_star - b_eq == 0
+        A_in * x_star - b_in >= 0
+cvx_end
+
+fprintf('Percent difference: %1.7f%% (cvx: %e, interior_newton: %e)\n', ...
+    100 * (fun.f(x_star) - fun.f(x))/fun.f(x_star), fun.f(x_star), fun.f(x));
