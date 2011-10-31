@@ -1,6 +1,7 @@
 function [] = test1(n)
 % Test lbfgs against a simple unconstrained quadratic problem.
 
+randn('state', 1);
 A = spdiags(randn(n, 7), -3:3, n, n);
 b = randn(n, 1);
 x_star = A \ b;
@@ -9,7 +10,7 @@ x_star = A \ b;
 fun = @(x) my_quad(A, b, x);
 
 tic
-res = lbfgs_unc(fun, zeros(n, 1), ...
+res = lbfgs_compact(fun, zeros(n, 1), ...
             'Display', 'final', ...
             'MaxIters', 1e4, ...
             'MaxFuncEvals', 1e4, ...
