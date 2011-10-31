@@ -151,6 +151,7 @@ end
 function [x] = inv_lemma(Ainv, B, C, b)
 % Matrix inversion lemma (also known as Sherman-Woodbury-Morrison formula).
 % An efficient way of computing (A + BC)x = b, given A^-1.
+% Reference: Appendix C.4.3, Convex Optimization, Boyd and Vandenberghe
 z = Ainv * b;
 E = speye(size(C, 1)) + C * Ainv * B;
 w = E \ (C * z);
