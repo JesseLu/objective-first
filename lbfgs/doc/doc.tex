@@ -1,0 +1,48 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\begin{document}
+As taken from section 19.3 of \cite{NW04}, 
+    the interior point method obtains step direction $p$ by solving
+\begin{equation}
+\begin{bmatrix}
+    \nabla^2_{xx}\mathit{L} & 0 & A_E^T(x) & A_I^T(x) \\
+    0 & \Sigma & 0 & -I \\
+    A_E(x) & 0 & 0 & 0 \\
+    A_I(x) & -I & 0 & 0
+\end{bmatrix}
+\begin{bmatrix} p_x \\ p_s \\ -p_y \\ -p_z \end{bmatrix}
+    = -
+\begin{bmatrix}
+    \nabla f(x) - A_E^T(x) y - A_I^T(x) z \\
+    z - \mu S^{-1} e \\
+    c_E(x) \\
+    c_I(x) - s
+\end{bmatrix}.
+\end{equation}
+
+This equation can be simplified by removing $p_s$ and then $p_z$.
+The reduced system is then
+\begin{equation}
+\begin{bmatrix}
+    \nabla^2_{xx}\mathit{L} + A_I^T(x) \Sigma A_I^T(x) & A_E^T(x) \\
+    A_E(x) & 0 
+\end{bmatrix}
+\begin{bmatrix} p_x \\ -p_y \end{bmatrix}
+    = -
+\begin{bmatrix}
+    \nabla f(x) - A_E^T(x) y - A_I(x) (z - \Sigma c_I(x) + \mu S^{-1} e) \\
+    c_E(x)
+\end{bmatrix},
+\end{equation}
+where
+\begin{align}
+    p_z &= -\Sigma A_I(x) p_x + \Sigma c_I(x) - \mu S^{-1} e \\
+    p_s &= -\Sigma^{-1} p_z + s - \mu Z^{-1} e.
+\end{align}
+
+
+\begin{thebibliography}{99}
+\bibitem{NW04} Nocedal and Wright, 
+    Numerical Optimization, Second Edition (Cambridge 2004)
+\end{thebibliography}
+\end{document}
