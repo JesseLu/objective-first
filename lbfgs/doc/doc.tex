@@ -36,9 +36,36 @@ The reduced system is then
 \end{equation}
 where
 \begin{align}
-    p_z &= -\Sigma A_I(x) p_x - \Sigma c_I(x) + \mu S^{-1} e \\
-    p_s &= A_I(x) p_x + c_I(x) - s
+    p_s &= A_I(x) p_x + c_I(x) - s \\
+    p_z &= -\Sigma A_I(x) p_x - \Sigma c_I(x) + \mu S^{-1} e.
 \end{align}
+
+We can focus the problem by only considering 
+    simple bound inequality constraints $l \le x \le u$, and
+    affine equality constraints $A x - b = 0$.
+Then our problem is written down as
+\begin{multline}
+\begin{bmatrix}
+    \nabla^2 f(x) + \Sigma_0 + \Sigma_1 & A^T \\
+    A & 0 
+\end{bmatrix}
+\begin{bmatrix} p_x \\ -p_y \end{bmatrix}
+    = \\ -
+\begin{bmatrix}
+    \nabla f(x) - A^T y + (-z_0 + \Sigma_0 (x - l) - \mu S_0^{-1} e) 
+                        + (z_1 - \Sigma_1 (u - x) + \mu S_1^{-1} e) \\
+    A x - b
+\end{bmatrix},
+\end{multline}
+where
+\begin{align}
+    p_{s_0} &= p_x + (x - l) - s_0 \\
+    p_{z_0} &= -\Sigma_0 p_x - \Sigma_0 (x - l) + \mu S_0^{-1} e \\
+    p_{s_1} &= -p_x + (u - x) - s_1 \\
+    p_{z_1} &= \Sigma_1 p_x - \Sigma_1 (u - x) + \mu S_1^{-1} e.
+\end{align}
+
+
 
 
 \begin{thebibliography}{99}
