@@ -62,8 +62,19 @@ where
     p_{s_0} &= p_x + (x - l) - s_0 \\
     p_{z_0} &= -\Sigma_0 p_x - \Sigma_0 (x - l) + \mu S_0^{-1} e \\
     p_{s_1} &= -p_x + (u - x) - s_1 \\
-    p_{z_1} &= \Sigma_1 p_x - \Sigma_1 (u - x) + \mu S_1^{-1} e.
+    p_{z_1} &= \Sigma_1 p_x - \Sigma_1 (u - x) + \mu S_1^{-1} e,
 \end{align}
+and the error function used is
+\begin{multline}
+E(x, s_0, s_1, y, z_0, z_1, \mu) = \text{max}\{ 
+    \| \nabla f(x) - A^T y - z_0 + z_1 \|, \\
+    \| S_0 z_0 - \mu e \|, 
+    \| S_1 z_1 - \mu e \|, 
+    \| A x - b \|, 
+    \|(x - l) - s_0 \|, 
+    \|(u - x) - s_1 \| \}
+\end{multline}
+
 
 
 

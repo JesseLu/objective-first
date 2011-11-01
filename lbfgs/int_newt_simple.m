@@ -19,7 +19,14 @@ kkt_res = @(x, s0, s1, y, z0, z1, mu) cat(1, ...
                         - z0 + my_diag(z0./s0) * (x - l) - mu * s0.^-1 ...
                         + z1 - my_diag(z1./s1) * (u - x) + mu * s1.^-1, ...
                         A * x - b);
-err = @(x, s0, s1, y, z0, z1, mu) norm(kkt_res(x, s0, s1, y, z0, z1, mu));
+% err = @(x, s0, s1, y, z0, z1, mu) norm(kkt_res(x, s0, s1, y, z0, z1, mu));
+err = @(x, s0, s1, y, z0, z1, mu) max(cat(1, ...
+                        norm(fun.g(x) - A' * y - z0 + z1), ...
+                        norm(s0 .* z0 - mu), ...
+                        norm(s1 .* z1 - mu), ...
+                        norm(A * x - b), ...
+                        norm(x - l - s0), ...
+                        norm(u - x - s1)));
 
 % System Hessian matrix.
 H_sys = @(x, s0, s1, y, z0, z1, mu) ...
@@ -40,7 +47,7 @@ calc_p_z1 = @(p, x, s1, z1, mu) ...
 my_pos = @(z) (z > 0) .* z + (z <= 0) * 1; % If negative, set to 1.
 f2b_rule = @(pz, z) min([1; my_pos(-tau*z./pz)]);
 
-hist.err(1) = err(x, s0, s1, y, z0, z1, mu_0);
+hist.err(1) = err(x, s0, s1, y, z0, z1, 0);
 tic
 for mu = mu_0 * sigma.^[0:100]
     for k = 1 : 100
@@ -67,20 +74,20 @@ for mu = mu_0 * sigma.^[0:100]
         z1 = z1 + alpha_dual * p.z1;
 
         % Calculate error.
-        hist.err(end+1) = err(x, s0, s1, y, z0, z1, mu);
+        hist.err(end+1) = err(x, s0, s1, y, z0, z1, 0);
 
         % Test inner loop termination condition.
-        if (hist.err(end) <= mu)
+        if (err(x, s0, s1, y, z0, z1, mu) <= mu)
             break
         end
     end
 
     % Test outer loop termination condition.
-    if (mu <= err_tol)
+    if (hist.err(end) <= err_tol)
         break
     end
 end
-time0 = toc
+time0 = toc;
 semilogy(hist.err, '.-');
 xlabel('Error in KKT equations');
 ylabel('iterations');
@@ -104,9 +111,11 @@ cvx_begin
         x_star >= l
         x_star <= u
 cvx_end
-time1 = toc
+time1 = toc;
 
-fprintf('Norm difference: %1.7f%% (cvx: %e, interior_newton: %e)\n', ...
-    100 * norm(x_star - x)/norm(x_star), fun.f(x_star), fun.f(x));
+fprintf('Percent error: %1.7f%% (compared against cvx result)\n',  ...
+    100 * norm(x_star - x)/norm(x_star));
+fprintf('Interior newton, fval: %e, time: %1.2f s\n', fun.f(x), time0);
+fprintf('cvx, fval: %e, time: %1.2f s\n', fun.f(x_star), time1);
 
 
