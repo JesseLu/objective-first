@@ -3,35 +3,35 @@ function [] = int_newt_red(fun, x, A_eq, b_eq, A_in, b_in, ...
 % Implementation with reduced system Hessian.
 
 % Choose initial values of variables
-s = ones(length(x), 1);
-y = zeros(length(b_eq), 1); % Dual variable for equality constraint.
-z = zeros(length(b_in), 1); % Dual variable for inequality constraint.
+s = x - b_in;
+y = ones(length(b_eq), 1); % Dual variable for equality constraint.
+z = ones(length(b_in), 1); % Dual variable for inequality constraint.
+
+% Helper functions.
+empty = @(x1, x2) sparse(length(x1), length(x2)); % Matrix filled with 0's.
+my_diag = @(x) spdiags(x, 0, length(x), length(x)); % Sparse diagonal matrix.
 
 % Error function.
-kkt_res = @(x, y, mu) cat(1, ...
+kkt_res = @(x, s, y, z, mu) cat(1, ...
                         fun.g(x) - A_eq' * y - A_in' * ...
                             (z - ...
                             my_diag(z./s) * (A_in * x - b_in) + ...
                             mu * s.^-1), ...
                         A_eq * x - b_eq);
-err = @(x, y, mu) norm(kkt_res(x, y, mu));
-
-% Helper functions (for creating system Hessian).
-empty = @(x1, x2) sparse(length(x1), length(x2)); % Matrix filled with 0's.
-my_diag = @(x) spdiags(x, 0, length(x), length(x)); % Sparse diagonal matrix.
+err = @(x, s, y, z, mu) norm(kkt_res(x, s, y, z, mu));
 
 % System Hessian matrix.
 H_sys = @(x, s, y, z, mu) ...
-    [(fun.h(x) + A_in' * my_diag(z./s) * A_in, A_eq';
+    [(fun.h(x) + A_in' * my_diag(z./s) * A_in), A_eq';
     A_eq, empty(y, y)];
 
 % Helper to calculate different components of p
 calc_p_xy = @(p) struct(   'x', p(1:length(x)), ...
                             'y', -p(length(x) + [1:length(y)]));
-calc_p_z = @(p, x, y, s, z, mu) ...
-            my_diag(z./s) * (-A_in * p.x + A_in * x - b_in) - mu * s.^-1;
-calc_p_s = @(p, x, y, s, z, mu) ...
-            -my_diag(s./z) * p.z + s - mu * z.^-1;
+calc_p_z = @(p, x, s, y, z, mu) ...
+            -my_diag(z./s) * (A_in * p.x + A_in * x - b_in) + mu * s.^-1;
+calc_p_s = @(p, x, s, y, z, mu) A_in * p.x + (A_in * x - b_in) - s;
+            % -my_diag(s./z) * p.z + s - mu * z.^-1;
 
 % Fraction-to-boundary rule (for inequality constraint).
 my_pos = @(z) (z > 0) .* z + (z <= 0) * 1; % If negative, set to 1.
@@ -43,10 +43,10 @@ for mu = mu_0 * sigma.^[0:100]
     for k = 1 : 100
 
         % Obtain search direction (p).
-        p = -H_sys(x, y, mu) \ kkt_res(x, y, mu);
+        p = -H_sys(x, s, y, z, mu) \ kkt_res(x, s, y, z, mu);
         p = calc_p_xy(p);
-        p = calc_p_z(p, x, y, s, z, mu);
-        p = calc_p_s(p, x, y, s, z, mu);
+        p.z = calc_p_z(p, x, s, y, z, mu);
+        p.s = calc_p_s(p, x, s, y, z, mu);
 
         % Compute alpha using the fraction-to-boundary rule.
         alpha_prim = f2b_rule(p.s, s);
@@ -98,8 +98,3 @@ fprintf('Percent difference: %1.7f%% (cvx: %e, interior_newton: %e)\n', ...
     100 * (fun.f(x_star) - fun.f(x))/fun.f(x_star), fun.f(x_star), fun.f(x));
 
 
-function [p] = my_split_p(p)
-
-split_p = @(p) struct(  'x', p(1:length(x)), ...
-                        'y', -p(length(x) + [1:length(y)]));
-p.z = -

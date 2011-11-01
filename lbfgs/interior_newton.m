@@ -2,9 +2,9 @@ function [] = interior_newton(fun, x, A_eq, b_eq, A_in, b_in, ...
                                 mu_0, sigma, tau, err_tol)
 
 % Choose initial values of variables
-s = ones(length(x), 1);
-y = zeros(length(b_eq), 1); % Dual variable for equality constraint.
-z = zeros(length(b_in), 1); % Dual variable for inequality constraint.
+s = x-b_in;
+y = ones(length(b_eq), 1); % Dual variable for equality constraint.
+z = ones(length(b_in), 1); % Dual variable for inequality constraint.
 
 % Error function.
 kkt_res = @(x, s, y, z, mu) cat(1, ...
