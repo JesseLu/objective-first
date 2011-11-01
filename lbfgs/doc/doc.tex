@@ -75,6 +75,35 @@ E(x, s_0, s_1, y, z_0, z_1, \mu) = \text{max}\{
     \|(u - x) - s_1 \| \}
 \end{multline}
 
+Lastly, inspired from section 11.7.3 of \cite{BL04}, 
+    we perform a backtracking line search (see section 9.2 or \cite{BL04})
+    in order to guarantee decrease of the residual
+    $r(x^+, s_0^+, s_1^+, y^+, z_0^+, z_1^+, \mu)$ where,
+    \begin{align*}
+    x^+ &= x + t \alpha_p p_x \\
+    s_0^+ &= s_0+t \alpha_p p_{s_0} \\
+    s_1^+ &= s_1+t \alpha_p p_{s_1} \\
+    y^+ &= y +\alpha_d p_y \\
+    z_0^+ &= z_0 + \alpha_d p_{z_0} \\
+    z_1^+ &= z_1+\alpha_d p_{z_1} 
+    \end{align*}
+    and,
+\begin{multline}
+    r(x, s_0, s_1, y, z_0, z_1, \mu) = \\
+\left\|
+\begin{bmatrix}
+    \nabla f(x) - A^T y + (-z_0 + \Sigma_0 (x - l) - \mu S_0^{-1} e) 
+                        + (z_1 - \Sigma_1 (u - x) + \mu S_1^{-1} e) \\
+    A x - b
+\end{bmatrix}\right\|_2.
+\end{multline}
+The exit condition for the line search is 
+    \begin{equation} r(x^+, s_0^+, s_1^+, y^+, z_0^+, z_1^+, \mu) \le
+    (1-\alpha t) r(x, s_0, s_1, y, z_0, z_1, \mu).
+    \end{equation}
+where $t$ is initially set to $t = \alpha_p$.
+
+
 
 
 
@@ -82,5 +111,7 @@ E(x, s_0, s_1, y, z_0, z_1, \mu) = \text{max}\{
 \begin{thebibliography}{99}
 \bibitem{NW04} Nocedal and Wright, 
     Numerical Optimization, Second Edition (Cambridge 2004)
+\bibitem{BL04} Boyd and Vandenberghe,
+    Convex Optimization (Cambridge 2004)
 \end{thebibliography}
 \end{document}

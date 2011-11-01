@@ -31,4 +31,5 @@ u = ones(n, 1);
 % subplot 122;
 % int_newt_red(fun, ones(n, 1), A_eq, b_eq, A_in, b_in, 1, 0.01, 0.995, err_tol);
 subplot 111;
-int_newt_simple(fun, 0.5 * ones(n, 1), l, u, A_eq, b_eq, 1, 0.1, 0.995, err_tol);
+int_newt_simple(fun, 0.5 * ones(n, 1), l, u, A_eq, b_eq, ...
+    1, 0.1, 0.995, 0.1, 0.5, err_tol);
