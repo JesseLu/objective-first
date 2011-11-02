@@ -1,6 +1,12 @@
 \documentclass{article}
 \usepackage{amsmath,amssymb}
 \begin{document}
+\title{Documentation of Objective-First Numerical Methods}
+\author{Jesse Lu}
+\maketitle
+\tableofcontents
+
+\section{Interior-point algorithm}
 As taken from section 19.3 of \cite{NW04}, 
     the interior point method obtains step direction $p$ by solving
 \begin{equation}
@@ -22,18 +28,18 @@ As taken from section 19.3 of \cite{NW04},
 
 This equation can be simplified by removing $p_s$ and then $p_z$.
 The reduced system is then
-\begin{equation}
+\begin{multline}
 \begin{bmatrix}
     \nabla^2_{xx}\mathcal{L} + A_I^T(x) \Sigma A_I^T(x) & A_E^T(x) \\
     A_E(x) & 0 
 \end{bmatrix}
 \begin{bmatrix} p_x \\ -p_y \end{bmatrix}
-    = -
+    = \\ -
 \begin{bmatrix}
     \nabla f(x) - A_E^T(x) y - A_I(x) (z - \Sigma c_I(x) + \mu S^{-1} e) \\
     c_E(x)
 \end{bmatrix},
-\end{equation}
+\end{multline}
 where
 \begin{align}
     p_s &= A_I(x) p_x + c_I(x) - s \\
@@ -103,12 +109,40 @@ The exit condition for the line search is
     \end{equation}
 where $t$ is initially set to $t = \alpha_p$.
 
+\section{Other}
+We now address the solution of a system with the following form:
+\begin{equation}
+    \left(\begin{bmatrix} D & A^T \\ A & 0 \end{bmatrix} + UV^T\right)x = 
+    (\hat{A} + UV^T)x = b. \label{eq:main}
+\end{equation}
 
+First, we obtain a method to solve $\hat{A}^{-1} x$.
+We choose to use block substitution to do so. 
+Such a method solves 
+\begin{equation}
+    \hat{A}y = 
+    \begin{bmatrix} D & A^T \\ A & 0 \end{bmatrix}
+    \begin{bmatrix} y_1 \\ y_2 \end{bmatrix} = 
+    \begin{bmatrix} d_1 \\ d_2 \end{bmatrix}
+\end{equation}
+by computing
+\begin{align}
+    y_2 &= S^{-1} (d_2 - A D^{-1} d_1) \\
+    y_1 &= D^{-1} ( d_1 - A^T y_2).
+\end{align}
 
+Next, we solve \ref{eq:main} by employing the matrix inversion lemma,
+    \begin{equation}
+    (A+UV^T)^{-1} = A^{-1} - A^{-1}U(I + V^T A^{-1}U)^{-1} V^T A^{-1},
+    \end{equation}
+    in the following way:
+\begin{align}
+    Y &= \hat{A}^{-1} U \\
+    z &= \hat{A}^{-1} b \\
+    x &= z - Y (I + V^T Y)^{-1} V^T z.
+\end{align}
 
-
-
-\begin{thebibliography}{99}
+    \begin{thebibliography}{99}
 \bibitem{NW04} Nocedal and Wright, 
     Numerical Optimization, Second Edition (Cambridge 2004)
 \bibitem{BL04} Boyd and Vandenberghe,

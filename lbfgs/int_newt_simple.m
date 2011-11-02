@@ -2,6 +2,10 @@ function [] = int_newt_simple(fun, x, l, u, A, b, ...
                                 mu_0, sigma, tau, alpha, beta, err_tol)
 % Implementation with reduced system Hessian, simple upper and lower bounds.
 
+    %
+    % Set up variables and helper functions.
+    %
+
 % Choose initial values of variables
 s0 = x - l; % Slack variable for lower bound.
 z0 = ones(length(l), 1); % Dual variable for lower bound.
@@ -57,6 +61,11 @@ calc_p_z1 = @(p, x, s1, z1, mu) ...
 my_pos = @(z) (z > 0) .* z + (z <= 0) * 1; % If negative, set to 1.
 f2b_rule = @(pz, z) min([1; my_pos(-tau*z./pz)]);
 
+
+    %
+    % Optimize!
+    %
+
 hist.err(1) = err(x, s0, s1, y, z0, z1, 0);
 hist.err_mu(1) = err(x, s0, s1, y, z0, z1, mu_0);
 hist.t(1) = nan;
@@ -107,6 +116,8 @@ for mu = mu_0 * sigma.^[0:100]
     end
 end
 time0 = toc;
+
+% Plot results.
 semilogy(0:length(hist.err)-1, [hist.err; hist.err_mu; hist.t]', '.-');
 xlabel('Error in KKT equations');
 ylabel('iterations');
@@ -142,12 +153,11 @@ fprintf('cvx, fval: %e, time: %1.2f s\n', fun.f(x_star), time1);
 function [t] = backtrack_search(f, t, alpha, beta);
 % Backtracking line search on one-dimensional function f.
 t = 1;
-% return
 f0 = f(0);
-y = [];
+y = []; % For debugging purposes.
 x = [];
 while f(t) > (1 - alpha * t) * f(0)
-    y(end+1) = f(t) - f(0);
+    y(end+1) = f(t);
     x(end+1) = t;
     t = beta * t;
     if (t <= 1e-6) % Just try to get some improvement.
@@ -155,7 +165,7 @@ while f(t) > (1 - alpha * t) * f(0)
         alpha = 0;
     end
     if (t <= eps) % Not a descent direction.
-        semilogx(x, y, '.-');
+        semilogx(x, y - f0, '.-');
         drawnow
         error('Backtracking line-search failed.');
         break
