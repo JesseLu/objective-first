@@ -1,4 +1,4 @@
-function [] = test1(n)
+function [] = test1(n, tol, max_iters)
 % Test lbfgs against a simple unconstrained quadratic problem.
 
 randn('state', 1);
@@ -9,23 +9,53 @@ x_star = A \ b;
 % Solve using lbfgs.
 fun = @(x) my_quad(A, b, x);
 
-tic
-res = lbfgs_compact(fun, zeros(n, 1), ...
-            'Display', 'final', ...
-            'MaxIters', 1e4, ...
-            'MaxFuncEvals', 1e4, ...
-            'StopTol', 1e-3, ...
-            'RelFuncTol', 0, ...
-            'LineSearch_method', 'more-thuente');
-toc
+trials = {  {'lbfgs_compact', 'Compact with MT linesearch'}, ...
+            {'lbfgs_outer', 'Uses lbfgs_update with MT linesearch'}, ...
+            {'lbfgs_compact_bt', 'Compact with BT linesearch'}, ...
+            {'lbfgs_outer_bt', 'Uses lbfgs_update with BT linesearch'}};
 
-
-if (res.ExitFlag == 0)
-    fprintf('Successfully stopped on gradient-norm termination condition.\n');
-else
-    error('Unsuccessful termination (exit flag %d)\n', res.ExitFlag);
+for k = 1 : length(trials)
+    fprintf(['\n', trials{k}{2}, '\n']);
+    tstart = tic;
+    res = feval(trials{k}{1}, fun, zeros(n, 1), ...
+                'Display', 'off', ...
+                'MaxIters', max_iters, ...
+                'MaxFuncEvals', 1e4, ...
+                'StopTol', tol, ...
+                'RelFuncTol', 0, ...
+                'LineSearch_method', 'more-thuente');
+    fprintf('iters: %d, fevals: %d, fval: %1.3e, err: %1.3e, time: %1.3f s\n', ...
+        res.Iters, res.FuncEvals, res.F, norm(res.G)/n, toc(tstart));
 end
-fprintf('Error: %e (l-bfgs), %e (direct).\n', fun(res.X), fun(x_star));
+
+tic
+% Custom, simple lbfgs algorithm, using lbfgs_update.
+fprintf('\nCustom lbfgs algorithm\n');
+n_max = 5;
+x = zeros(n, 1);
+[f, g] = feval(fun, x);
+h = [];
+num_iters = 0;
+while norm(g)/n > tol % Termination condition.
+    if isempty(h) % Initialize.
+        [delta, M, W, h] = lbfgs_update(x, g, n_max, h);
+        p = -g; % Just go in steepest-descent direction.
+    else
+        [delta, M, W, h] = lbfgs_update(x, g, n_max, h);
+        p = arrow_solve((delta)*ones(n,1), ones(0,n), -W*M, W, -g);
+    end
+    
+    f_t = @(t) fun(x + t * p);
+    t = backtrack_linesearch(f_t, 1, f_t(0), (g' * p), 0.1, 0.5);
+
+    x_prev = x;
+    g_prev = g;
+
+    x = x_prev + t * p;
+    [f, g] = fun(x);
+    num_iters = num_iters + 1;
+end
+fprintf('%d iterations, fval = %e, ||g||/n = %e\n', num_iters, f, norm(g)/n);
 
 
 function [fval, grad] = my_quad(A, b, x)

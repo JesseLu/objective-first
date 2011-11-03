@@ -140,6 +140,10 @@ while out.ExitFlag == -1
 
     % Compute step length
     [xk,fk,gk,ak,lsinfo,nfev] = poblano_linesearch(FUN,xk,fk,gk,ak,pk,params.Results);
+    f = @(t) FUN(xkold + t * pk);
+    t = backtrack_linesearch(f, 1, f(0), gkold'*pk, 0.1, 0.5);
+    xk = xkold + t * pk;
+    [fk, gk] = FUN(xk);
     if (lsinfo ~= 1) && strcmp(params.Results.Display, 'iter')
         fprintf(1,[mfilename,': line search warning = %d\n'],lsinfo);
     end

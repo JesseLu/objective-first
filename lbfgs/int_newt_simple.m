@@ -87,7 +87,7 @@ for mu = mu_0 * sigma.^[0:100]
         alpha_dual = f2b_rule([p.z0; p.z1], [z0; z1]);
 
         % Perform a backtracking (Armijo) line search.
-        t = backtrack_search(@(t) ...
+        t = simple_backtrack(@(t) ...
             phi(x, s0, s1, y, z0, z1, mu, alpha_prim, alpha_dual, p, t), ...
             alpha_prim, alpha, beta);
 
@@ -150,9 +150,9 @@ fprintf('Interior newton, fval: %e, time: %1.2f s\n', fun.f(x), time0);
 fprintf('cvx, fval: %e, time: %1.2f s\n', fun.f(x_star), time1);
 
 
-function [t] = backtrack_search(f, t, alpha, beta);
+function [t] = simple_backtrack(f, t, alpha, beta);
 % Backtracking line search on one-dimensional function f.
-t = 1;
+% t = 1;
 f0 = f(0);
 y = []; % For debugging purposes.
 x = [];
