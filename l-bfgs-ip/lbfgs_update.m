@@ -13,8 +13,8 @@ function [delta, M, W, h] = lbfgs_update(x, g, n_max, h)
 if isempty(h) 
     % For restart, we simply guess a scaling value of 1.
     delta = 1;
-    W = [];
-    M = [];
+    W = zeros(length(x),0);
+    M = zeros(0);
     h.S = [];
     h.Y = [];
     h.x_prev = x;
