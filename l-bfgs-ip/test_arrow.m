@@ -1,4 +1,5 @@
 function [] = test_arrow(n, p, q)
+% Test to solve augmented arrow matrix.
 
 randn('state', 1);
 

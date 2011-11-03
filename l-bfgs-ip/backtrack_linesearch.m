@@ -1,5 +1,6 @@
 function [t] = backtrack_linesearch(f, t, f0, g0dx, alpha, beta);
 % Backtracking line search on one-dimensional function f.
+% Assumes alpha in (0, 0.5) and beta in (0, 1).
 
 % y = []; % For debugging purposes.
 % x = [];

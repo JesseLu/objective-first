@@ -2,6 +2,7 @@ function [] = int_newt_simple(fun, x, l, u, A, b, ...
                                 mu_0, sigma, tau, alpha, beta, err_tol)
 % Implementation with reduced system Hessian, simple upper and lower bounds.
 
+
     %
     % Set up variables and helper functions.
     %

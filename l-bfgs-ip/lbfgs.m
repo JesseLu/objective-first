@@ -1,4 +1,5 @@
 function [x, num_iters] = lbfgs(fun, x, tol)
+% Simple implementation of a l-bfgs algorithm (backtracking line search).
 n = length(x);
 n_max = 5;
 [f, g] = feval(fun, x);

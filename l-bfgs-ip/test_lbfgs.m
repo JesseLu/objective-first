@@ -1,4 +1,4 @@
-function [] = test1(n, tol, max_iters)
+function [] = test_lbfgs(n, tol, max_iters)
 % Test lbfgs against a simple unconstrained quadratic problem.
 
 randn('state', 1);

@@ -1,4 +1,5 @@
 function [delta, M, W, h] = lbfgs_update(x, g, n_max, h)
+% Updates the l-bfgs approximation to the hessian of a function.
 % s is x_cur - x_old
 % y is g_cur - g_old
 % If h is empty, then will restart.

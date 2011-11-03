@@ -1,6 +1,7 @@
 function [] = lbfgs_ip(fun, x, l, u, A, b, ...
                                 mu_0, sigma, tau, alpha, beta, err_tol)
 % L-BFGS Interior-Point algorithm.
+% Assumes A is skinny and has linearly independent columns.
 
     %
     % Set up variables and helper functions.
@@ -75,9 +76,11 @@ tic
 for mu = mu_0 * sigma.^[0:100]
     for k = 1 : 100
 
-        % Obtain search direction (p).
-        [delta, M, W, h] = lbfgs_update(x, fun.g(x), n_max, h);
+        % L-BFGS approximation of Hessian function.
+        [delta, M, W, h] = lbfgs_update(x, fun.g(x), n_max, h); 
         W = [W; zeros(size(A, 1), size(W, 2))];
+
+        % Obtain search direction (p).
         p = arrow_solve(delta + z0./s0 + z1./s1, A, -W*M, W, ...
             -kkt_res(x, s0, s1, y, z0, z1, mu));
 

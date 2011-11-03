@@ -50,20 +50,23 @@ We can focus the problem by only considering
     simple bound inequality constraints $l \le x \le u$, and
     affine equality constraints $A x - b = 0$.
 Then our problem is written down as
-\begin{multline}
+\begin{equation}
 \begin{bmatrix}
     \nabla^2 f(x) + \Sigma_0 + \Sigma_1 & A^T \\
     A & 0 
 \end{bmatrix}
 \begin{bmatrix} p_x \\ -p_y \end{bmatrix}
-    = \\ -
+    = -
 \begin{bmatrix}
-    \nabla f(x) - A^T y + (-z_0 + \Sigma_0 (x - l) - \mu S_0^{-1} e) 
-                        + (z_1 - \Sigma_1 (u - x) + \mu S_1^{-1} e) \\
-    A x - b
+    \nabla f(x) - A^T y + h_0 + h_1 \\ A x - b
 \end{bmatrix},
-\end{multline}
+\end{equation}
 where
+\begin{align}
+h_0 &= -z_0 + \Sigma_0 (x - l) - \mu S_0^{-1} e \\
+h_1 &= z_1 - \Sigma_1 (u - x) + \mu S_1^{-1} e, 
+\end{align}
+the other components of $p$ are
 \begin{align}
     p_{s_0} &= p_x + (x - l) - s_0 \\
     p_{z_0} &= -\Sigma_0 p_x - \Sigma_0 (x - l) + \mu S_0^{-1} e \\
@@ -78,7 +81,7 @@ E(x, s_0, s_1, y, z_0, z_1, \mu) = \text{max}\{
     \| S_1 z_1 - \mu e \|, 
     \| A x - b \|, 
     \|(x - l) - s_0 \|, 
-    \|(u - x) - s_1 \| \}
+    \|(u - x) - s_1 \| \}.
 \end{multline}
 
 Lastly, inspired from section 11.7.3 of \cite{BL04}, 
@@ -109,7 +112,7 @@ The exit condition for the line search is
     \end{equation}
 where $t$ is initially set to $t = \alpha_p$.
 
-\section{Other}
+\section{Solving an augmented-arrow system}
 We now address the solution of a system with the following form:
 \begin{equation}
     \left(\begin{bmatrix} D & A^T \\ A & 0 \end{bmatrix} + UV^T\right)x = 
@@ -142,7 +145,23 @@ Next, we solve \ref{eq:main} by employing the matrix inversion lemma,
     x &= z - Y (I + V^T Y)^{-1} V^T z.
 \end{align}
 
-    \begin{thebibliography}{99}
+\section{Outer-product form of L-BFGS}
+We use an outer-product form of the 
+    limited-memory Broyden-Fletcher-Goldfarb-Shanno (L-BFGS) algorithm
+    (See chapter 7.2 of \cite{NW04}).
+This form produces a diagonal plus low-rank approximation
+    of the Hessian of a function,
+    \begin{equation}
+    \tilde{H} = \delta I + W M W^T
+    \end{equation}
+    based on a limited sampling of previous gradients of the function.
+
+% The values in the approximation, $\delta$, $W$, and $M$, are calculated from
+%     a limited list of previous gradients, $\nabla f(x_i)$, as follows:
+
+\section{Backtracking-line search}
+
+\begin{thebibliography}{99}
 \bibitem{NW04} Nocedal and Wright, 
     Numerical Optimization, Second Edition (Cambridge 2004)
 \bibitem{BL04} Boyd and Vandenberghe,

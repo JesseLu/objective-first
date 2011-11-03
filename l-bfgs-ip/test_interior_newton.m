@@ -1,4 +1,4 @@
-function [] = test3(n, p, err_tol)
+function [] = test_interior_newton(n, p, err_tol)
 % Test interior_newton.
 
 randn('state', 1);
