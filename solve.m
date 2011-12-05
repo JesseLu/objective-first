@@ -1,4 +1,4 @@
-function [eps] = solve(spec, max_iters, min_grad, varargin)
+function [eps, f, g, var_len, x] = solve(spec, max_iters, min_grad, varargin)
 % EPS = SOLVE(SPEC, MAX_ITERS, MIN_GRAD, [METHOD])
 %
 % Description
@@ -89,7 +89,7 @@ grad = @(x, p) [((S.res * A_x(p))' * (S.res * A_x(p)) * x); ...
     % Helper functions for optimization process.
     %
 
-% Functions to include add boundary values to interior values of x and p.
+% Functions to include boundary values to interior values of x and p.
 p_full = @(pin) S.int' * pin + S.bnd' * p_bnd;
 x_full = @(xin) S.int' * xin + S.bnd' * x_bnd;
 
@@ -156,6 +156,78 @@ switch method
             end
         end
 
+    case 'admm'
+        % Alternating directions method of multipliers.
+        % *   Should provide faster convergence than alternating directions.
+        % *   Reference: Boyd et al, Distributed Optimization and Statistical 
+        %     Learning via the Alternating Direction Method of Multipliers, 
+        %     Foundations and Trends in Machine Learning (2011).
+
+        rho = 1e0; % "Robustification" parmeter.
+        y = {zeros(N, 1), zeros(N, 1)}; % Dual variable.
+        x = {zeros(length(x_int), 1), zeros(length(x_int), 1)};
+
+        fprintf('Starting the ADMM solver (rho = %e)...\n', rho);
+        print_header('x/p'); % Print header information for progress.
+        start_time = tic; % For timing purposes.
+
+        for k = 1 : max_iters
+            % Solve for x_int.
+            A = A_x(p_full(p_int)) * S.int';
+            b = -A_x(p_full(p_int)) * S.bnd' * x_bnd;
+            b = {real(b), imag(b)};
+            for l = 1 : 2
+            x{l} = x{l} - ...
+                ((rho * A' * A) \ ...
+                    (rho * A' * (A * x{l} - b{l}) + A' * y{l}));
+            end
+            fprintf('(x) '); print_prog(k, x{1} + i * x{2}, p_int)
+
+            % Solve for p_int.
+            A = A_p(x_full(x{1} + i * x{2})) * S.int';
+            b = -A_p(x_full(x{1} + i * x{2})) * S.bnd' * p_bnd + ...
+                b_p(x_full(x{1} + i * x{2}));
+            A = [real(A); imag(A)];
+            b = [real(b); imag(b)];
+            cvx_quiet(true);
+            cvx_begin
+                variable p_int(length(p_int))
+                minimize (rho/2 * quad_form(A * p_int - b, speye(2 * N)) + ...
+                    ([y{1}; y{2}]' * (A * p_int - b)))
+%                     real(y)' * real(A * p_int - b) + ...
+%                     imag(y)' * imag(A * p_int - b))
+                subject to
+                    p_int >= 0
+                    p_int <= 1
+            cvx_end
+%             p_int = p_int - ...
+%                 ((rho * A' * A) \ (rho * A' * (A * p_int - b) + A' * y));
+            fprintf('(p) '); print_prog(k, x{1} + i * x{2}, p_int)
+
+            % Update y
+            r_p = (A * p_int - b);
+            A = A_x(p_full(p_int)) * S.int';
+            b = -A_x(p_full(p_int)) * S.bnd' * x_bnd;
+            b = {real(b), imag(b)};
+            r_x = [(A * x{1} - b{1}); (A * x{2} - b{2})];
+            % norm(r_p - r_x)
+
+            for l = 1 : 2
+                y{l} = y{l} + rho * (A * x{l} - b{l});
+            end
+
+
+            % Visualize.
+            ob1_plot(dims,  {'p', p_full(p_int)}, ...
+                            {'|x|', abs(x_full(x{1} + i * x{2}))}, ...
+                            {'Re(x)', real(x_full(x{1} + i * x{2}))});
+
+            % Check for gradient norm stopping condition.
+            if (norm(grad(x_full(x_int), p_full(p_int))) < min_grad)
+                fprintf('Gradient norm stopping condition satisfied.');
+                break
+            end
+        end
     otherwise
         error('Invalid choice of METHOD (%s).', method);
 end
