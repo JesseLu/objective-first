@@ -163,7 +163,7 @@ switch method
         %     Learning via the Alternating Direction Method of Multipliers, 
         %     Foundations and Trends in Machine Learning (2011).
 
-        rho = 1e0; % "Robustification" parmeter.
+        rho = 1e-6; % "Robustification" parmeter.
         y = {zeros(N, 1), zeros(N, 1)}; % Dual variable.
         x = {zeros(length(x_int), 1), zeros(length(x_int), 1)};
 
