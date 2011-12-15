@@ -10,7 +10,7 @@ eps0(:,30:50) = 12.25;
 % The 2-cell boundary layer is left unchanged because the boundary conditions
 % use these cells.
 % Feel free to comment out this line, you will still get a working design!
-eps0(3:end-2,3:end-2) = 9.0;
+% eps0(3:end-2,3:end-2) = 9.0;
 
 % Setup the design. Specifically, we want
 % *   a design frequency of 0.15,
