@@ -156,6 +156,49 @@ switch method
             end
         end
 
+    case 'alt_dir_mod'
+        % Alternating directions method.
+        % *   The basic idea is to alternately optimize for x and then p.
+        % *   This allows us to use standard, guaranteed-to-work solvers.
+        % *   Although this method is slow, it should always approach a 
+        %     solution.
+
+        fprintf('Starting the alternating directions solver...\n');
+        print_header('x/p'); % Print header information for progress.
+        start_time = tic; % For timing purposes.
+        ptot = norm(p_int, 1);
+        for k = 1 : max_iters
+            % Solve for x_int.
+            x_int = (A_x(p_full(p_int)) * S.int') \ ...
+                    (-A_x(p_full(p_int)) * S.bnd' * x_bnd);
+            fprintf('(x) '); print_prog(k, x_int, p_int)
+
+            % Solve for p_int.
+            cvx_quiet(true);
+            cvx_begin
+                variable p_int(length(p_int))
+                minimize norm(A_p(x_full(x_int)) * ...
+                                (S.int' * p_int + S.bnd' * p_bnd) - ...
+                                b_p(x_full(x_int)))
+                subject to
+                    p_int >= 0
+                    p_int <= 1
+                    norm(p_int, 1) <= ptot
+            cvx_end
+            fprintf('(p) '); print_prog(k, x_int, p_int)
+
+            % Visualize.
+            ob1_plot(dims,  {'p', p_full(p_int)}, ...
+                            {'|x|', abs(x_full(x_int))}, ...
+                            {'Re(x)', real(x_full(x_int))});
+
+            % Check for gradient norm stopping condition.
+            if (norm(grad(x_full(x_int), p_full(p_int))) < min_grad)
+                fprintf('Gradient norm stopping condition satisfied.');
+                break
+            end
+        end
+
     otherwise
         error('Invalid choice of METHOD (%s).', method);
 end
