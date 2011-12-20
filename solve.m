@@ -166,7 +166,7 @@ switch method
         fprintf('Starting the alternating directions solver...\n');
         print_header('x/p'); % Print header information for progress.
         start_time = tic; % For timing purposes.
-        ptot = norm(p_int, 1);
+            ptot = 1.0 * norm(p_int, 1);
         for k = 1 : max_iters
             % Solve for x_int.
             x_int = (A_x(p_full(p_int)) * S.int') \ ...
@@ -174,6 +174,7 @@ switch method
             fprintf('(x) '); print_prog(k, x_int, p_int)
 
             % Solve for p_int.
+            % ptot = norm(p_int, 1);
             cvx_quiet(true);
             cvx_begin
                 variable p_int(length(p_int))
