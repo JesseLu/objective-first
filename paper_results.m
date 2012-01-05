@@ -14,28 +14,28 @@ function [] = paper_results()
 % In order to recalculate the results, the first section of this script must
 % be uncommented.
 
-% 
+
 %     %
 %     % Generate the five designs found in the paper.
 %     % This section must be uncommented if you want to re-generate the results
 %     % yourself.
 %     %
 % 
-% dims = [40 80]; % Dimensions of all the couplers.
-% eps_uniform = 9.0; % Uniform value of epsilon within design area.
-% eps_lims = [1 12.25]; % Limited range of epsilon.
-% num_iters = 400; % Number of iterations to run the design optimization for.
-% 
-% % Create the specifications for the various design problems.
-% specs = create_specs(dims, eps_lims, eps_uniform);
-% 
-% for k = 1 : length(specs)
-%     eps{k} = solve(specs{k}, num_iters, 1e-6);
-%     simulate(specs{k}, eps{k}, [200 160]);
-% end
-% 
-% save('precomp_results.mat', 'eps', 'specs');
-%
+dims = [40 80]; % Dimensions of all the couplers.
+eps_uniform = 9.0; % Uniform value of epsilon within design area.
+eps_lims = [1 12.25]; % Limited range of epsilon.
+num_iters = 4; % Number of iterations to run the design optimization for.
+
+% Create the specifications for the various design problems.
+specs = create_specs(dims, eps_lims, eps_uniform);
+
+for k = 1 : length(specs)
+    eps{k} = solve(specs{k}, num_iters, 1e-6);
+    simulate(specs{k}, eps{k}, [200 160]);
+end
+
+
+save('precomp_results.mat', 'eps', 'specs');
 
     %
     % Load data and generate figures.
@@ -207,3 +207,174 @@ eps(end-1:end,  (dims(2)-w(2))/2:(dims(2)+w(2))/2) = -2; % Output wg.
 eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
 
 spec{5} = setup(0.25, eps, eps_lims, [1 1]);
+
+
+    %
+    %
+    % APPENDIX FIGURES
+    %
+    %
+
+
+    %
+    % Couplers between the four propagating modes of a wide waveguide.
+    %
+
+w = 24; % Width of the waveguide. Wider, so as to allow for four modes.
+eps = ones(dims);
+eps(:,(dims(2)-w)/2:(dims(2)+w)/2) = 12.25;
+eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
+
+spec{6} = setup(0.15, eps, eps_lims, [1 2]);
+spec{7} = setup(0.15, eps, eps_lims, [1 3]);
+spec{8} = setup(0.15, eps, eps_lims, [1 4]);
+spec{9} = setup(0.15, eps, eps_lims, [2 3]);
+spec{10} = setup(0.15, eps, eps_lims, [2 4]);
+spec{11} = setup(0.15, eps, eps_lims, [3 4]);
+ 
+
+    %
+    % Couplers from fiber input waveguide.
+    %
+
+w = [48 16]; % Widths of the waveguides
+eps = ones(dims);
+eps(1:2,  (dims(2)-w(1))/2:(dims(2)+w(1))/2) = 2.25; % Input wg.
+eps(end-1:end,(dims(2)-w(2))/2:(dims(2)+w(2))/2) = 12.25; % Output wg.
+eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
+
+spec{12} = setup(0.15, eps, eps_lims, [1 2]);
+
+% To air-core.
+eps = ones(dims);
+eps(1:2,  (dims(2)-w(1))/2:(dims(2)+w(1))/2) = 2.25; % Input wg.
+
+% Create output waveguide.
+l = 30; % An effective wavelength.
+qw_air = round(l/4); % Quarter wavelength in air.
+qw_si = round(qw_air/3.5); % Quarter wavelength in silicon.
+eps_temp = [ones(1, qw_air), 12.25*ones(1, qw_si)]; % One period.
+
+% Create quarter-wavelength stack.
+epsilon1 = repmat(eps_temp, 1, ceil(dims(2)/2/(qw_air + qw_si))); 
+epsilon1 = epsilon1(1:dims(2)/2); % Trim.
+epsilon1 = [epsilon1(end:-1:1), epsilon1]; % Mirror, to create cavity.
+
+eps(end-1:end,:)  = repmat(epsilon1, 2, 1); % Stretch out to fill space.
+eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
+
+spec{13} = setup(0.25, eps, eps_lims, [1 9]);
+
+
+% Coupler to a metal-insulator-metal plasmonic waveguide.
+w = [48 2]; % Widths of input and output waveguides.
+eps = ones(dims);
+eps(1:2,  (dims(2)-w(1))/2:(dims(2)+w(1))/2) = 2.25; % Input wg.
+eps(end-1:end, :) = -2; % Output plasmonic wg.
+eps(end-1:end,  (dims(2)-w(2))/2:(dims(2)+w(2))/2) = 1; 
+eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
+
+spec{14} = setup(0.25, eps, eps_lims, [1 1]);
+
+% Coupler to a plasmonic wire.
+w = [48 2]; % Widths of input and output waveguides.
+eps = ones(dims);
+eps(1:2,        (dims(2)-w(1))/2:(dims(2)+w(1))/2) = 2.25; % Input wg.
+eps(end-1:end,  (dims(2)-w(2))/2:(dims(2)+w(2))/2) = -2; % Output wg.
+eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
+
+spec{15} = setup(0.25, eps, eps_lims, [1 1]);
+
+
+% Coupler to a metal-insulator-metal plasmonic waveguide.
+w = [10 2]; % Widths of input and output waveguides.
+eps = ones(dims);
+eps(1:2,        (dims(2)-w(1))/2:(dims(2)+w(1))/2) = 12.25; % Input wg.
+for shift = 13 * [-2:2]
+    if shift == 26 
+        e_val = -1.6;
+    else
+        e_val = -2.0;
+    end
+    eps(end-1:end,  (dims(2)-w(2))/2+shift:(dims(2)+w(2))/2+shift) = e_val; 
+end
+eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
+spec{16} = setup(0.25, eps, eps_lims, [1 1]);
+
+% Coupler to a metal-insulator-metal plasmonic waveguide.
+w = [10 2]; % Widths of input and output waveguides.
+eps = ones(dims);
+eps(1:2,        (dims(2)-w(1))/2:(dims(2)+w(1))/2) = 12.25; % Input wg.
+for shift = 13 * [-2:2]
+    if shift == 13 
+        e_val = -1.6;
+    else
+        e_val = -2.0;
+    end
+    eps(end-1:end,  (dims(2)-w(2))/2+shift:(dims(2)+w(2))/2+shift) = e_val; 
+end
+eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
+spec{17} = setup(0.25, eps, eps_lims, [1 1]);
+
+% Coupler to a metal-insulator-metal plasmonic waveguide.
+w = [10 2]; % Widths of input and output waveguides.
+eps = ones(dims);
+eps(1:2,        (dims(2)-w(1))/2:(dims(2)+w(1))/2) = 12.25; % Input wg.
+for shift = 13 * [-2:2]
+    if shift == 0 
+        e_val = -1.6;
+    else
+        e_val = -2.0;
+    end
+    eps(end-1:end,  (dims(2)-w(2))/2+shift:(dims(2)+w(2))/2+shift) = e_val; 
+end
+eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
+spec{18} = setup(0.25, eps, eps_lims, [1 1]);
+
+% Coupler to a metal-insulator-metal plasmonic waveguide.
+w = [10 2]; % Widths of input and output waveguides.
+eps = ones(dims);
+eps(1:2,        (dims(2)-w(1))/2:(dims(2)+w(1))/2) = 12.25; % Input wg.
+eps(end-1:end,:) = -2;
+for shift = 13 * [-2:2]
+    if shift == 0 
+        e_val = 1.1;
+    else
+        e_val = 1;
+    end
+    eps(end-1:end,  (dims(2)-w(2))/2+shift:(dims(2)+w(2))/2+shift) = e_val; 
+end
+eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
+spec{19} = setup(0.25, eps, eps_lims, [1 1]);
+
+% Coupler to a metal-insulator-metal plasmonic waveguide.
+w = [10 2]; % Widths of input and output waveguides.
+eps = ones(dims);
+eps(1:2,        (dims(2)-w(1))/2:(dims(2)+w(1))/2) = 12.25; % Input wg.
+eps(end-1:end,:) = -2;
+for shift = 13 * [-2:2]
+    if shift == -13 
+        e_val = 1.1;
+    else
+        e_val = 1;
+    end
+    eps(end-1:end,  (dims(2)-w(2))/2+shift:(dims(2)+w(2))/2+shift) = e_val; 
+end
+eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
+spec{20} = setup(0.25, eps, eps_lims, [1 1]);
+
+% Coupler to a metal-insulator-metal plasmonic waveguide.
+w = [10 2]; % Widths of input and output waveguides.
+eps = ones(dims);
+eps(1:2,        (dims(2)-w(1))/2:(dims(2)+w(1))/2) = 12.25; % Input wg.
+eps(end-1:end,:) = -2;
+for shift = 13 * [-2:2]
+    if shift == -26 
+        e_val = 1.1;
+    else
+        e_val = 1;
+    end
+    eps(end-1:end,  (dims(2)-w(2))/2+shift:(dims(2)+w(2))/2+shift) = e_val; 
+end
+eps(3:end-2, 3:end-2) = eps_uniform; % Fill the design area with uniform eps.
+spec{21} = setup(0.25, eps, eps_lims, [1 1]);
