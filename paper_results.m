@@ -21,21 +21,21 @@ function [] = paper_results()
 %     % yourself.
 %     %
 % 
-dims = [40 80]; % Dimensions of all the couplers.
-eps_uniform = 9.0; % Uniform value of epsilon within design area.
-eps_lims = [1 12.25]; % Limited range of epsilon.
-num_iters = 4; % Number of iterations to run the design optimization for.
-
-% Create the specifications for the various design problems.
-specs = create_specs(dims, eps_lims, eps_uniform);
-
-for k = 1 : length(specs)
-    eps{k} = solve(specs{k}, num_iters, 1e-6);
-    simulate(specs{k}, eps{k}, [200 160]);
-end
-
-
-save('precomp_results.mat', 'eps', 'specs');
+% dims = [40 80]; % Dimensions of all the couplers.
+% eps_uniform = 9.0; % Uniform value of epsilon within design area.
+% eps_lims = [1 12.25]; % Limited range of epsilon.
+% num_iters = 400; % Number of iterations to run the design optimization for.
+% 
+% % Create the specifications for the various design problems.
+% specs = create_specs(dims, eps_lims, eps_uniform);
+% 
+% for k = 1 : length(specs)
+%     eps{k} = solve(specs{k}, num_iters, 1e-6);
+%     simulate(specs{k}, eps{k}, [200 160]);
+% end
+% 
+% 
+% save('precomp_results.mat', 'eps', 'specs');
 
     %
     % Load data and generate figures.
@@ -49,6 +49,9 @@ eps = results.eps;
 % Generate the figures.
 for k = 1 : length(specs)
     basename = ['fig/res', num2str(k), '/'];
+    try
+        system(['mkdir ', basename]);
+    end
     fprintf('\n\nGenerating plots used for result #%d...\n===\n', k);
 
     fprintf('Simulation results:\n'); % Simulate.
