@@ -59,7 +59,8 @@ P_in = ob1_calc_power(Ey(x_out,y_out), Hz(x_out,y_out), spec.in);
     %
 
 [Ex, Ey, Hz] = ob1_fdfd(spec.omega, eps, spec.in);
-P_out = ob1_calc_power(Ey(x_out,y_out), Hz(x_out,y_out), spec.out);
+[P_out, err, filtered_percent] = ...
+    ob1_calc_power(Ey(x_out,y_out), Hz(x_out,y_out), spec.out);
 
 
     %
@@ -71,11 +72,10 @@ fprintf('P_in: %1.3e \nP_out: %1.3e \neff: %1.3f%%\n', ...
     P_in, P_out, 100 * eff);
 
 ob1_plot(dims, {'\epsilon', eps}, {'|Hz|', abs(Hz)}, {'Re(Hz)', real(Hz)});
+% ob1_plot(size(Hz), {'|Hz|', abs(Hz)}, {'Re(Hz)', real(Hz)});
 
 % The following commands may be used (uncommented) in order to plot more
 % field information.
-% figure(1); 
-ob1_plot(dims, {'\epsilon', eps}, {'|Hz|', abs(Hz)}, {'Re(Hz)', real(Hz)});
 
 % % Plot all fields.
 % figure(2); 

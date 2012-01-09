@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="213.16"
+   height="122.65"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   sodipodi:docname="drawing.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.0"
+   inkscape:export-filename="/home/toutpourlui/objective-first/fig/10.png"
+   inkscape:export-xdpi="799.83691"
+   inkscape:export-ydpi="799.83691">
+  <defs
+     id="defs4">
+    <marker
+       style="overflow:visible"
+       id="TriangleOutS"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="TriangleOutS">
+      <path
+         transform="scale(0.2,0.2)"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         d="M 5.77,0 L -2.88,5 L -2.88,-5 L 5.77,0 z"
+         id="path3839" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="TriangleInS"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="TriangleInS">
+      <path
+         transform="scale(-0.2,-0.2)"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         d="M 5.77,0 L -2.88,5 L -2.88,-5 L 5.77,0 z"
+         id="path3720" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <inkscape:perspective
+       id="perspective4357"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4413"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4469"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4578"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4679"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4784"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4906"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5011"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5334"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5451"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <filter
+       inkscape:collect="always"
+       id="filter5600">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.75827613"
+         id="feGaussianBlur5602" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter3283">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.75827613"
+         id="feGaussianBlur3285" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     gridtolerance="10000"
+     guidetolerance="10"
+     objecttolerance="10"
+     inkscape:pageopacity="1"
+     inkscape:pageshadow="2"
+     inkscape:zoom="3.9549303"
+     inkscape:cx="96.294125"
+     inkscape:cy="60.094768"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1278"
+     inkscape:window-height="726"
+     inkscape:window-x="50"
+     inkscape:window-y="0"
+     showguides="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2407"
+       visible="true"
+       enabled="true" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g2487"
+       style="filter:url(#filter3283)">
+      <rect
+         transform="scale(-1,1)"
+         style="opacity:0.4;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.36635435;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4223"
+         width="3.5270138"
+         height="45.396084"
+         x="-15.311214"
+         y="68.563713"
+         inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+         inkscape:export-xdpi="300"
+         inkscape:export-ydpi="300" />
+      <rect
+         style="opacity:0.4;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.36635435;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4217"
+         width="3.5270138"
+         height="45.396084"
+         x="198.54828"
+         y="68.563713"
+         inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+         inkscape:export-xdpi="300"
+         inkscape:export-ydpi="300" />
+      <rect
+         style="opacity:0.4;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.36635435;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4710"
+         width="3.5270138"
+         height="45.396084"
+         x="198.54828"
+         y="8.9782887"
+         inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+         inkscape:export-xdpi="300"
+         inkscape:export-ydpi="300" />
+      <rect
+         style="opacity:0.4;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4479"
+         width="84.442001"
+         height="52.776001"
+         x="110.05078"
+         y="64.873756"
+         inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+         inkscape:export-xdpi="300"
+         inkscape:export-ydpi="300" />
+      <rect
+         style="opacity:0.4;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4481"
+         width="84.442001"
+         height="52.776001"
+         x="19.366699"
+         y="64.873756"
+         inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+         inkscape:export-xdpi="300"
+         inkscape:export-ydpi="300" />
+      <rect
+         style="opacity:0.4;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4475"
+         width="83.518723"
+         height="25.056"
+         x="20.28998"
+         y="33.300068"
+         inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+         inkscape:export-xdpi="300"
+         inkscape:export-ydpi="300" />
+      <rect
+         style="opacity:0.4;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4477"
+         width="83.518723"
+         height="25.056"
+         x="20.28998"
+         y="5.5800209"
+         inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+         inkscape:export-xdpi="300"
+         inkscape:export-ydpi="300" />
+      <rect
+         style="opacity:0.4;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect3157"
+         width="84.442001"
+         height="53.359161"
+         x="110.05078"
+         y="4.9967499"
+         inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+         inkscape:export-xdpi="300"
+         inkscape:export-ydpi="300" />
+    </g>
+    <image
+       y="68.465874"
+       x="198.36528"
+       id="image5013"
+       height="45.591759"
+       width="3.8929999"
+       sodipodi:absref="/home/toutpourlui/objective-first/fig/1e_cbar.png"
+       xlink:href="e_cbar.png"
+       style="stroke-width:0.1;stroke-miterlimit:4.5;stroke-dasharray:none" />
+    <image
+       y="64.873756"
+       x="110.05078"
+       id="image4681"
+       height="52.776001"
+       width="84.441597"
+       sodipodi:absref="/home/toutpourlui/objective-first/fig/1e.png"
+       xlink:href="e.png" />
+    <image
+       y="64.873756"
+       x="19.366699"
+       id="image4580"
+       height="52.776249"
+       width="84.442001"
+       sodipodi:absref="/home/toutpourlui/objective-first/fig/1d.png"
+       xlink:href="d.png" />
+    <image
+       y="5.5801716"
+       x="20.289843"
+       id="image4359"
+       height="25.0557"
+       width="83.518997"
+       sodipodi:absref="/home/toutpourlui/objective-first/fig/1a.png"
+       xlink:href="a.png" />
+    <image
+       y="33.300217"
+       x="20.289843"
+       id="image4415"
+       height="25.055698"
+       width="83.518997"
+       sodipodi:absref="/home/toutpourlui/objective-first/fig/1b.png"
+       xlink:href="b.png" />
+    <image
+       y="5.2883301"
+       x="110.05099"
+       id="image4471"
+       height="52.776001"
+       width="84.441597"
+       sodipodi:absref="/home/toutpourlui/objective-first/fig/1c.png"
+       xlink:href="c.png" />
+    <image
+       y="68.380753"
+       x="11.601208"
+       id="image5453"
+       height="45.762001"
+       width="3.8929999"
+       sodipodi:absref="/home/toutpourlui/objective-first/fig/1d_cbar.png"
+       xlink:href="d_cbar.png" />
+    <image
+       y="8.79533"
+       x="198.36528"
+       id="image4786"
+       height="45.762001"
+       width="3.8929999"
+       sodipodi:absref="/home/toutpourlui/objective-first/fig/1c_cbar.png"
+       xlink:href="c_cbar.png" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4.5;stroke-dasharray:none;stroke-opacity:1"
+       d="M 201.63367,91.176421 L 202.19559,91.176421"
+       id="path5159" />
+    <g
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       transform="matrix(0.1592845,0,0,0.1592845,181.0942,-53.534869)"
+       id="g4548">
+      <path
+         style="fill:#ffc200;fill-opacity:1;fill-rule:evenodd;stroke:#ffc200;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M -269.91071,533.5229 L -275.625,529.68361 C -275.625,529.68361 -274.01785,532.80861 -275.53571,537.36218 L -269.91071,533.5229 z"
+         id="path4542"
+         sodipodi:nodetypes="cccc" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#ffc200;stroke-width:2.29999995;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M -272.23224,533.52287 L -295.6251,533.52287"
+         id="path4546" />
+    </g>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       id="text4882"
+       y="114.32372"
+       x="203.89005"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:1.91141403px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="114.32372"
+         x="203.89005"
+         id="tspan4884"
+         sodipodi:role="line">-1</tspan></text>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       transform="matrix(0,1,-1,0,0,0)"
+       id="text4890"
+       y="-208.26688"
+       x="74.904236"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:3.18568993px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="-208.26688"
+         x="74.904236"
+         id="tspan4892"
+         sodipodi:role="line">field amplitude (a.u.)</tspan></text>
+    <g
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       transform="matrix(0.3058523,0,0,0.3058523,36.125573,-99.041848)"
+       id="g5442">
+      <text
+         inkscape:export-ydpi="300"
+         inkscape:export-xdpi="300"
+         inkscape:export-filename="/home/toutpourlui/pres/muri_pres/fig/target.png"
+         id="text2801"
+         y="568.25714"
+         x="271.57809"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         xml:space="preserve"><tspan
+           y="568.25714"
+           x="271.57809"
+           id="tspan2803"
+           sodipodi:role="line"
+           style="font-size:8px">x</tspan></text>
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#TriangleInS);marker-end:url(#TriangleOutS);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 269.05649,566.96398 L 250.23739,566.96398 L 250.23739,548.14488"
+         id="path2805"
+         sodipodi:nodetypes="ccc" />
+      <text
+         inkscape:export-ydpi="300"
+         inkscape:export-xdpi="300"
+         inkscape:export-filename="/home/toutpourlui/pres/muri_pres/fig/target.png"
+         id="text5394"
+         y="544.43298"
+         x="248.53928"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         xml:space="preserve"><tspan
+           y="544.43298"
+           x="248.53928"
+           id="tspan5396"
+           sodipodi:role="line"
+           style="font-size:8px">y</tspan></text>
+      <path
+         sodipodi:type="arc"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.0825758;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="path5400"
+         sodipodi:cx="780.69348"
+         sodipodi:cy="645.92212"
+         sodipodi:rx="15.447512"
+         sodipodi:ry="14.000921"
+         d="M 796.14099,645.92212 A 15.447512,14.000921 0 1 1 765.24597,645.92212 A 15.447512,14.000921 0 1 1 796.14099,645.92212 z"
+         transform="matrix(0.156517,0,0,0.1726885,128.02144,455.41579)" />
+      <path
+         sodipodi:type="arc"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:6.0825758;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="path5402"
+         sodipodi:cx="780.69348"
+         sodipodi:cy="645.92212"
+         sodipodi:rx="15.447512"
+         sodipodi:ry="14.000921"
+         d="M 796.14099,645.92212 A 15.447512,14.000921 0 1 1 765.24597,645.92212 A 15.447512,14.000921 0 1 1 796.14099,645.92212 z"
+         transform="matrix(5.9555867e-2,0,0,6.5709242e-2,203.71836,524.51606)" />
+      <text
+         inkscape:export-ydpi="300"
+         inkscape:export-xdpi="300"
+         inkscape:export-filename="/home/toutpourlui/pres/muri_pres/fig/target.png"
+         id="text5408"
+         y="565.60406"
+         x="253.26462"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         xml:space="preserve"><tspan
+           y="565.60406"
+           x="253.26462"
+           id="tspan5410"
+           sodipodi:role="line"
+           style="font-size:8px">z</tspan></text>
+    </g>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       id="text5031"
+       y="29.008137"
+       x="20.337765"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:3.18568993px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="29.008137"
+         x="20.337765"
+         id="tspan5033"
+         sodipodi:role="line"> input mode, Hz (a.u.)</tspan></text>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       id="text5035"
+       y="56.728176"
+       x="20.28998"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:3.18568993px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="56.728176"
+         x="20.28998"
+         id="tspan5037"
+         sodipodi:role="line"> output mode, Hz (a.u.)</tspan></text>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       id="text5057"
+       y="57.248165"
+       x="110.05078"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:3.18568993px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="57.248165"
+         x="110.05078"
+         id="tspan5059"
+         sodipodi:role="line"> dielectric structure</tspan></text>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       id="text5061"
+       y="116.72929"
+       x="19.366699"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:3.18568993px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ffffff;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="116.72929"
+         x="19.366699"
+         id="tspan5063"
+         sodipodi:role="line"> simulated Hz field</tspan></text>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       id="text5065"
+       y="116.72929"
+       x="110.05078"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:3.18568993px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="116.72929"
+         x="110.05078"
+         id="tspan5067"
+         sodipodi:role="line"> simulated Hz field</tspan></text>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       id="text5141"
+       y="91.831078"
+       x="204.31247"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:1.91141403px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="91.831078"
+         x="204.31247"
+         id="tspan5143"
+         sodipodi:role="line">0</tspan></text>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       id="text5145"
+       y="69.327667"
+       x="203.88814"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:1.91141403px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="69.327667"
+         x="203.88814"
+         id="tspan5147"
+         sodipodi:role="line">+1</tspan></text>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       id="text5161"
+       y="55.086605"
+       x="203.69508"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:1.91141403px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="55.086605"
+         x="203.69508"
+         id="tspan5163"
+         sodipodi:role="line">1.0</tspan></text>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       id="text5165"
+       y="9.742033"
+       x="203.69508"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:1.91141403px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="9.742033"
+         x="203.69508"
+         id="tspan5167"
+         sodipodi:role="line">12.25</tspan></text>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       transform="matrix(0,1,-1,0,0,0)"
+       id="text5169"
+       y="-208.26688"
+       x="16.549038"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:3.18568993px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="-208.26688"
+         x="16.549038"
+         id="tspan5171"
+         sodipodi:role="line">relative permittivity</tspan></text>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       id="text5207"
+       y="114.62253"
+       x="8.8713856"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:1.91141403px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="114.62253"
+         x="8.8713856"
+         id="tspan5209"
+         sodipodi:role="line">0</tspan></text>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       id="text5211"
+       y="69.30835"
+       x="8.8713856"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:1.91141403px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="69.30835"
+         x="8.8713856"
+         id="tspan5213"
+         sodipodi:role="line">1</tspan></text>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/toutpourlui/misc/presentations/fios_2011/abstract/fig/fiber.png"
+       transform="matrix(0,-1,1,0,0,0)"
+       id="text5457"
+       y="4.8949614"
+       x="-107.97881"
+       style="font-size:6.37137985px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         style="font-size:3.18568993px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L"
+         y="4.8949614"
+         x="-107.97881"
+         id="tspan5459"
+         sodipodi:role="line">field magnitude (a.u.)</tspan></text>
+    <g
+       id="g3575">
+      <path
+         id="path5157"
+         d="M 198.42759,91.176421 L 198.98951,91.176421"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.10000000000000001;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;opacity:0.4" />
+      <path
+         id="path2791"
+         d="M 201.63368,91.176418 L 202.1956,91.176418"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.10000000000000001;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;opacity:0.4" />
+    </g>
+  </g>
+</svg>

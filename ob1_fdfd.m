@@ -14,9 +14,9 @@ function [Ex, Ey, Hz] = ob1_fdfd(omega, eps, in)
 
 
 % Hard-coded parameters for the pml.
-t_pml = 10; % Thickness of pml.
+t_pml = 20; % Thickness of pml.
 sigma_pml = 1 / omega; % Strength of pml.
-exp_pml = 3.5; % Exponential spatial increase in pml strength.
+exp_pml = 2.5; % Exponential spatial increase in pml strength.
 
 % Expand eps to include room for the pml padding
 eps = ob1_pad_eps(eps, t_pml * [1 1 1 1]);
@@ -53,7 +53,7 @@ A = Ecurl * inv_eps * Hcurl - omega^2 * speye(prod(dims));
     %
 
 b = zeros(dims); % Input excitation, equivalent to magnetic current source.
-in_pos = 2; % Cannot be 1, because eps interpolation wreaks havoc at border.
+in_pos = t_pml+2; % Cannot be 1, because eps interpolation wreaks havoc at border.
 
 % For one-way excitation in the forward (to the right) direction,
 % we simple cancel out excitation in the backward (left) direction.
