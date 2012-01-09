@@ -40,7 +40,7 @@ function [] = paper_results()
     %
 
 % Load the data.
-results = load('precomp_results_2.mat', 'eps', 'specs');
+results = load('precomp_results.mat', 'eps', 'specs');
 specs = results.specs;
 eps = results.eps;
 
@@ -55,7 +55,7 @@ for k = 1 : length(specs)
     fprintf('Simulation results:\n'); % Simulate.
     [eff(k), eps_sim, Ex, Ey, Hz] = simulate(specs{k}, eps{k}, [160 100]);
 
-    fprintf('\nInput/output mode profiles (figure 1)...\n');
+    % fprintf('\nInput/output mode profiles (figure 1)...\n');
     figure(1); subplot 111; % Generate image files.
     my_area_plot(specs{k}.in.Hz, [basename, 'a']);
     my_area_plot(specs{k}.out.Hz, [basename, 'b']);
@@ -63,7 +63,7 @@ for k = 1 : length(specs)
     my_plot_images({[basename, 'a.png'], 'Input mode (Hz)'}, ...
                    {[basename, 'b.png'], 'Output mode (Hz)'});
                    
-    fprintf('\nDesign results (figure 2)...\n');
+    % fprintf('\nDesign results (figure 2)...\n');
     figure(2); subplot 111; % Generate image files.
     if (min(eps{k}(:)) < 0) % Custom colormap if we have metallic devices.
         cmap = flipud([colormap('bone'); flipud(fliplr(colormap('bone')))]);
