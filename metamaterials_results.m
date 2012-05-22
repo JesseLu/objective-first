@@ -1,5 +1,5 @@
 function metamaterial_results()
-    dims = [60 80]; % Dimensions of all the couplers.
+    dims = [60 100]; % Dimensions of all the couplers.
     eps_init = 9.0; % Initial value of epsilon within design area.
     eps_lims = [1 12.25]; % Limited range of epsilon.
     num_iters = 400; % Number of iterations to run the design optimization for.
@@ -24,6 +24,16 @@ function metamaterial_results()
     end
 
 function [specs, blocks] = create_specs(dims, eps_lims, eps_init)
+%     % Object mimic.
+%     ext_dims = dims + [80 0];
+% 	eps0 = ones(ext_dims);
+% 	eps0 = my_circle(eps0, ext_dims/2, 8, -2);
+% 	spec = setup(0.15, eps0, eps_lims, [1 1], 'periodic');
+%     [Ex, Ey, Hz] = ob1_fdfd(spec.omega, eps0, spec.in, spec.bc);
+%     ob1_plot(ext_dims, {'\epsilon', eps0}, {'|Hz|', abs(Hz)}, {'Re(Hz)', real(Hz)});
+%     pause
+
+
 	% Anti-reflection coating.
 	eps0 = ones(dims);
 	eps0(3:end,:) = 12.25;
