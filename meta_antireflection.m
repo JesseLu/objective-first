@@ -31,7 +31,7 @@ eps_init = 9.0
 
 % Back cloak.
 
-dims = [80 80];
+dims = [40 80];
 obj_dims = [10 10];
 
 block = false * ones(dims);
@@ -48,7 +48,7 @@ eps0(end,:) = 1;
 spec = setup(0.15, eps0, [1 12.25], [1 1], 'periodic');
 close(gcf);
 
-eps = solve(spec, 400, 1e-6, block);
+eps = solve(spec, 40, 1e-6, block);
 simulate(spec, eps, [160 80]);
 
 
