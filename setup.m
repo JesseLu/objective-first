@@ -29,13 +29,9 @@ function [spec] = setup(omega, eps0, eps_lims, mode_nums, varargin)
 %         If the selected modes are non-propagating (evanesent), a warning will 
 %         be issued.
 % 
-%     PHASE: Scalar (optional).
-%         The relative phase of the output mode relative to the input mode.
-%         Default value assumes that the input and output modes each propagate 
-%         through half of the design space.
-% 
-%         Note that the length of the design space is considered to be
-%         size(EPS, 1) - 1.
+%     BOUNDARY: String (optional).
+%         If set to 'periodic', then we assume the top and bottom boundaries to 
+%         to have periodic boundary conditions.
 % 
 % Outputs
 %     SPEC: Structure.
@@ -73,10 +69,13 @@ fprintf('Output mode calculation (figure 2)\n');
     %
 
 % Determine phase relation between input and output modes.
+phase = mean([spec.in.beta, spec.out.beta]) * (size(eps, 1) - 1);
 if isempty(varargin)
-    phase = mean([spec.in.beta, spec.out.beta]) * (size(eps, 1) - 1);
+    spec.bc = 'pml';
+elseif strcmp(varargin{1}, 'periodic')
+    spec.bc = 'per';
 else
-    phase = varargin{1};
+    error('Not a valid option for BOUNDARY.');
 end
 
 % Create boundary field conditions.

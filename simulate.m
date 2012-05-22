@@ -34,10 +34,15 @@ function [eff, eps, Ex, Ey, Hz] = simulate(spec, eps, dims)
     %
 
 % Number of extra cells to add to eps.
+if strcmp(spec.bc, 'per') % Override for periodic case.
+    dims(2) = size(eps, 2);
+end
 pad = [ floor((dims(1) - size(eps, 1))/2), ...
         ceil((dims(1) - size(eps, 1))/2), ...
         floor((dims(2) - size(eps, 2))/2), ...
         ceil((dims(2) - size(eps, 2))/2)];
+x_out = round(dims(1)-pad(2)/2+1) : dims(1);
+y_out = pad(3)+1 : dims(2)-pad(4);
 
 eps = ob1_pad_eps(eps, pad);
 
@@ -47,10 +52,9 @@ eps = ob1_pad_eps(eps, pad);
     % waveguide.
     %
 
-[Ex, Ey, Hz] = ob1_fdfd(spec.omega, repmat(eps(1,:), size(eps,1), 1), spec.in);
+[Ex, Ey, Hz] = ob1_fdfd(spec.omega, repmat(eps(1,:), size(eps,1), 1), spec.in, spec.bc);
 
-x_out = round(dims(1)-pad(2)/2+1) : dims(1);
-y_out = pad(3)+1 : dims(2)-pad(4);
+ob1_plot(size(eps), {'\epsilon', eps}, {'|Hz|', abs(Hz)}, {'Re(Hz)', real(Hz)});
 P_in = ob1_calc_power(Ey(x_out,y_out), Hz(x_out,y_out), spec.in);
 
 
@@ -58,7 +62,7 @@ P_in = ob1_calc_power(Ey(x_out,y_out), Hz(x_out,y_out), spec.in);
     % Calculate output power for the structure (and actual output mode).
     %
 
-[Ex, Ey, Hz] = ob1_fdfd(spec.omega, eps, spec.in);
+[Ex, Ey, Hz] = ob1_fdfd(spec.omega, eps, spec.in, spec.bc);
 [P_out, err, filtered_percent] = ...
     ob1_calc_power(Ey(x_out,y_out), Hz(x_out,y_out), spec.out);
 

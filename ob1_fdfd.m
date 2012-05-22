@@ -1,4 +1,4 @@
-function [Ex, Ey, Hz] = ob1_fdfd(omega, eps, in)
+function [Ex, Ey, Hz] = ob1_fdfd(omega, eps, in, bc)
 % 
 % Description
 %     Solve a FDFD (finite-difference, frequency-domain) problem, using the
@@ -19,7 +19,11 @@ sigma_pml = 1 / omega; % Strength of pml.
 exp_pml = 2.5; % Exponential spatial increase in pml strength.
 
 % Expand eps to include room for the pml padding
-eps = ob1_pad_eps(eps, t_pml * [1 1 1 1]);
+if strcmp(bc, 'pml') 
+    eps = ob1_pad_eps(eps, t_pml * [1 1 1 1]);
+elseif strcmp(bc, 'per') 
+    eps = ob1_pad_eps(eps, t_pml * [1 1 0 0]);
+end
 dims = size(eps); % New size of the structure.
 [eps_x, eps_y] = ob1_interp_eps(eps); % Obtain x- and y- components of eps.
 
@@ -38,8 +42,13 @@ scy = @(sx, sy) ob1_stretched_coords(dims, [1 dims(2)+0.5], [sx, sy], ...
     'y', t_pml, sigma_pml, exp_pml);
 
 % Define the curl operators as applied to E and H, respectively.
-Ecurl = [scy(.5,.5)*-(S(0,1)-S(0,0)), scx(.5,.5)*(S(1,0)-S(0,0))];  
-Hcurl = [scy(.5,0)*(S(0,0)-S(0,-1));  scx(0,.5)*-(S(0,0)-S(-1,0))]; 
+if strcmp(bc, 'pml')
+    Ecurl = [scy(.5,.5)*-(S(0,1)-S(0,0)), scx(.5,.5)*(S(1,0)-S(0,0))];  
+    Hcurl = [scy(.5,0)*(S(0,0)-S(0,-1));  scx(0,.5)*-(S(0,0)-S(-1,0))]; 
+elseif strcmp(bc, 'per')
+    Ecurl = [-(S(0,1)-S(0,0)), scx(.5,.5)*(S(1,0)-S(0,0))];  
+    Hcurl = [(S(0,0)-S(0,-1));  scx(0,.5)*-(S(0,0)-S(-1,0))]; 
+end
 
 % Diagonal matrix for 1/epsilon.
 inv_eps = spdiags([eps_x(:).^-1; eps_y(:).^-1], 0, 2*prod(dims), 2*prod(dims));
@@ -57,9 +66,13 @@ in_pos = t_pml+2; % Cannot be 1, because eps interpolation wreaks havoc at borde
 
 % For one-way excitation in the forward (to the right) direction,
 % we simple cancel out excitation in the backward (left) direction.
-% b(in_pos+1, pad(3)+1:end-pad(4)) = in.Hz;
-b_pad = [floor((dims(2) - length(in.Hz))/2), ...
-        ceil((dims(2) - length(in.Hz))/2)];
+if strcmp(bc, 'pml')
+    b_pad = [floor((dims(2) - length(in.Hz))/2), ...
+            ceil((dims(2) - length(in.Hz))/2)];
+elseif strcmp(bc, 'per')
+    b_pad = [0 0];
+end
+b(in_pos+1, b_pad(1)+1:end-b_pad(2)) = in.Hz;
 b(in_pos, b_pad(1)+1:end-b_pad(2)) = -in.Hz * exp(i * in.beta);
 
 b = b ./ eps_y; % Convert from field to current source.
@@ -81,6 +94,12 @@ Ey = reshape(E(prod(dims)+1:end), dims);
 Hz = reshape(Hz, dims);
 
 % Cut off the pml parts.
-Ex = Ex(t_pml+1:end-t_pml, t_pml+1:end-t_pml);
-Ey = Ey(t_pml+1:end-t_pml, t_pml+1:end-t_pml);
-Hz = Hz(t_pml+1:end-t_pml, t_pml+1:end-t_pml);
+if strcmp(bc, 'pml')
+    Ex = Ex(t_pml+1:end-t_pml, t_pml+1:end-t_pml);
+    Ey = Ey(t_pml+1:end-t_pml, t_pml+1:end-t_pml);
+    Hz = Hz(t_pml+1:end-t_pml, t_pml+1:end-t_pml);
+elseif strcmp(bc, 'per')
+    Ex = Ex(t_pml+1:end-t_pml, :);
+    Ey = Ey(t_pml+1:end-t_pml, :);
+    Hz = Hz(t_pml+1:end-t_pml, :);
+end
