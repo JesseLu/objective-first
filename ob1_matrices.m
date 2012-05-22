@@ -1,4 +1,4 @@
-function [A, S] = ob1_matrices(dims)
+function [A, S] = ob1_matrices(dims, bc, eps_block)
 % Form matrices used for objective-first method.
 
     %
@@ -18,21 +18,34 @@ A{3} = [(S_(0,0)-S_(0,-1)); -(S_(0,0)-S_(-1,0))]; % Curl for H-field.
     % or boundary elements of x and p.
     %
 
-[S.int, S.bnd] = my_selection(dims, [2 2]); % 2-cell border on all four sides.
-[S.res] = my_selection(dims, [1 1]); % Used to calculate the residual.
+if strcmp(bc, 'pml')
+    [S.int, S.bnd] = my_selection(dims, [2 2]); % 2-cell border on all four sides.
+    [S.eint, S.ebnd] = my_selection(dims, [2 2], eps_block);
+    [S.res] = my_selection(dims, [1 1]); % Used to calculate the residual.
+elseif strcmp(bc, 'per')
+    [S.int, S.bnd] = my_selection(dims, [2 0]); % 2-cell border on all four sides.
+    [S.eint, S.ebnd] = my_selection(dims, [2 0], eps_block);
+    [S.res] = my_selection(dims, [1 0]); % Used to calculate the residual.
+end
 
 
 
-function [int, bnd] = my_selection(dims, border)
+
+function [int, bnd] = my_selection(dims, border, varargin)
 % Form selection matrices for both interior and boundary values.
 
 % Temporary field which we use to select boundary elements.
-field = zeros(dims);
-field(border(1)+1:end-border(1), border(2)+1:end-border(2)) = 1;
+field = true * ones(dims);
+field(border(1)+1:end-border(1), border(2)+1:end-border(2)) = false;
+
+if ~isempty(varargin) % Add an additional block for the structure if needed.
+    block = varargin{1};
+    field = field | block;
+end
 
 % Find which elements are either on the interior or on the boundary.
-ind_int = find(field == 1);
-ind_bnd = find(field == 0);
+ind_int = find(field == false);
+ind_bnd = find(field == true);
 
 % Function which forms the sparse matrix.
 my_sparse = @(ind) sparse(1:length(ind), ind, ones(length(ind),1), ...

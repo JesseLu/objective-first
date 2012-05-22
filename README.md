@@ -1,7 +1,21 @@
 TODO
 ====
 
-*   Start with cloaking designs.
+Cloaking designs
+----------------
+
+*   Anti-reflection
+*   Wrap-cloak
+*   Front/back/side cloak
+*   Channeler
+
+Mimic designs
+-------------
+
+*   Uncloak (mimic the prev. cloaked object)
+*   Mimic n = -1 material
+*   Lens mimic
+*   Lithography mimic
 
 
 Purpose
