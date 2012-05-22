@@ -20,7 +20,8 @@ eps0(3:end-2,3:end-2) = 9.0;
 spec = setup(0.15, eps0, [1 12.25], [1 2]);
 
 % Optimize for 40 iterations, or until the gradient norm drops below 1e-4.
-eps = solve(spec, 40, 1e-6);
+eps = solve(spec, 1, 1e-6, 'alt_dir_mod');
+return
 
 % Simulate the result. Make the simulation space 100x100.
 simulate(spec, eps, [160 120]);

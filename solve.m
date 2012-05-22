@@ -174,17 +174,23 @@ switch method
             fprintf('(x) '); print_prog(k, x_int, p_int)
 
             % Solve for p_int.
-            cvx_quiet(true);
-            cvx_begin
-                variable p_int(length(p_int))
-                minimize norm(A_p(x_full(x_int)) * ...
-                                (S.int' * p_int + S.bnd' * p_bnd) - ...
-                                b_p(x_full(x_int)))
-                subject to
-                    p_int >= 0
-                    p_int <= 1
-                    norm(p_int, 1) <= ptot
-            cvx_end
+            n = length(p_int);
+            p_int = ob1_interior_newton(A_p(x_full(x_int)) * S.int', ...
+                                -A_p(x_full(x_int)) * (S.bnd' * p_bnd) + b_p(x_full(x_int)), ...
+                                0.5 * ones(n, 1), zeros(n, 1), ones(n, 1), 1e-6);
+%             ob1_interior_newton(fun, 0.5 * ones(n, 1), l, u, [], [], ...
+%                 1e-3, 0.995, 0.1, 0.5, err_tol);
+%            cvx_quiet(true);
+%            cvx_begin
+%                variable p_int(length(p_int))
+%                minimize norm(A_p(x_full(x_int)) * ...
+%                                (S.int' * p_int + S.bnd' * p_bnd) - ...
+%                                b_p(x_full(x_int)))
+%                subject to
+%                    p_int >= 0
+%                    p_int <= 1
+%                    norm(p_int, 1) <= ptot
+%            cvx_end
             fprintf('(p) '); print_prog(k, x_int, p_int)
 
             % Visualize.

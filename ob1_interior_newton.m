@@ -1,5 +1,20 @@
 %% Interior-point Newton algorithm for simple bounds.
-function [x, err] = ob1_interior_newton(fun, x, l, u, A, b, ...
+function [x, err] = ob1_interior_newton(A, b, x, l, u, err_tol)
+
+    H = A' * A;
+    n = size(A, 2);
+
+    fun.f = @(x) 0.5 * norm(A * x - b)^2;
+    fun.g = @(x) A' * (A * x - b);
+    fun.h = @(x) H;
+
+    [x, hist, s0, s1, y, z0, z1] = interior_newton_simple_bounds(fun, x, l, u, ...
+        zeros(0, n), zeros(0, 1), 1e-1, 0.995, 0.1, 0.5, err_tol);
+
+
+
+
+function [x, hist, s0, s1, y, z0, z1] = interior_newton_simple_bounds(fun, x, l, u, A, b, ...
                                 sigma, tau, alpha, beta, err_tol)
 
 
@@ -62,90 +77,146 @@ function [x, err] = ob1_interior_newton(fun, x, l, u, A, b, ...
     my_pos = @(z) (z > 0) .* z + (z <= 0) * 1; % If negative, set to 1.
     f2b_rule = @(pz, z) min([1; my_pos(-tau*z./pz)]);
 
+    %
+    % Optimize!
+    %
 
-        %
-        % Optimize!
-        %
-
+    mu_0 = 1;
     hist.err(1) = err(x, s0, s1, y, z0, z1, 0);
-    hist.err_mu(1) = err(x, s0, s1, y, z0, z1, sigma * hist.err(1));
+    hist.err_mu(1) = err(x, s0, s1, y, z0, z1, mu_0);
     hist.t(1) = nan;
     tic
+    for mu = mu_0 * sigma.^[0:10]
+        for k = 1 : 10
 
-    for k = 1:100
-        mu = sigma * hist.err(end); % Dynamically set mu.
+            % Obtain search direction (p).
+            p = -H_sys(x, s0, s1, y, z0, z1, mu) \ ...
+                kkt_res(x, s0, s1, y, z0, z1, mu);
+            p = calc_p_xy(p);
+            p.s0 = calc_p_s0(p, x, s0);
+            p.s1 = calc_p_s1(p, x, s1);
+            p.z0 = calc_p_z0(p, x, s0, z0, mu);
+            p.z1 = calc_p_z1(p, x, s1, z1, mu);
 
-        % Obtain search direction (p).
-        p = -H_sys(x, s0, s1, y, z0, z1, mu) \ ...
-            kkt_res(x, s0, s1, y, z0, z1, mu);
-        p = calc_p_xy(p);
-        p.s0 = calc_p_s0(p, x, s0);
-        p.s1 = calc_p_s1(p, x, s1);
-        p.z0 = calc_p_z0(p, x, s0, z0, mu);
-        p.z1 = calc_p_z1(p, x, s1, z1, mu);
+            % Compute alpha using the fraction-to-boundary rule.
+            alpha_prim = f2b_rule([p.s0; p.s1], [s0; s1]);
+            alpha_dual = f2b_rule([p.z0; p.z1], [z0; z1]);
 
-        % Compute alpha using the fraction-to-boundary rule.
-        alpha_prim = f2b_rule([p.s0; p.s1], [s0; s1]);
-        alpha_dual = f2b_rule([p.z0; p.z1], [z0; z1]);
+            % Perform a backtracking (Armijo) line search.
+            t = simple_backtrack(@(t) ...
+                phi(x, s0, s1, y, z0, z1, mu, alpha_prim, alpha_dual, p, t), ...
+                alpha_prim, alpha, beta);
 
-        % Perform a backtracking (Armijo) line search.
-        t = simple_backtrack(@(t) ...
-            phi(x, s0, s1, y, z0, z1, mu, alpha_prim, alpha_dual, p, t), ...
-            alpha_prim, alpha, beta);
+            % Update variables.
+            x = x + t * alpha_prim * p.x;
+            s0 = s0 + t * alpha_prim * p.s0;
+            s1 = s1 + t * alpha_prim * p.s1;
+            y = y + 1 * alpha_dual * p.y;
+            z0 = z0 + 1 * alpha_dual * p.z0;
+            z1 = z1 + 1 * alpha_dual * p.z1;
 
-        % Update variables.
-        x = x + t * alpha_prim * p.x;
-        s0 = s0 + t * alpha_prim * p.s0;
-        s1 = s1 + t * alpha_prim * p.s1;
-        y = y + 1 * alpha_dual * p.y;
-        z0 = z0 + 1 * alpha_dual * p.z0;
-        z1 = z1 + 1 * alpha_dual * p.z1;
+            % Calculate error.
+            hist.err(end+1) = err(x, s0, s1, y, z0, z1, 0);
+            hist.err_mu(end+1) = err(x, s0, s1, y, z0, z1, mu);
+            hist.t(end+1) = t;
 
-        % Calculate error.
-        hist.err(end+1) = err(x, s0, s1, y, z0, z1, 0);
-        hist.err_mu(end+1) = err(x, s0, s1, y, z0, z1, mu);
-        hist.t(end+1) = t;
+            % Test inner loop termination condition.
+            if (hist.err_mu(end) <= mu)
+                break
+            end
+        end
 
-        % Test termination condition.
+        % Test outer loop termination condition.
         if (hist.err(end) <= err_tol)
             break
         end
     end
+    time0 = toc;
+% 
+%         %
+%         % Optimize!
+%         %
+% 
+%     hist.err(1) = err(x, s0, s1, y, z0, z1, 0);
+%     hist.err_mu(1) = err(x, s0, s1, y, z0, z1, sigma * hist.err(1));
+%     hist.t(1) = nan;
+%     tic
+% 
+%     for k = 1:20
+%         mu = sigma * hist.err(end); % Dynamically set mu.
+% 
+%         % Obtain search direction (p).
+%         p = -H_sys(x, s0, s1, y, z0, z1, mu) \ ...
+%             kkt_res(x, s0, s1, y, z0, z1, mu);
+%         p = calc_p_xy(p);
+%         p.s0 = calc_p_s0(p, x, s0);
+%         p.s1 = calc_p_s1(p, x, s1);
+%         p.z0 = calc_p_z0(p, x, s0, z0, mu);
+%         p.z1 = calc_p_z1(p, x, s1, z1, mu);
+% 
+%         % Compute alpha using the fraction-to-boundary rule.
+%         alpha_prim = f2b_rule([p.s0; p.s1], [s0; s1]);
+%         alpha_dual = f2b_rule([p.z0; p.z1], [z0; z1]);
+% 
+%         % Perform a backtracking (Armijo) line search.
+%         t = simple_backtrack(@(t) ...
+%             phi(x, s0, s1, y, z0, z1, mu, alpha_prim, alpha_dual, p, t), ...
+%             alpha_prim, alpha, beta);
+% 
+%         % Update variables.
+%         x = x + t * alpha_prim * p.x;
+%         s0 = s0 + t * alpha_prim * p.s0;
+%         s1 = s1 + t * alpha_prim * p.s1;
+%         y = y + 1 * alpha_dual * p.y;
+%         z0 = z0 + 1 * alpha_dual * p.z0;
+%         z1 = z1 + 1 * alpha_dual * p.z1;
+% 
+%         % Calculate error.
+%         hist.err(end+1) = err(x, s0, s1, y, z0, z1, 0);
+%         hist.err_mu(end+1) = err(x, s0, s1, y, z0, z1, mu);
+%         hist.t(end+1) = t;
+% 
+%         % Test termination condition.
+%         if (hist.err(end) <= err_tol)
+%             break
+%         end
+%     end
 
     time0 = toc;
-    hist.err(end)
-    % Plot results.
-    semilogy(0:length(hist.err)-1, [hist.err; hist.err_mu; hist.t]', '.-');
-    xlabel('Error in KKT equations');
-    ylabel('iterations');
-    title('Interior Primal-Dual Full Newton Step Convergence');
-    legend({'global error', 'local error', 'step size'}, -1);
-    drawnow
-
-
-        %
-        % Compare against cvx.
-        %
-
-    tic;
-    path(path, genpath('../cvx'));
-    cvx_quiet(true);
-    cvx_begin
-        variable x_star(length(x))
-        % minimize norm(fun.A*x_star - fun.b)
-        minimize fun.f_cvx(x_star)
-        subject to
-            A * x_star - b == 0
-            x_star >= l
-            x_star <= u
-    cvx_end
-    time1 = toc;
-
-    fprintf('Percent error: %1.7f%% (compared against cvx result)\n',  ...
-        100 * norm(x_star - x)/norm(x_star));
-    fprintf('Interior newton, fval: %e, time: %1.2f s\n', fun.f(x), time0);
-    fprintf('cvx, fval: %e, time: %1.2f s\n', fun.f(x_star), time1);
-
+   hist.err(end)
+   % Plot results.
+   semilogy(0:length(hist.err)-1, [hist.err; hist.err_mu; hist.t]', '.-');
+   xlabel('Error in KKT equations');
+   ylabel('iterations');
+   title('Interior Primal-Dual Full Newton Step Convergence');
+   legend({'global error', 'local error', 'step size'}, -1);
+   drawnow
+   pause
+%
+%
+%        %
+%        % Compare against cvx.
+%        %
+%
+%    tic;
+%    path(path, genpath('../cvx'));
+%    cvx_quiet(true);
+%    cvx_begin
+%        variable x_star(length(x))
+%        % minimize norm(fun.A*x_star - fun.b)
+%        minimize fun.f_cvx(x_star)
+%        subject to
+%            A * x_star - b == 0
+%            x_star >= l
+%            x_star <= u
+%    cvx_end
+%    time1 = toc;
+%
+%    fprintf('Percent error: %1.7f%% (compared against cvx result)\n',  ...
+%        100 * norm(x_star - x)/norm(x_star));
+%    fprintf('Interior newton, fval: %e, time: %1.2f s\n', fun.f(x), time0);
+%    fprintf('cvx, fval: %e, time: %1.2f s\n', fun.f(x_star), time1);
+%
 
 function [t] = simple_backtrack(f, t, alpha, beta);
 % Backtracking line search on one-dimensional function f.
