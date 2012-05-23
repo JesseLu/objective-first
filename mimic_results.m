@@ -43,7 +43,7 @@ function mimic_results()
     % Set up simulation which will find what we need to mimic.
     dims = [60 80];
     pad = 100;
-    width = 4; % Of source.
+    width = 6; % Of source.
     ext_dims = dims + [2*pad 0];
 
     y_pos = [1 : dims(2)] - dims(2)/2;
