@@ -12,8 +12,11 @@ yy = prod(f(2:2:n));
 
 for k = 1 : N
     v = varargin{k};
-    % subplot(yy, xx, k); % Horizontal preference.
-    subplot(xx, yy, k); % Vertical preference.
+    if (dims(2) > dims(1))
+        subplot(yy, xx, k); % Horizontal preference.
+    else
+        subplot(xx, yy, k); % Vertical preference.
+    end
     imagesc(real(reshape(v{2}, dims))', 1 * max(abs(v{2}(:)) + eps) * [-1 1]);
     title(v{1});
     axis equal tight;

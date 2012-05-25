@@ -1,4 +1,4 @@
-function [Ex, Ey, Hz] = ob1_fdfd_adv(omega, eps, mu, input_exc, bc, t_pml)
+function [Ex, Ey, Hz] = ob1_fdfd_adv(omega, eps, mu, input_exc, bc, t_pml, varargin)
 % 
 % Description
 %     Solve a FDFD (finite-difference, frequency-domain) problem, using the
@@ -49,13 +49,28 @@ mu = spdiags(mu(:), 0, prod(dims), prod(dims));
 % This is the matrix that we will solve.
 A = Ecurl * inv_eps * Hcurl - omega^2 * mu;
 
-    
+
+
     %
     % Determine the input excitation.
     %
 
 b = input_exc(:); % Vectorize.
 
+    % 
+    % Advanced "forcing" option.
+    %
+
+if ~isempty(varargin)
+    if strcmp(varargin{1}, 'force')
+        ind = (b == 0); % Find where the current sources are.
+        A = spdiags(ind, 0, length(ind), length(ind)) * A; % Eliminate those rows.
+        A = A + spdiags(~ind, 0, length(ind), length(ind)); % Insert 1 in the "forced" rows.
+    else
+        error('Invalid option.');
+    end
+end
+    
 
     %
     % Solve.
