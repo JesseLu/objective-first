@@ -18,10 +18,8 @@ function [eps] = solve(spec, max_iters, min_grad, varargin)
 % 
 %         Note that the norm of the gradient is used, and not the norm-squared.
 % 
-%     METHOD: Character string (optional).
-%         The name of the numerical method to use to solve the problem.
-%         Currently only the 'alt_dir' option is supported. 'alt_dir'
-%         requires the CVX package (www.stanford.edu/~boyd/cvx).
+%     EPS_BLOCK: 2d array (optional).
+%         Binary values where epsilon should not be allowed to vary.
 % 
 % Outputs
 %     EPS: 2d array.
@@ -47,7 +45,12 @@ N = prod(dims);
     % Form relevant matrices, and get initial values of x and p.
     %
 
-[A, S] = ob1_matrices(dims); % Relevant matrices.
+if isempty(varargin)
+    eps_block = false * ones(dims);
+else
+    eps_block = varargin{1};
+end
+[A, S] = ob1_matrices(dims, spec.bc, eps_block); % Relevant matrices.
 
 x0 = spec.Hz0(:); % Initial value of x.
 x_int = S.int * x0; % Interior values of the field (variable).
@@ -57,8 +60,8 @@ p_scale = diff(spec.eps_lims.^-1); % Scaling factor for p.
 p_offset = (spec.eps_lims(1).^-1) * ones(N,1); % Offset for values of p.
 
 p0 = p_scale^-1 * (spec.eps0(:).^-1 - p_offset); % Initial value of p.
-p_int = S.int * p0; % Interior values of the structure (variable).
-p_bnd = S.bnd * p0; % Boundary values of the structure (fixed).
+p_int = S.eint * p0; % Interior values of the structure (variable).
+p_bnd = S.ebnd * p0; % Boundary values of the structure (fixed).
 
 
     %
@@ -90,7 +93,7 @@ grad = @(x, p) [((S.res * A_x(p))' * (S.res * A_x(p)) * x); ...
     %
 
 % Functions to include add boundary values to interior values of x and p.
-p_full = @(pin) S.int' * pin + S.bnd' * p_bnd;
+p_full = @(pin) S.eint' * pin + S.ebnd' * p_bnd;
 x_full = @(xin) S.int' * xin + S.bnd' * x_bnd;
 
 % Progress functions.
@@ -107,11 +110,7 @@ print_header = @(str) ...
     %
 
 % Resolve what optimization method we should use.
-if isempty(varargin)
-    method = 'alt_dir';
-else
-    method = varargin{1};
-end
+method = 'alt_dir';
 
 switch method
     case 'alt_dir'
@@ -136,54 +135,11 @@ switch method
             cvx_begin
                 variable p_int(length(p_int))
                 minimize norm(A_p(x_full(x_int)) * ...
-                                (S.int' * p_int + S.bnd' * p_bnd) - ...
+                                (S.eint' * p_int + S.ebnd' * p_bnd) - ...
                                 b_p(x_full(x_int)))
                 subject to
                     p_int >= 0
                     p_int <= 1
-            cvx_end
-            fprintf('(p) '); print_prog(k, x_int, p_int)
-
-            % Visualize.
-            ob1_plot(dims,  {'p', p_full(p_int)}, ...
-                            {'|x|', abs(x_full(x_int))}, ...
-                            {'Re(x)', real(x_full(x_int))});
-
-            % Check for gradient norm stopping condition.
-            if (norm(grad(x_full(x_int), p_full(p_int))) < min_grad)
-                fprintf('Gradient norm stopping condition satisfied.');
-                break
-            end
-        end
-
-    case 'alt_dir_mod'
-        % Alternating directions method.
-        % *   The basic idea is to alternately optimize for x and then p.
-        % *   This allows us to use standard, guaranteed-to-work solvers.
-        % *   Although this method is slow, it should always approach a 
-        %     solution.
-
-        fprintf('Starting the alternating directions solver...\n');
-        print_header('x/p'); % Print header information for progress.
-        start_time = tic; % For timing purposes.
-        ptot = norm(p_int, 1);
-        for k = 1 : max_iters
-            % Solve for x_int.
-            x_int = (A_x(p_full(p_int)) * S.int') \ ...
-                    (-A_x(p_full(p_int)) * S.bnd' * x_bnd);
-            fprintf('(x) '); print_prog(k, x_int, p_int)
-
-            % Solve for p_int.
-            cvx_quiet(true);
-            cvx_begin
-                variable p_int(length(p_int))
-                minimize norm(A_p(x_full(x_int)) * ...
-                                (S.int' * p_int + S.bnd' * p_bnd) - ...
-                                b_p(x_full(x_int)))
-                subject to
-                    p_int >= 0
-                    p_int <= 1
-                    norm(p_int, 1) <= ptot
             cvx_end
             fprintf('(p) '); print_prog(k, x_int, p_int)
 

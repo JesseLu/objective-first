@@ -48,20 +48,35 @@ spec.omega = omega;
 spec.eps0 = eps0;
 spec.eps_lims = sort(eps_lims);
 
+if isempty(varargin)
+    spec.bc = 'pml';
+elseif strcmp(varargin{1}, 'periodic')
+    spec.bc = 'per';
+else
+    error('Not a valid option for BOUNDARY.');
+end
+
 
     %
     % Calculate the input and output modes.
     %
 
-figure(1);
-fprintf('Input mode calculation (figure 1)\n');
-[spec.in.beta, spec.in.Hz, spec.in.Ey] = ...
-    ob1_wgmode(spec.omega, eps0(1,:), mode_nums(1));
+if strcmp(spec.bc, 'pml')
+    figure(1);
+    fprintf('Input mode calculation (figure 1)\n');
+    [spec.in.beta, spec.in.Hz, spec.in.Ey] = ...
+        ob1_wgmode(spec.omega, eps0(1,:), mode_nums(1));
 
-figure(2);
-fprintf('Output mode calculation (figure 2)\n');
-[spec.out.beta, spec.out.Hz, spec.out.Ey] = ...
-    ob1_wgmode(spec.omega, eps0(end,:), mode_nums(2));
+    figure(2);
+    fprintf('Output mode calculation (figure 2)\n');
+    [spec.out.beta, spec.out.Hz, spec.out.Ey] = ...
+        ob1_wgmode(spec.omega, eps0(end,:), mode_nums(2));
+elseif strcmp(spec.bc, 'per')
+    [spec.in.beta, spec.in.Hz, spec.in.Ey] = ...
+        ob1_wgmode(spec.omega, eps0(1,:), mode_nums(1), 'noplot');
+    [spec.out.beta, spec.out.Hz, spec.out.Ey] = ...
+        ob1_wgmode(spec.omega, eps0(end,:), mode_nums(2), 'noplot');
+end
 
 
     %
@@ -70,13 +85,6 @@ fprintf('Output mode calculation (figure 2)\n');
 
 % Determine phase relation between input and output modes.
 phase = mean([spec.in.beta, spec.out.beta]) * (size(eps, 1) - 1);
-if isempty(varargin)
-    spec.bc = 'pml';
-elseif strcmp(varargin{1}, 'periodic')
-    spec.bc = 'per';
-else
-    error('Not a valid option for BOUNDARY.');
-end
 
 % Create boundary field conditions.
 % Two layers of Hz fields are needed since we must fix Hz as well as its 

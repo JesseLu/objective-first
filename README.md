@@ -1,3 +1,12 @@
+TODO
+====
+
+% Notes for litho_results.m  
+% These are at omega = 0.25.
+litho_results(10, 2.5, 15, 400); % Works well.
+litho_results(7, 3, 15, 400); % Works well too!
+litho_results(6, 3.5, 15, 400); % Might not be surprising that this also works.
+
 Purpose
 =======
 

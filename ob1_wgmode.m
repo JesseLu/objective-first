@@ -1,4 +1,4 @@
-function [beta, Hz, Ey] = ob1_wgmode(omega, eps, order)
+function [beta, Hz, Ey] = ob1_wgmode(omega, eps, order, varargin)
 % Waveguide mode solver.
 % 
 % Casts the problem in terms of Hz components, solves for eigenvalues and 
@@ -99,13 +99,17 @@ end
 err = norm(A * Hz - beta^2 * Hz);
 power = Ey' * Hz;
 
-fprintf('Mode number: %d\n', order);
-fprintf('Beta (wave-vector): %1.3f\n', beta);
-fprintf('Error in eigenvalue equation: %1.1e\n', err);
-fprintf('Power: %1.3f\n\n', power);
-
 % Plot result.
-my_mode_plot(Hz, Ey);
+if isempty(varargin)
+    fprintf('Mode number: %d\n', order);
+    fprintf('Beta (wave-vector): %1.3f\n', beta);
+    fprintf('Error in eigenvalue equation: %1.1e\n', err);
+    fprintf('Power: %1.3f\n\n', power);
+
+    my_mode_plot(Hz, Ey);
+elseif ~strcmp(varargin{1}, 'noplot')
+    error('Invalid option.');
+end
 
 
 
