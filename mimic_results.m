@@ -1,13 +1,85 @@
 function mimic_results()
-    num_iters = 400;
-    [eps{1}, Hz0{1}, Hz1{1}] = object(num_iters);
-    [eps{2}, Hz0{2}, Hz1{2}] = negative_index(num_iters);
-    [eps{3}, Hz0{3}, Hz1{3}] = lens(35, 100, num_iters); % "Wide" focus.
-    [eps{4}, Hz0{4}, Hz1{4}] = lens(12, 50, num_iters); % Tight focus.
-    [eps{5}, Hz0{5}, Hz1{5}] = lens(12, 150, num_iters); % Tight focus.
-    [eps{6}, Hz0{6}, Hz1{6}] = litho(6, 3.5, 15, num_iters);
+%     num_iters = 400;
+%     [eps{1}, Hz0{1}, Hz1{1}] = object(num_iters);
+%     [eps{2}, Hz0{2}, Hz1{2}] = negative_index(num_iters);
+%     [eps{3}, Hz0{3}, Hz1{3}] = lens(35, 100, num_iters); % "Wide" focus.
+%     [eps{4}, Hz0{4}, Hz1{4}] = lens(12, 50, num_iters); % Tight focus.
+%     [eps{5}, Hz0{5}, Hz1{5}] = lens(12, 150, num_iters); % Tight focus.
+%     [eps{6}, Hz0{6}, Hz1{6}] = litho(6, 3.5, 15, num_iters);
+% 
+%     save('precomp_mimic_results.mat', 'eps', 'Hz0', 'Hz1');
 
-    save('precomp_mimic_results.mat', 'eps', 'Hz0', 'Hz1');
+    results = load('precomp_mimic_results.mat', 'eps', 'Hz0', 'Hz1');
+    eps = results.eps;
+    Hz0 = results.Hz0;
+    Hz1 = results.Hz1
+
+    % Comparison lines.
+    comp_lines = [300, 230, 320, 270, 370, 220];
+    black_out = [220, 230, 220, 220, 220, 220];
+    
+% Generate the figures.
+try
+    system('mkdir fig');
+end
+for k = 1 : length(eps)
+    basename = ['fig/mimic', num2str(k), '/'];
+    try
+        system(['mkdir ', basename]);
+    end
+    fprintf('\n\nGenerating plots used for result #%d...\n===\n', k);
+
+    % Get the comparison line.
+    target = Hz0{k}(comp_lines(k), :);
+    actual = Hz1{k}(comp_lines(k), :);
+
+    figure(1); subplot 111;
+    ob1_area_plot(abs(target(:)), [basename, 'dt'], 'pos');
+    ob1_area_plot(abs(actual(:)), [basename, 'da'], 'pos');
+    figure(1)
+    ob1_plot_images({[basename, 'dt.png'], 'Target (Hz)'}, ...
+                   {[basename, 'da.png'], 'Actual (Hz)'});
+
+    % Calculate the error.
+    t = abs(target(:)) / norm(target(:));
+    a = abs(actual(:)) / norm(actual(:));
+    fprintf('Relative error on comparison line: %1.5f%%\n', 100 * norm(t - a) / norm(t));
+
+    % Pad epsilon.
+    pad = (size(Hz0{k}, 1) - size(eps{k}, 1)) / 2;
+    eps_sim = [ones(pad, size(eps{k}, 2)); eps{k}; ones(pad, size(eps{k}, 2))];
+
+    % Trim.
+    trim_start = 151;
+    eps_sim = eps_sim(trim_start:end,:);
+    Hz0{k}(1:219,:) = 0; % Black-out field to the left of the device.
+    Hz0{k} = Hz0{k}(trim_start:end, :);
+    Hz1{k} = Hz1{k}(trim_start:end, :);
+
+    c = 1.5; % Controls the color range.
+    ob1_imagesc(eps_sim, colormap('bone'), ...
+        [min(eps{k}(:)), max(eps{k}(:))], [basename, 'a']);
+
+    xline = comp_lines(k) - trim_start + 1;
+    ob1_imagesc(abs(Hz0{k}), colormap('hot'), ...
+        c * max(abs(target(:))) * [0 1], [basename, 'b'], xline);
+    ob1_imagesc(real(Hz0{k}), colormap('jet'), ...
+        c * max(real(target(:))) * [-1 1], [basename, 'c'], xline);
+    ob1_imagesc(abs(Hz1{k}), colormap('hot'), ...
+        c * max(abs(actual(:))) * [0 1], [basename, 'e'], xline);
+    ob1_imagesc(real(Hz1{k}), colormap('jet'), ...
+        c * max(real(actual(:))) * [-1 1], [basename, 'f'], xline);
+    figure(2)
+    ob1_plot_images({[basename, 'a.png'], 'Relative permittivity'}, ...
+                   {[basename, 'b.png'], '|Hz| (target)'}, ...
+                   {[basename, 'c.png'], 'Re(Hz) (target)'}, ...
+                   {[basename, 'e.png'], '|Hz| (simulation)'}, ...
+                   {[basename, 'f.png'], 'Re(Hz) (simulation)'});
+
+    fprintf('\nPress enter to continue...\n'); pause; % Wait for user.
+end
+
+;
 
 function [eps, Hz0, Hz1] = object(num_iters)
     %% Object mimic.

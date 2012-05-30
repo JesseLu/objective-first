@@ -15,10 +15,11 @@ function [Ex, Ey, Hz] = ob1_fdfd(omega, eps, in, bc)
 t_pml = 20;
 
 % Expand eps to include room for the pml padding
+side_pad = t_pml+4;
 if strcmp(bc, 'pml') 
-    eps = ob1_pad_eps(eps, t_pml * [1 1 1 1]);
+    eps = ob1_pad_eps(eps, side_pad * [1 1 1 1]);
 elseif strcmp(bc, 'per') 
-    eps = ob1_pad_eps(eps, t_pml * [1 1 0 0]);
+    eps = ob1_pad_eps(eps, side_pad * [1 1 0 0]);
 end
 dims = size(eps); % New size of the structure.
 [eps_x, eps_y] = ob1_interp_eps(eps); % Obtain x- and y- components of eps.
@@ -53,11 +54,11 @@ b = b ./ eps_y; % Convert from field to current source.
 
 % Cut off the pml parts.
 if strcmp(bc, 'pml')
-    Ex = Ex(t_pml+1:end-t_pml, t_pml+1:end-t_pml);
-    Ey = Ey(t_pml+1:end-t_pml, t_pml+1:end-t_pml);
-    Hz = Hz(t_pml+1:end-t_pml, t_pml+1:end-t_pml);
+    Ex = Ex(side_pad+1:end-side_pad, side_pad+1:end-side_pad);
+    Ey = Ey(side_pad+1:end-side_pad, side_pad+1:end-side_pad);
+    Hz = Hz(side_pad+1:end-side_pad, side_pad+1:end-side_pad);
 elseif strcmp(bc, 'per')
-    Ex = Ex(t_pml+1:end-t_pml, :);
-    Ey = Ey(t_pml+1:end-t_pml, :);
-    Hz = Hz(t_pml+1:end-t_pml, :);
+    Ex = Ex(side_pad+1:end-side_pad, :);
+    Ey = Ey(side_pad+1:end-side_pad, :);
+    Hz = Hz(side_pad+1:end-side_pad, :);
 end

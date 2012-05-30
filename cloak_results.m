@@ -17,8 +17,16 @@ function cloak_results()
     specs = results.specs;
     eps = results.eps;
 
+% Add empty ball and channel results.
+kill_pos = @(z) z .* (z < 0) + 1 * (z >= 0);
+specs = [specs, {specs{2}}, {specs{5}}];
+eps = [eps, {kill_pos(eps{2})}, {kill_pos(eps{5})}];
 % Generate the figures.
-for k = 1 : length(specs)
+try
+    system('mkdir fig');
+end
+% for k = 1 : length(specs)
+for k = [6, 7]
     basename = ['fig/cloak', num2str(k), '/'];
     try
         system(['mkdir ', basename]);
@@ -30,10 +38,10 @@ for k = 1 : length(specs)
 
     % fprintf('\nInput/output mode profiles (figure 1)...\n');
     figure(1); subplot 111; % Generate image files.
-    my_area_plot(specs{k}.in.Hz, [basename, 'a']);
-    my_area_plot(specs{k}.out.Hz, [basename, 'b']);
+    ob1_area_plot(specs{k}.in.Hz, [basename, 'a']);
+    ob1_area_plot(specs{k}.out.Hz, [basename, 'b']);
     figure(1); % Plot images for user.
-    my_plot_images({[basename, 'a.png'], 'Input mode (Hz)'}, ...
+    ob1_plot_images({[basename, 'a.png'], 'Input mode (Hz)'}, ...
                    {[basename, 'b.png'], 'Output mode (Hz)'});
                    
     % fprintf('\nDesign results (figure 2)...\n');
@@ -47,14 +55,15 @@ for k = 1 : length(specs)
     else
         cmap = flipud(colormap('bone'));
     end
-    my_imagesc(eps_sim, cmap, ...
+    c = 3; % Controls the color range.
+    ob1_imagesc(eps_sim, cmap, ...
         [min(eps{k}(:)), max(eps{k}(:))], [basename, 'c']);
-    my_imagesc(abs(Hz), colormap('hot'), ...
-        mean(max(max(abs(Hz(1:20,:))))) * [0 1], [basename, 'd']);
-    my_imagesc(real(Hz), colormap('jet'), ...
-        mean(max(max(abs(real(Hz(1:20,:)))))) * [-1 1], [basename, 'e']);
+    ob1_imagesc(abs(Hz), colormap('hot'), ...
+        c * mean(max(max(abs(Hz(1:20,:))))) * [0 1], [basename, 'd']);
+    ob1_imagesc(real(Hz), colormap('jet'), ...
+        c * mean(max(max(abs(real(Hz(1:20,:)))))) * [-1 1], [basename, 'e']);
     figure(2); % Plot images for user.
-    my_plot_images({[basename, 'c.png'], 'Relative permittivity'}, ...
+    ob1_plot_images({[basename, 'c.png'], 'Relative permittivity'}, ...
                    {[basename, 'd.png'], '|Hz| (simulation)'}, ...
                    {[basename, 'e.png'], 'Re(Hz) (simulation)'});
 
@@ -119,47 +128,5 @@ function [z] = my_circle(z, pos, radius, val)
     r = sqrt((x-pos(1)).^2 + (y-pos(2)).^2);
     in = r <= radius;
     z = in * val + ~in .* z;
-
-function my_plot_images(varargin)
-% Plot the images for the user to see.
-N = length(varargin);
-for k = 1 : N
-    subplot(1, N, k); 
-    [im, map] = imread(varargin{k}{1}); 
-    if ~isempty(map) % Try to convert to RGB values if needed (mapped data).
-        try
-            im = idx2rgb(im, map ); 
-        catch 
-            colormap('jet');
-        end
-    end
-    image(im);
-    title(varargin{k}{2});
-    axis equal tight; 
-end
-
-function my_imagesc(z, map, lims, filename)
-% Write out a mapped image.
-z = (((z)-lims(1)) / diff(lims) * 63) + 1;
-z = 1 * (z < 1) + 64 * (z > 64) + z .* ((z >= 1) & (z <= 64));
-imwrite(z', map, [filename, '.png']);
-imwrite([64:-1:1]', map, [filename, '_cbar.png']); % Colorbar.
-
-
-function my_area_plot(z, filename)
-% Normalized area plot.
-h = area(1:length(z), z./max(abs(z)));
-% set(h, 'FaceColor', [255 194 0]./256); % Tangerine.
-axis([1 length(z) -3 3]);
-set(gca, 'ytick', []); % No ticks wanted.
-print(gcf, '-dpng', '-r150', [filename]); % Save image.
-[im] = imread([filename, '.png']); % Reload image.
-im = my_add_border(im(300:569,160:1059,:), 0); % Crop and add border.
-imwrite(uint8(im), [filename, '.png'], 'png'); % Save.
-
-function [A1] = my_add_border(A0, val)
-% Add a one pixel border around image.
-A1 = val * ones(size(A0));
-A1(2:end-1,2:end-1,:) = A0(2:end-1,2:end-1,:);
 
 
