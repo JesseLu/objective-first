@@ -1,36 +1,83 @@
-Objective-first optimization package
-====================================
+Purpose
+=======
 
-This package is a research and development build with the goal of formulating a design algorithm for wave structures.
+This package implements an "objective-first" approach to
+the design of nanophotonic waveguide couplers in two dimensions.
+
+Feel free to use and modify the code, for this reason
+the implementation here is simple and heavily documented.
+
+See the following paper for details on objective-first optimization:
+    J. Lu, J. Vuckovic, 
+    "Objective-first design of nanophotonic waveguide couplers," 
+    (to be submitted)
+
+Draft can be found at:
+https://github.com/JesseLu/misc/blob/master/presentations/ob1_wg_paper/paper.pdf
 
 
-What is objective-first (Ob-1) optimization?
---------------------------------------------
+Installation
+============
 
-Objective-first optimization is a unique strategy for finding a physical structure and field which meet a design objective. 
+This package requires the basic version of Matlab,
+The CVX software (www.stanford.edu/~boyd/cvx)
+is included verbatim in this repository as well.
 
-Understanding the idea behind Ob-1 optimization is most easily understood by comparing it with traditional optimization techniques.
+To install, just unzip all files in a directory.
+Then to use, just open matlab from the directory.
 
-Traditional: Satisfy physics while improving the value of the design objective.
+You can also run example.m to for a demo of the package.
+To do this, simply type 'example' in the Matlab command line.
 
-Ob-1: Satisfy the design objective while decreasing the error in the physical equations (physics residual).
+
+Problem Specification
+=====================
+
+This package attempts to solve the following nanophotonic design problem; given
+
+1.  an arbitrary input waveguide mode on the left,
+1.  an arbitrary output waveguide mode on the right, and
+1.  a central "design box" between the two; 
+
+find a dielectric structure within the "design box" which will convert from 
+the input to the output waveguide mode as efficiently as possible.
 
 
-Validation steps
-----------------
+Limitations
+-----------
 
-The following steps form a progressive validation procedure that allows one to determine whether or not a specific optimization strategy is viable.
+1.  There is no guarantee on the performance of the design, meaning that
+    the user is not even guaranteed that the final design will improve upon
+    the initial one.
+    This is a natural outcome of employing an objective-first approach.
+    In practice, this software routinely designs very high efficiency 
+    (~95%) couplers.
+1.  Although a discretized permittivity (or dielectric structure)
+    is usually desired, the current version of the package only limits the
+    values of the permittivity to a continuous range.
+    The ability to produce completely binary structures is being actively
+    developed for the next iteration of this package.
 
-1.  Cast the physics of the wave equation in a matrix-vector form and independently solve for both the field and unbounded structure variables using a generic linear algebra solver.
-    This step validates the correctness of the matrices and, in doing so, the formulation of the problem.
 
-2.  Produce an equivalent result using a gradient descent method on both field and unbounded structure variables independently.
-    This step validates the accuracy of the gradient.
+Usage
+=====
 
-3.  Joint gradient-descent on field and unbounded structure variables.
-    This is likely the first non-convex problem attempted and serves as a key milestone in evaluating whether or not Ob-1 will be effective.
+Basic usage consists of the following three commands:
 
-4.  Joint gradient-descent on field and bounded structure variables.
-    Use the level-set method to calculate the shape derivatives for the boundaries of the structure. Care will be needed in testing the shape derivatives. 
+1.  setup(), determine the input and output waveguides modes;
+1.  solve(), run the design algorithm;
+1.  simulate(), determine the actual performance of the design.
 
+See the example.m file for an example optimization.
+
+Please consult the documentation of use help command, 
+where command is setup, optimize, or simulate, 
+for more information on how to use these commands.
+
+
+License
+=======
+
+This code is public domain and comes with no guarantees. 
+Feel free to use it however you like.
 
