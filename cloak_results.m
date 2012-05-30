@@ -1,5 +1,5 @@
 function cloak_results()
-    dims = [40 80]; % Dimensions of all the couplers.
+    dims = [60 100]; % Dimensions of all the couplers.
     eps_init = 9.0; % Initial value of epsilon within design area.
     eps_lims = [1 12.25]; % Limited range of epsilon.
     num_iters = 400; % Number of iterations to run the design optimization for.
@@ -28,7 +28,7 @@ function [specs, blocks] = create_specs(dims, eps_lims, eps_init)
 	% Anti-reflection coating.
 	eps0 = ones(dims);
 	eps0(3:end,:) = 12.25;
-	specs{1} = setup(0.15, eps0, eps_lims, [1 1], 'periodic');
+	specs{1} = setup(0.10, eps0, eps_lims, [1 1], 'periodic');
     blocks{1} = false * ones(dims);
 
 	% Wrap cloak. 
