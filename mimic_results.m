@@ -57,7 +57,7 @@ for k = 1 : length(eps)
     Hz1{k} = Hz1{k}(trim_start:end, :);
 
     c = 1.5; % Controls the color range.
-    ob1_imagesc(eps_sim, colormap('bone'), ...
+    ob1_imagesc(eps_sim, flipud(colormap('bone')), ...
         [min(eps{k}(:)), max(eps{k}(:))], [basename, 'a']);
 
     xline = comp_lines(k) - trim_start + 1;

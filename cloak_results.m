@@ -26,7 +26,7 @@ try
     system('mkdir fig');
 end
 % for k = 1 : length(specs)
-for k = [6, 7]
+for k = 5:7
     basename = ['fig/cloak', num2str(k), '/'];
     try
         system(['mkdir ', basename]);
@@ -48,16 +48,24 @@ for k = [6, 7]
     figure(2); subplot 111; % Generate image files.
     if (min(eps{k}(:)) < 0) % Custom colormap if we have metallic devices.
         cmap = flipud([colormap('bone'); flipud(fliplr(colormap('bone')))]);
-        r = (abs(min(eps{k}(:))) + 1) / (max(eps{k}(:)) - 1); % Ratio.
+
+
+        min_eps = -2; % Override.
+        max_eps = 12.25; % Override.
+
+        % Ratio (centers around 1).
+        r = (abs(min_eps) + 1) / (max_eps - 1); 
         n = size(cmap, 1);
         ind = round(n/2 * (1 - r))+2;
         cmap = interp1(cmap, ind:(n-ind)/64:n);
     else
+        min_eps = min(eps{k}(:));
+        max_eps = max(eps{k}(:));
         cmap = flipud(colormap('bone'));
     end
     c = 3; % Controls the color range.
     ob1_imagesc(eps_sim, cmap, ...
-        [min(eps{k}(:)), max(eps{k}(:))], [basename, 'c']);
+        [min_eps, max_eps], [basename, 'c']);
     ob1_imagesc(abs(Hz), colormap('hot'), ...
         c * mean(max(max(abs(Hz(1:20,:))))) * [0 1], [basename, 'd']);
     ob1_imagesc(real(Hz), colormap('jet'), ...
