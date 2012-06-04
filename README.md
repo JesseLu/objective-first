@@ -1,6 +1,8 @@
 TODO
 ====
 
+Clean up!!!!
+
 % Notes for litho_results.m  
 % These are at omega = 0.25.
 litho_results(10, 2.5, 15, 400); % Works well.

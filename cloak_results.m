@@ -25,8 +25,7 @@ eps = [eps, {kill_pos(eps{2})}, {kill_pos(eps{5})}];
 try
     system('mkdir fig');
 end
-% for k = 1 : length(specs)
-for k = 5:7
+for k = 1 : length(specs)
     basename = ['fig/cloak', num2str(k), '/'];
     try
         system(['mkdir ', basename]);
