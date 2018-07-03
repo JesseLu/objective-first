@@ -1,7 +1,12 @@
 clc; clf; close all;
 
+input_mode = 1;
+output_mode = 2;
+
+load_epsilon_filename = sprintf('adjoint_eps_bin_%d_%d.csv', input_mode, output_mode);
+
 % Read in a binary epsilon structure in order to start.
-eps = csvread('adjoint_eps_bin_1_2.csv');
+eps = csvread(load_epsilon_filename);
 
 [eps_rows, eps_cols] = size(eps);
 num_eps_pixels = eps_rows * eps_cols;
@@ -22,10 +27,10 @@ output_type = 'python';
 assert((strcmp(output_type, 'python') == 1) || ...
     (strcmp(output_type, 'describe') == 1));
 
-file_name = 'waveguide_turtle.py';
+file_name = './output/waveguide_turtle.py';
 
 if (strcmp(output_type, 'describe'))
-    file_name = 'waveguide_describe.txt';
+    file_name = './output/waveguide_describe.txt';
 end
 
 file_id = fopen(file_name, 'w');
@@ -167,8 +172,6 @@ num_reduced_segments = reduced_dims(1);
 % Re-sort in case things moved around a lot in the reduction
 filtered_line_segments = sortrows(filtered_line_segments, 1);
 filtered_line_segments = sortrows(filtered_line_segments, 2);
-
-csvwrite('filtered_lines.csv', filtered_line_segments);
 
 for n = 1 : 1 : num_reduced_segments
     filtered_line = filtered_line_segments(n, :);

@@ -65,9 +65,6 @@ for n = 1 : 1 : num_iter
     [Ex_adj, Ey_adj, Hz_adj, gradient_adj] = ob1_fdfd_adj(spec.omega, eps, spec.in, g_x_partial, spec.bc);
     adjoint_time = toc;
 
-    upper_eps_grad_reshape = reshape(grad_eps_punishment(eps, upper_eps), size(eps));
-    lower_eps_grad_reshape = reshape(grad_eps_punishment(eps, lower_eps), size(eps));
-    
     fprintf('Iteration #%d, Objective Function Value = %f, Computation Time (sec) = %f!\n', ...
         n, compute_objective(Hz_adj(end,:).'), adjoint_time);
        
@@ -78,3 +75,7 @@ end
     
 % Simulate the result and analyze the success of the design process.
 simulate(spec, eps, [simulation_width simulation_height]);
+
+save_epsilon_filename = sprintf('adjoint_eps_%d_%d.csv', input_mode, output_mode);
+csvwrite(save_epsilon_filename, eps);
+
